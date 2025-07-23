@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace XSD.Comprobante
+namespace Schemas.Base
 {
     [Serializable]
     [DebuggerStepThrough]

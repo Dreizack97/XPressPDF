@@ -9,7 +9,7 @@ namespace Schemas.Complements
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.sat.gob.mx/TimbreFiscalDigital")]
     [XmlRoot(Namespace = "http://www.sat.gob.mx/TimbreFiscalDigital", IsNullable = false)]
-    public partial class TimbreFiscalDigital
+    public partial class TimbreFiscalDigital : IComplement
     {
         [XmlAttribute]
         public string Version { get; set; } = "1.1";
@@ -34,5 +34,7 @@ namespace Schemas.Complements
 
         [XmlAttribute]
         public string SelloSAT { get; set; } = string.Empty;
+
+        public string ComplementName => "TimbreFiscalDigital";
     }
 }
