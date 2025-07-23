@@ -5,7 +5,7 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
-        Console.WriteLine("===== XML Invoice Reader (.NET 9) =====");
+        Console.WriteLine("===== XPressPDF =====");
 
         FileService fileService = new FileService();
         XmlDeserializer deserializer = new XmlDeserializer();

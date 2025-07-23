@@ -33,6 +33,8 @@ namespace App.Implementation
             Console.WriteLine($"Date: {comprobante.Fecha}");
             Console.WriteLine($"Total: {comprobante.Total}");
             Console.WriteLine($"UUID: {comprobante.TimbreFiscalDigital?.UUID ?? ""}");
+            Console.WriteLine($"Total Percepciones: {comprobante.Nomina?.TotalPercepciones.ToString() ?? ""}");
+            Console.WriteLine($"Total Vales: {comprobante.ValesDespensa?.Total.ToString() ?? ""}");
             // etc...
         }
     }

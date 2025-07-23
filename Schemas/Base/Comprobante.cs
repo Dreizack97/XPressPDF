@@ -1,4 +1,6 @@
 ﻿using Schemas.Complements;
+using Schemas.Complements.Nomina;
+using Schemas.Complements.ValesDeDespensa;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml.Serialization;
@@ -32,6 +34,10 @@ namespace Schemas.Base
 
         // Complements
         public TimbreFiscalDigital? TimbreFiscalDigital { get; set; }
+
+        public Nomina? Nomina { get; set; }
+
+        public ValesDeDespensa? ValesDespensa { get; set; }
 
         [XmlAttribute]
         public string Version { get; set; } = "4.0";
