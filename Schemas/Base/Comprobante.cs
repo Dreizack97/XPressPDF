@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Schemas.Complements;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
@@ -28,6 +29,9 @@ namespace Schemas.Base
         public ComprobanteComplemento Complemento { get; set; }
 
         public ComprobanteAddenda Addenda { get; set; }
+
+        // Complements
+        public TimbreFiscalDigital? TimbreFiscalDigital { get; set; }
 
         [XmlAttribute]
         public string Version { get; set; } = "4.0";

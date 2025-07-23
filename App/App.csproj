@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Implementation\ComplementService.cs" />
-    <Compile Remove="Interfaces\IComplementService.cs" />
-    <Compile Remove="Utilities\ComprobanteExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Schemas\Schemas.csproj" />
   </ItemGroup>
 

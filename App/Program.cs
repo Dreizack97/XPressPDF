@@ -30,6 +30,9 @@ internal class Program
                 return;
             }
 
+            ComplementService complementService = new ComplementService();
+            comprobante = complementService.GetComplements(comprobante);
+
             uiService.ShowSuccess("XML deserialized successfully!");
             uiService.ShowInvoiceSummary(comprobante);
         }

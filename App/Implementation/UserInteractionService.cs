@@ -32,6 +32,7 @@ namespace App.Implementation
             Console.WriteLine($"Receiver: {comprobante.Receptor?.Nombre}");
             Console.WriteLine($"Date: {comprobante.Fecha}");
             Console.WriteLine($"Total: {comprobante.Total}");
+            Console.WriteLine($"UUID: {comprobante.TimbreFiscalDigital?.UUID ?? ""}");
             // etc...
         }
     }

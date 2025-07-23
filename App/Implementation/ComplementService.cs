@@ -1,5 +1,4 @@
 ﻿using App.Interfaces;
-using Schemas;
 using Schemas.Base;
 using Schemas.Complements;
 using System.Xml;
@@ -10,27 +9,22 @@ namespace App.Implementation
     {
         private readonly XmlDeserializer _invoiceDeserializer = new XmlDeserializer();
 
-        public IEnumerable<IComplement> GetComplements(Comprobante comprobante)
+        public Comprobante GetComplements(Comprobante comprobante)
         {
-            List<IComplement> complements = new List<IComplement>();
-
-            if (comprobante.Complemento == null)
-                return complements;
-
-            foreach (XmlElement element in comprobante.Complemento.Any)
+            if (comprobante?.Complemento?.Any != null)
             {
-                switch (element.LocalName)
+                foreach (XmlElement element in comprobante.Complemento.Any)
                 {
-                    case "TimbreFiscalDigital":
-                        TimbreFiscalDigital? timbre = _invoiceDeserializer.Deserialize<TimbreFiscalDigital>(element.OuterXml);
-
-                        if (timbre != null)
-                            complements.Add(timbre);
-                        break;
+                    switch (element.LocalName)
+                    {
+                        case "TimbreFiscalDigital":
+                            comprobante.TimbreFiscalDigital = _invoiceDeserializer.Deserialize<TimbreFiscalDigital>(element.OuterXml);
+                            break;
+                    }
                 }
             }
 
-            return complements;
+            return comprobante;
         }
     }
 }
