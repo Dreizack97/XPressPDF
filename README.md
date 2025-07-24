@@ -46,7 +46,7 @@ dotnet run
 
 ## 🖼️ Ejemplo de Salida
 
-![Ejemplo](https://github.com/Dreizack97/Example.png)
+![Ejemplo](https://github.com/Dreizack97/XPressPDF/blob/e5821a1b7d8983ce32ae2742af34ddba528d0870/Example.png)
 
 - Datos de empresa y empleado
 - Tablas de percepciones y deducciones
