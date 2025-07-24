@@ -1,4 +1,8 @@
 ﻿using App.Implementation;
+using App.Utilities;
+using QuestPDF;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using Schemas.Base;
 
 internal class Program
@@ -11,7 +15,7 @@ internal class Program
         XmlDeserializer deserializer = new XmlDeserializer();
         UserInteractionService uiService = new UserInteractionService();
 
-        string filePath = uiService.RequestFilePath();
+        string filePath = uiService.RequestFilePath().Trim('"');
 
         if (!fileService.FileExists(filePath))
         {
@@ -35,6 +39,10 @@ internal class Program
 
             uiService.ShowSuccess("XML deserialized successfully!");
             uiService.ShowInvoiceSummary(comprobante);
+
+            Settings.License = LicenseType.Community;
+            PdfGenerator document = new PdfGenerator(comprobante);
+            document.GeneratePdf(filePath.ToUpper().Replace(".XML", ".pdf"));
         }
         catch (Exception ex)
         {
