@@ -5,5 +5,7 @@
         Task<string> ReadFileAsync(string path);
 
         bool FileExists(string path);
+
+        bool DirectoryExists(string path);
     }
 }

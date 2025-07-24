@@ -7,8 +7,22 @@ namespace App.Implementation
     {
         public string RequestFilePath()
         {
-            Console.Write("Enter the XML file path: ");
+            Console.Write("\nEnter the XML file path: ");
             return Console.ReadLine();
+        }
+
+        public string RequestDirectoryPath()
+        {
+            Console.Write("\nEnter the directory files path: ");
+            return Console.ReadLine();
+        }
+
+        public void ShowMenu()
+        {
+            Console.WriteLine("\n1. Enter XML File");
+            Console.WriteLine("2. Select Directory");
+            Console.WriteLine("3. Exit\n");
+            Console.Write("Choose an option: ");
         }
 
         public void ShowError(string message)
@@ -28,7 +42,7 @@ namespace App.Implementation
         public void ShowInvoiceSummary(Comprobante comprobante)
         {
             // This method should be expanded based on your 'Comprobante' class structure
-            Console.WriteLine($"Invoice Issuer: {comprobante.Emisor?.Nombre}");
+            Console.WriteLine($"\nInvoice Issuer: {comprobante.Emisor?.Nombre}");
             Console.WriteLine($"Receiver: {comprobante.Receptor?.Nombre}");
             Console.WriteLine($"Date: {comprobante.Fecha}");
             Console.WriteLine($"Total: {comprobante.Total}");

@@ -6,6 +6,10 @@ namespace App.Interfaces
     {
         string RequestFilePath();
 
+        string RequestDirectoryPath();
+
+        void ShowMenu();
+
         void ShowError(string message);
 
         void ShowSuccess(string message);
