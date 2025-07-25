@@ -6,6 +6,7 @@
 
 - ⚡ **Generación ultrarrápida** de PDFs a partir de XML de nómina CFDI
 - 📁 **Soporte para archivos individuales y carpetas completas**
+- 🆙 **Sube tus archivos mediante FTP**
 - 🎨 **Diseño PDF moderno y profesional**, con soporte para logotipo y QR SAT
 - 💻 **Interfaz fácil, con validaciones robustas**
 - 🖥️ **Compatible con Windows, Linux y MacOS**
@@ -78,4 +79,5 @@ MIT — Gratis para uso personal y comercial.
 
 - [QuestPDF](https://www.questpdf.com/) — Motor PDF
 - [QRCoder](https://github.com/codebude/QRCoder) — Generador QR
+- [FluentFTP](https://github.com/robinrodricks/FluentFTP) - Cliente FTP
 - [SAT](https://www.sat.gob.mx/) — Estándares CFDI de nómina en México
