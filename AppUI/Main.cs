@@ -1,5 +1,8 @@
-using AppUI.Objetcs;
+﻿using AppUI.Objetcs;
 using BLL;
+using BLL.Objetcs;
+using BLL.Utilities;
+using System.Text;
 
 namespace AppUI
 {
@@ -14,18 +17,6 @@ namespace AppUI
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = "XML Files (*.xml)|*.xml|All files (*.*)|*.*",
-                FilterIndex = 1,
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Multiselect = true,
-                RestoreDirectory = true,
-                Title = "Select XML files"
-            };
-
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -65,6 +56,7 @@ namespace AppUI
 
             int i = 0;
             btnConvert.Enabled = false;
+            Cursor = Cursors.WaitCursor;
 
             try
             {
@@ -88,6 +80,50 @@ namespace AppUI
             finally
             {
                 btnConvert.Enabled = true;
+                Cursor = Cursors.Default;
+            }
+        }
+
+        private async void btnUpload_Click(object sender, EventArgs e)
+        {
+            btnUpload.Enabled = false;
+            Cursor = Cursors.WaitCursor;
+
+            string? directoryPath = Path.GetDirectoryName(openFileDialog.FileName);
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+                throw new DirectoryNotFoundException("Directory not found.");
+
+            string uploadPath = Path.Combine(DateTime.Now.Year.ToString(), "S", "1");
+            string[] pdfFiles = Directory.GetFiles(directoryPath, "*.pdf");
+
+            try
+            {
+                FtpService ftpService = new FtpService();
+                List<FileUploadResult> results = await ftpService.UploadAsync(pdfFiles, uploadPath);
+
+                int successCount = results.Count(r => r.Success);
+                int failedCount = results.Count(r => !r.Success);
+
+                string logFileName = $"Log-{DateTime.Now:yyyyMMdd}.txt";
+                string fullLogFilePath = Path.Combine(AppContext.BaseDirectory, "Logs", logFileName);
+
+                StringBuilder messageBuilder = new StringBuilder();
+                messageBuilder.AppendLine("FTP Upload Results:");
+                messageBuilder.AppendLine($"✅ Files Uploaded: {successCount}");
+                messageBuilder.AppendLine($"❌ Files Failed: {failedCount}");
+                messageBuilder.AppendLine($"Check the log file for more details: {fullLogFilePath}");
+
+                MessageBox.Show(messageBuilder.ToString(), "FTP Upload Summary", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnUpload.Enabled = true;
+                Cursor = Cursors.Default;
             }
         }
     }

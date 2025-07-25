@@ -31,6 +31,8 @@
             btnSelect = new Button();
             dataGrid = new DataGridView();
             btnConvert = new Button();
+            btnUpload = new Button();
+            openFileDialog = new OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)dataGrid).BeginInit();
             SuspendLayout();
             // 
@@ -61,12 +63,12 @@
             dataGrid.RowHeadersVisible = false;
             dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGrid.Size = new Size(630, 450);
-            dataGrid.TabIndex = 2;
+            dataGrid.TabIndex = 3;
             // 
             // btnConvert
             // 
             btnConvert.AutoSize = true;
-            btnConvert.Location = new Point(130, 12);
+            btnConvert.Location = new Point(132, 12);
             btnConvert.Name = "btnConvert";
             btnConvert.Size = new Size(99, 25);
             btnConvert.TabIndex = 1;
@@ -74,11 +76,30 @@
             btnConvert.UseVisualStyleBackColor = true;
             btnConvert.Click += btnConvert_Click;
             // 
+            // btnUpload
+            // 
+            btnUpload.AutoSize = true;
+            btnUpload.Location = new Point(252, 12);
+            btnUpload.Name = "btnUpload";
+            btnUpload.Size = new Size(99, 25);
+            btnUpload.TabIndex = 2;
+            btnUpload.Text = "Upload";
+            btnUpload.UseVisualStyleBackColor = true;
+            btnUpload.Click += btnUpload_Click;
+            // 
+            // openFileDialog
+            // 
+            openFileDialog.Filter = "XML Files (*.xml)|*.xml|All files (*.*)|*.*";
+            openFileDialog.Multiselect = true;
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Title = "Select XML files";
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(654, 511);
+            Controls.Add(btnUpload);
             Controls.Add(btnConvert);
             Controls.Add(dataGrid);
             Controls.Add(btnSelect);
@@ -96,5 +117,7 @@
         private Button btnSelect;
         private DataGridView dataGrid;
         private Button btnConvert;
+        private Button btnUpload;
+        private OpenFileDialog openFileDialog;
     }
 }
