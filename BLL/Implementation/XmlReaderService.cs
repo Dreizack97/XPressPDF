@@ -1,4 +1,4 @@
-﻿using BLL.Implementation;
+﻿using BLL.Interfaces;
 using BLL.Utilities;
 using QuestPDF;
 using QuestPDF.Fluent;
@@ -6,14 +6,14 @@ using QuestPDF.Infrastructure;
 using Schemas.Base;
 using System.Globalization;
 
-namespace BLL
+namespace BLL.Implementation
 {
-    public class XmlReader
+    public class XmlReaderService : IXmlReaderService
     {
         private readonly ComplementService _complementService;
         private readonly XmlDeserializer _xmlDeserializer;
 
-        public XmlReader()
+        public XmlReaderService()
         {
             _complementService = new ComplementService();
             _xmlDeserializer = new XmlDeserializer();

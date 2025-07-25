@@ -1,4 +1,4 @@
-﻿namespace BLL
+﻿namespace BLL.Utilities
 {
     public static class LogManager
     {

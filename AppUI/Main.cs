@@ -1,5 +1,5 @@
 ﻿using AppUI.Objetcs;
-using BLL;
+using BLL.Implementation;
 using BLL.Objetcs;
 using BLL.Utilities;
 using System.Text;
@@ -62,7 +62,7 @@ namespace AppUI
             {
                 await Task.Run(async () =>
                 {
-                    XmlReader xmlReader = new XmlReader();
+                    XmlReaderService xmlReader = new XmlReaderService();
 
                     foreach (XmlFile xmlFile in xmlFiles)
                     {
