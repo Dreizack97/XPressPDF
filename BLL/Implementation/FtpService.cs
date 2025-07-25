@@ -2,7 +2,6 @@
 using BLL.Objetcs;
 using FluentFTP;
 using FluentFTP.Exceptions;
-using System.Threading.Tasks;
 
 namespace BLL.Utilities
 {
