@@ -1,4 +1,4 @@
-﻿namespace App.Interfaces
+﻿namespace BLL.Interfaces
 {
     public interface IXmlDeserializer
     {

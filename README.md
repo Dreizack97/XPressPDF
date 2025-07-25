@@ -1,13 +1,13 @@
 # XPressPDF 🚀 Generador de Recibos de Nómina en PDF
 
-**XPressPDF** es una herramienta de consola .NET moderna y multiplataforma que transforma tus archivos XML de nómina mexicana (CFDI de Nómina) en elegantes PDFs listos para imprimir, ¡en segundos! Incluye diseño profesional, código QR SAT, procesamiento por lotes y validación amigable.
+**XPressPDF** es una herramienta de escritorio .NET moderna y multiplataforma que transforma tus archivos XML de nómina mexicana (CFDI de Nómina) en elegantes PDFs listos para imprimir, ¡en segundos! Incluye diseño profesional, código QR SAT, procesamiento por lotes y validación amigable.
 
 ### ✨ Funcionalidades
 
 - ⚡ **Generación ultrarrápida** de PDFs a partir de XML de nómina CFDI
 - 📁 **Soporte para archivos individuales y carpetas completas**
 - 🎨 **Diseño PDF moderno y profesional**, con soporte para logotipo y QR SAT
-- 💻 **Interfaz de consola fácil, con validaciones robustas**
+- 💻 **Interfaz fácil, con validaciones robustas**
 - 🖥️ **Compatible con Windows, Linux y MacOS**
 - 🔓 **Código abierto (Licencia MIT)**
 
@@ -57,9 +57,8 @@ dotnet run
 
 ## 📂 Estructura del Proyecto
 
-- `Program.cs`: Lógica principal de consola y flujo
-- `PdfGenerator.cs`: Renderizado profesional con QuestPDF y QRCoder
-- `App.Implementation/`, `App.Utilities/`: Utilidades para archivos, XML y lógica de negocio
+- `AppUI`: Interfaz Gráfica de Usuario
+- `BLL`: Utilidades para archivos XML, lógica de negocio y renderizado profesional con QuestPDF y QRCoder
 
 ---
 

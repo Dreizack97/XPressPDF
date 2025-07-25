@@ -1,7 +1,7 @@
-﻿using App.Interfaces;
+﻿using BLL.Interfaces;
 using System.Xml.Serialization;
 
-namespace App.Implementation
+namespace BLL.Implementation
 {
     public class XmlDeserializer : IXmlDeserializer
     {

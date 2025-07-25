@@ -1,11 +1,11 @@
-﻿using App.Interfaces;
+﻿using BLL.Interfaces;
 using Schemas.Base;
 using Schemas.Complements;
 using Schemas.Complements.Nomina;
 using Schemas.Complements.ValesDeDespensa;
 using System.Xml;
 
-namespace App.Implementation
+namespace BLL.Implementation
 {
     public class ComplementService : IComplementService
     {

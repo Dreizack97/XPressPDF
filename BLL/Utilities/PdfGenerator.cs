@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 using Schemas.Base;
 using Schemas.Complements.Nomina;
 
-namespace App.Utilities
+namespace BLL.Utilities
 {
     public class PdfGenerator : IDocument
     {

@@ -1,6 +1,6 @@
 ﻿using Schemas.Base;
 
-namespace App.Interfaces
+namespace BLL.Interfaces
 {
     public interface IComplementService
     {
