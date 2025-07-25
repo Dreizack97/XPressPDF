@@ -1,4 +1,4 @@
-using AppUI.Objetcs;
+﻿using AppUI.Objetcs;
 using BLL;
 
 namespace AppUI
@@ -14,18 +14,6 @@ namespace AppUI
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = "XML Files (*.xml)|*.xml|All files (*.*)|*.*",
-                FilterIndex = 1,
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Multiselect = true,
-                RestoreDirectory = true,
-                Title = "Select XML files"
-            };
-
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -89,6 +77,11 @@ namespace AppUI
             {
                 btnConvert.Enabled = true;
             }
+        }
+
+        private void btnUpload_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
