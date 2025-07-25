@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="53.0.1" />
+    <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="QuestPDF" Version="2025.7.0" />
   </ItemGroup>
