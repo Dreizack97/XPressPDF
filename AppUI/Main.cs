@@ -1,4 +1,5 @@
 using AppUI.Objetcs;
+using BLL;
 
 namespace AppUI
 {
@@ -69,8 +70,12 @@ namespace AppUI
             {
                 await Task.Run(async () =>
                 {
+                    XmlReader xmlReader = new XmlReader();
+
                     foreach (XmlFile xmlFile in xmlFiles)
                     {
+                        await xmlReader.Read(xmlFile.Path);
+
                         dataGrid.Rows[i].Cells[4].Value = "Complete";
                         i++;
                     }
