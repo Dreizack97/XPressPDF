@@ -77,6 +77,7 @@
             MainMenuStrip = menuStrip;
             MaximizeBox = false;
             Name = "Settings";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Settings";
             Load += Settings_Load;
             menuStrip.ResumeLayout(false);

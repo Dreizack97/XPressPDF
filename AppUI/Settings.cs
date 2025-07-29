@@ -1,5 +1,5 @@
 ﻿using AppUI.Components;
-using AppUI.Utilities;
+using BLL.Utilities;
 
 namespace AppUI
 {
@@ -15,7 +15,9 @@ namespace AppUI
             string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
             if (!File.Exists(configPath))
-                ConfigManager.CreateDefaultConfig(configPath);
+                ConfigManager.CreateDefaultConfig();
+
+            openFormOnPanel<FtpServer>();
         }
 
         private void ftpServerToolStripMenuItem_Click(object sender, EventArgs e)
