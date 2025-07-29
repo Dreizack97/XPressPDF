@@ -79,5 +79,6 @@ MIT — Gratis para uso personal y comercial.
 
 - [QuestPDF](https://www.questpdf.com/) — Motor PDF
 - [QRCoder](https://github.com/codebude/QRCoder) — Generador QR
-- [FluentFTP](https://github.com/robinrodricks/FluentFTP) - Cliente FTP
+- [FluentFTP](https://github.com/robinrodricks/FluentFTP) — Cliente FTP
+- [MailKit](https://mimekit.net/) — Cliente SMTP
 - [SAT](https://www.sat.gob.mx/) — Estándares CFDI de nómina en México
