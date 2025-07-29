@@ -2,6 +2,6 @@
 {
     public interface IXmlReaderService
     {
-        Task Read(string xmlPath);
+        Task<bool> Read(string xmlPath);
     }
 }

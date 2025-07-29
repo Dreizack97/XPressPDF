@@ -1,4 +1,4 @@
-﻿namespace AppUI.Objetcs
+﻿namespace AppUI.Objects
 {
     public class XmlFile
     {

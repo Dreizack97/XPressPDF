@@ -1,4 +1,4 @@
-﻿using AppUI.Objetcs;
+﻿using AppUI.Objects;
 using BLL.Implementation;
 using BLL.Objetcs;
 using BLL.Utilities;
@@ -125,6 +125,12 @@ namespace AppUI
                 btnUpload.Enabled = true;
                 Cursor = Cursors.Default;
             }
+        }
+
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            Settings settings = new Settings();
+            settings.ShowDialog();
         }
     }
 }

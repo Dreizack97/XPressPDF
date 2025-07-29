@@ -513,13 +513,16 @@ namespace BLL.Utilities
                     static IContainer CellStyle(IContainer container) => container.Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingLeft(5);
                 });
 
-                foreach (NominaDeduccionesDeduccion deduccion in Deducciones.Deduccion)
+                if (Deducciones != null)
                 {
-                    table.Cell().Element(CellStyle).Text(deduccion.TipoDeduccion).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
-                    table.Cell().Element(CellStyle).Text(deduccion.Concepto).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
-                    table.Cell().Element(CellStyle).Text(deduccion.Importe.ToString("C")).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
+                    foreach (NominaDeduccionesDeduccion deduccion in Deducciones.Deduccion)
+                    {
+                        table.Cell().Element(CellStyle).Text(deduccion.TipoDeduccion).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
+                        table.Cell().Element(CellStyle).Text(deduccion.Concepto).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
+                        table.Cell().Element(CellStyle).Text(deduccion.Importe.ToString("C")).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
 
-                    static IContainer CellStyle(IContainer container) => container.BorderBottom(0.75F).BorderColor(Colors.Grey.Lighten2).PaddingVertical(1.5F).PaddingLeft(5);
+                        static IContainer CellStyle(IContainer container) => container.BorderBottom(0.75F).BorderColor(Colors.Grey.Lighten2).PaddingVertical(1.5F).PaddingLeft(5);
+                    }
                 }
 
                 table.Footer(footer =>

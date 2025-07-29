@@ -19,7 +19,7 @@ namespace BLL.Implementation
             _xmlDeserializer = new XmlDeserializer();
         }
 
-        public async Task Read(string xmlPath)
+        public async Task<bool> Read(string xmlPath)
         {
             if (!File.Exists(xmlPath))
                 throw new FileNotFoundException("File not found.", xmlPath);
@@ -39,6 +39,8 @@ namespace BLL.Implementation
                 PdfGenerator document = new PdfGenerator(comprobante);
 
                 document.GeneratePdf(fileInfo.FullName.Replace(".xml", ".pdf", true, CultureInfo.InvariantCulture));
+
+                return true;
             }
             catch (Exception ex)
             {
