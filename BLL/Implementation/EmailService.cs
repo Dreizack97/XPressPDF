@@ -1,4 +1,6 @@
 ﻿using BLL.Interfaces;
+using BLL.Objects;
+using BLL.Utilities;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -6,19 +8,34 @@ namespace BLL.Implementation
 {
     public class EmailService : IEmailService
     {
-        private struct MailServer
+        private readonly MailServerConfig _mailServerConfig;
+        private readonly AppConfig _config;
+
+        public EmailService()
         {
-            public const string ADDRESS = "";
+            _config = ConfigManager.LoadConfig();
 
-            public const string PASSWORD = "";
+            _mailServerConfig = _config.MailServer;
+        }
 
-            public const string DISPLAY_NAME = "";
-
-            public const string HOST = "";
-
-            public const int PORT = 587;
-
-            public const bool SSL = true;
+        public async Task<bool> ConnectAsync()
+        {
+            using (SmtpClient smtpClient = new SmtpClient())
+            {
+                try
+                {
+                    await smtpClient.ConnectAsync(_mailServerConfig.Host, _mailServerConfig.Port, _mailServerConfig.SSL);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    await smtpClient.DisconnectAsync(true);
+                }
+            }
         }
 
         public async Task<bool> SendEmailAsync(string addresses, string subject, string body, List<string>? attachments = null)
@@ -27,7 +44,7 @@ namespace BLL.Implementation
         public async Task<bool> SendEmailAsync(List<string> addresses, string subject, string body, List<string>? attachments = null)
         {
             MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress(MailServer.DISPLAY_NAME, MailServer.ADDRESS));
+            message.From.Add(new MailboxAddress(_mailServerConfig.DisplayName, _mailServerConfig.Address));
 
             foreach (string address in addresses)
                 message.To.Add(MailboxAddress.Parse(address));
@@ -47,8 +64,8 @@ namespace BLL.Implementation
             {
                 try
                 {
-                    await smtpClient.ConnectAsync(MailServer.HOST, MailServer.PORT, MailServer.SSL);
-                    await smtpClient.AuthenticateAsync(MailServer.ADDRESS, MailServer.PASSWORD);
+                    await smtpClient.ConnectAsync(_mailServerConfig.Host, _mailServerConfig.Port, _mailServerConfig.SSL);
+                    await smtpClient.AuthenticateAsync(_mailServerConfig.Address, _mailServerConfig.Password);
                     await smtpClient.SendAsync(message);
                     await smtpClient.DisconnectAsync(true);
                     return true;

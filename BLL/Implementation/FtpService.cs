@@ -19,7 +19,7 @@ namespace BLL.Utilities
             ftpClient = new FtpClient(ftpServerConfig.Host, ftpServerConfig.User, ftpServerConfig.Password, ftpServerConfig.Port);
         }
 
-        public async Task<bool> Connect()
+        public async Task<bool> ConnectAsync()
         {
             try
             {

@@ -4,7 +4,7 @@ namespace BLL.Interfaces
 {
     public interface IFtpService
     {
-        Task<bool> Connect();
+        Task<bool> ConnectAsync();
 
         Task<List<FileUploadResult>> UploadAsync(string filePath, string uploadPath);
 

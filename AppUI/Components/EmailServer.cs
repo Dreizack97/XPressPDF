@@ -1,26 +1,28 @@
-﻿using BLL.Objects;
+﻿using BLL.Implementation;
+using BLL.Objects;
 using BLL.Utilities;
 
 namespace AppUI.Components
 {
-    public partial class FtpServer : UserControl
+    public partial class EmailServer : UserControl
     {
         private AppConfig config = new AppConfig();
 
-        public FtpServer()
+        public EmailServer()
         {
             InitializeComponent();
         }
 
-        private void FtpServer_Load(object sender, EventArgs e)
+        private void EmailServer_Load(object sender, EventArgs e)
         {
             config = ConfigManager.LoadConfig();
 
-            txtHost.Text = config.FtpServer.Host;
-            txtUser.Text = config.FtpServer.User;
-            txtPassword.Text = config.FtpServer.Password;
-            txtPort.Text = config.FtpServer.Port.ToString();
-            txtRootPath.Text = config.FtpServer.RootPath;
+            txtAddress.Text = config.MailServer.Address;
+            txtPassword.Text = config.MailServer.Password;
+            txtDisplayName.Text = config.MailServer.DisplayName;
+            txtHost.Text = config.MailServer.Host;
+            txtPort.Text = config.MailServer.Port.ToString();
+            checkBoxSSL.Checked = config.MailServer.SSL;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -43,11 +45,12 @@ namespace AppUI.Components
                 return;
             }
 
-            config.FtpServer.Host = txtHost.Text;
-            config.FtpServer.User = txtUser.Text;
-            config.FtpServer.Password = txtPassword.Text;
-            config.FtpServer.Port = port;
-            config.FtpServer.RootPath = txtRootPath.Text;
+            config.MailServer.Address = txtAddress.Text;
+            config.MailServer.Password = txtPassword.Text;
+            config.MailServer.DisplayName = txtDisplayName.Text;
+            config.MailServer.Host = txtHost.Text;
+            config.MailServer.Port = port;
+            config.MailServer.SSL = checkBoxSSL.Checked;
 
             ConfigManager.SaveConfig(config);
 
@@ -56,11 +59,11 @@ namespace AppUI.Components
 
         private async void btnTest_Click(object sender, EventArgs e)
         {
-            FtpService ftpService = new FtpService();
+            EmailService emailService = new EmailService();
 
             try
             {
-                if (await ftpService.ConnectAsync())
+                if (await emailService.ConnectAsync())
                 {
                     MessageBox.Show("Connection successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

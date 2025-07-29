@@ -27,7 +27,7 @@ namespace AppUI
 
         private void emailServertoolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            openFormOnPanel<EmailServer>();
         }
 
         private void openFormOnPanel<Component>() where Component : UserControl, new()
