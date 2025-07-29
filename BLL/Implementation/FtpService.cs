@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using BLL.Objects;
 using BLL.Objetcs;
 using FluentFTP;
 using FluentFTP.Exceptions;
@@ -7,20 +8,42 @@ namespace BLL.Utilities
 {
     public class FtpService : IFtpService
     {
+        private readonly FtpServerConfig ftpServerConfig;
         private readonly FtpClient ftpClient;
-
-        private struct FtpServer
-        {
-            public const string HOST = "";
-            public const string USER = "";
-            public const string PASSWORD = "";
-            public const int PORT = 21;
-            public const string ROOTPATH = "";
-        }
 
         public FtpService()
         {
-            ftpClient = new FtpClient(FtpServer.HOST, FtpServer.USER, FtpServer.PASSWORD, FtpServer.PORT);
+            AppConfig config = ConfigManager.LoadConfig();
+            ftpServerConfig = config.FtpServer;
+
+            ftpClient = new FtpClient(ftpServerConfig.Host, ftpServerConfig.User, ftpServerConfig.Password, ftpServerConfig.Port);
+        }
+
+        public async Task<bool> ConnectAsync()
+        {
+            try
+            {
+                ftpClient.Connect();
+                return ftpClient.IsConnected;
+            }
+            catch (FtpException ex)
+            {
+                await LogManager.LogAsync($"FATAL ERROR: Failed to connect to FTP server - {ex.Message}", "CRITICAL");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                await LogManager.LogAsync($"FATAL ERROR: An unexpected error occurred during multiple file upload - {ex.Message}", "CRITICAL");
+                throw;
+            }
+            finally
+            {
+                if (ftpClient.IsConnected)
+                {
+                    ftpClient.Disconnect();
+                    await LogManager.LogAsync("Disconnected from FTP server.", "INFO");
+                }
+            }
         }
 
         public async Task<List<FileUploadResult>> UploadAsync(string filePath, string uploadPath)
@@ -38,7 +61,7 @@ namespace BLL.Utilities
 
                 List<FileUploadResult> results = new List<FileUploadResult>();
 
-                string remoteBaseDirectory = Path.Combine(FtpServer.ROOTPATH, uploadPath).Replace(@"\", "/");
+                string remoteBaseDirectory = Path.Combine(ftpServerConfig.RootPath, uploadPath).Replace(@"\", "/");
                 await LogManager.LogAsync($"Starting multiple file upload to: {remoteBaseDirectory}", "INFO");
 
                 foreach (string filePath in filesPath)

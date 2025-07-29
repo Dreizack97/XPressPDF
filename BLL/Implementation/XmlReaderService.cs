@@ -1,4 +1,4 @@
-﻿using BLL.Implementation;
+﻿using BLL.Interfaces;
 using BLL.Utilities;
 using QuestPDF;
 using QuestPDF.Fluent;
@@ -6,20 +6,20 @@ using QuestPDF.Infrastructure;
 using Schemas.Base;
 using System.Globalization;
 
-namespace BLL
+namespace BLL.Implementation
 {
-    public class XmlReader
+    public class XmlReaderService : IXmlReaderService
     {
         private readonly ComplementService _complementService;
         private readonly XmlDeserializer _xmlDeserializer;
 
-        public XmlReader()
+        public XmlReaderService()
         {
             _complementService = new ComplementService();
             _xmlDeserializer = new XmlDeserializer();
         }
 
-        public async Task Read(string xmlPath)
+        public async Task<bool> Read(string xmlPath)
         {
             if (!File.Exists(xmlPath))
                 throw new FileNotFoundException("File not found.", xmlPath);
@@ -39,6 +39,8 @@ namespace BLL
                 PdfGenerator document = new PdfGenerator(comprobante);
 
                 document.GeneratePdf(fileInfo.FullName.Replace(".xml", ".pdf", true, CultureInfo.InvariantCulture));
+
+                return true;
             }
             catch (Exception ex)
             {

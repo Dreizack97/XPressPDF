@@ -1,5 +1,5 @@
-﻿using AppUI.Objetcs;
-using BLL;
+﻿using AppUI.Objects;
+using BLL.Implementation;
 using BLL.Objetcs;
 using BLL.Utilities;
 using System.Text;
@@ -62,7 +62,7 @@ namespace AppUI
             {
                 await Task.Run(async () =>
                 {
-                    XmlReader xmlReader = new XmlReader();
+                    XmlReaderService xmlReader = new XmlReaderService();
 
                     foreach (XmlFile xmlFile in xmlFiles)
                     {
@@ -125,6 +125,12 @@ namespace AppUI
                 btnUpload.Enabled = true;
                 Cursor = Cursors.Default;
             }
+        }
+
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            Settings settings = new Settings();
+            settings.ShowDialog();
         }
     }
 }

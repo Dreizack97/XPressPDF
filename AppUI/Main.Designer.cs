@@ -33,6 +33,7 @@
             btnConvert = new Button();
             btnUpload = new Button();
             openFileDialog = new OpenFileDialog();
+            btnSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGrid).BeginInit();
             SuspendLayout();
             // 
@@ -94,11 +95,24 @@
             openFileDialog.RestoreDirectory = true;
             openFileDialog.Title = "Select XML files";
             // 
+            // btnSettings
+            // 
+            btnSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnSettings.AutoSize = true;
+            btnSettings.Location = new Point(543, 12);
+            btnSettings.Name = "btnSettings";
+            btnSettings.Size = new Size(99, 25);
+            btnSettings.TabIndex = 4;
+            btnSettings.Text = "Settings";
+            btnSettings.UseVisualStyleBackColor = true;
+            btnSettings.Click += btnSettings_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(654, 511);
+            Controls.Add(btnSettings);
             Controls.Add(btnUpload);
             Controls.Add(btnConvert);
             Controls.Add(dataGrid);
@@ -106,6 +120,7 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Main";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "XPressPDF";
             ((System.ComponentModel.ISupportInitialize)dataGrid).EndInit();
             ResumeLayout(false);
@@ -119,5 +134,6 @@
         private Button btnConvert;
         private Button btnUpload;
         private OpenFileDialog openFileDialog;
+        private Button btnSettings;
     }
 }
