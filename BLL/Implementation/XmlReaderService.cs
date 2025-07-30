@@ -4,6 +4,7 @@ using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Schemas.Base;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace BLL.Implementation
@@ -38,7 +39,10 @@ namespace BLL.Implementation
                 Settings.License = LicenseType.Community;
                 PdfGenerator document = new PdfGenerator(comprobante);
 
-                document.GeneratePdf(fileInfo.FullName.Replace(".xml", ".pdf", true, CultureInfo.InvariantCulture));
+                string newFileName = $"{comprobante.TimbreFiscalDigital?.UUID}.pdf" ?? fileInfo.Name.Replace(".xml", ".pdf", true, CultureInfo.InvariantCulture);
+                string pdfFilePath = Path.Combine(fileInfo.DirectoryName!, newFileName);
+
+                document.GeneratePdf(pdfFilePath);
 
                 return true;
             }
