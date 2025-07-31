@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             menuStrip = new MenuStrip();
             ftpServerToolStripMenuItem = new ToolStripMenuItem();
             emailServertoolStripMenuItem = new ToolStripMenuItem();
@@ -74,6 +75,7 @@
             Controls.Add(panelContainer);
             Controls.Add(menuStrip);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip;
             MaximizeBox = false;
             Name = "Settings";
