@@ -1,15 +1,15 @@
-# XPressPDF 🚀 Generador de Recibos de Nómina en PDF
+# XPressPDF 🚀 Conversor de CFDI a PDF
 
-**XPressPDF** es una herramienta de escritorio .NET moderna y multiplataforma que transforma tus archivos XML de nómina mexicana (CFDI de Nómina) en elegantes PDFs listos para imprimir, ¡en segundos! Incluye diseño profesional, código QR SAT, procesamiento por lotes y validación amigable.
+**XPressPDF** es una herramienta de escritorio .NET moderna y multiplataforma que transforma tus archivos XML de CFDI mexicanos en elegantes PDFs listos para imprimir, ¡en segundos! Genera la representación impresa de recibos de nómina, facturas comerciales y dispersiones de vales de despensa conforme a los lineamientos del SAT.
 
 ### ✨ Funcionalidades
 
-- ⚡ **Generación ultrarrápida** de PDFs a partir de XML de nómina CFDI
-- 📁 **Soporte para archivos individuales y carpetas completas**
-- 🆙 **Sube tus archivos mediante FTP**
-- 🎨 **Diseño PDF moderno y profesional**, con soporte para logotipo y QR SAT
-- 💻 **Interfaz fácil, con validaciones robustas**
-- 🖥️ **Compatible con Windows, Linux y MacOS**
+- ⚡ **Generación ultrarrápida y concurrente** de PDFs a partir de XML CFDI 4.0
+- 🧾 **Soporta nómina, facturas (Ingreso/Egreso) y complemento de vales de despensa**
+- 📁 **Selector de archivos múltiple y arrastrar y soltar**
+- 🆙 **Sube tus PDF mediante FTP**
+- 🎨 **Diseño PDF profesional** con código QR de verificación del SAT, sellos y cadena original
+- 🖥️ **Interfaz Avalonia UI multiplataforma: Windows, macOS y Linux**
 - 🔓 **Código abierto (Licencia MIT)**
 
 ---
@@ -19,7 +19,8 @@
 ### Requisitos
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/en-us/download)
-- Windows, Linux o MacOS
+- Windows, Linux o macOS
+  - En Linux, QuestPDF/SkiaSharp puede requerir `libfontconfig1`
 
 ### Instalación
 
@@ -35,13 +36,18 @@ dotnet build
 ### Uso Rápido
 
 ```bash
-dotnet run
+dotnet run --project AppUI.Avalonia
 ```
-- **1**: Procesar archivo XML individual
-- **2**: Procesar todos los XML de una carpeta
-- **3**: Salir
 
-¡Tus PDFs aparecerán junto a los XML listos para imprimir o compartir!
+1. **Agregar archivos**: selecciona tus XML o arrástralos a la ventana
+2. **Convertir a PDF**: los PDF se generan junto a cada XML (nombre = UUID del timbre)
+3. **Subir PDF (FTP)**: opcionalmente sube los PDF generados a tu servidor
+4. **Configuración**: credenciales de FTP y correo, con prueba de conexión
+
+> ⚙️ La configuración y los logs se guardan en la carpeta de datos del usuario
+> (`%APPDATA%/XPressPDF` en Windows, `~/Library/Application Support/XPressPDF` en macOS,
+> `~/.config/XPressPDF` en Linux). Las credenciales se almacenan en JSON sin cifrar;
+> protege esa carpeta adecuadamente.
 
 ---
 
@@ -49,17 +55,18 @@ dotnet run
 
 ![Ejemplo](https://github.com/Dreizack97/XPressPDF/blob/e5821a1b7d8983ce32ae2742af34ddba528d0870/Example.png)
 
-- Datos de empresa y empleado
-- Tablas de percepciones y deducciones
-- Firmas digitales, UUID SAT
-- Código QR para verificación SAT
+- Datos de emisor y receptor con catálogos del SAT
+- Conceptos, impuestos, totales e importe con letra
+- Tablas de percepciones y deducciones (nómina) y dispersión por beneficiario (vales)
+- UUID, sellos digitales, cadena original y código QR de verificación del SAT
 
 ---
 
 ## 📂 Estructura del Proyecto
 
-- `AppUI`: Interfaz Gráfica de Usuario
-- `BLL`: Utilidades para archivos XML, lógica de negocio y renderizado profesional con QuestPDF y QRCoder
+- `AppUI.Avalonia`: interfaz gráfica multiplataforma (Avalonia 11, MVVM con CommunityToolkit, inyección de dependencias)
+- `BLL`: lógica de negocio, generación de PDF con QuestPDF/QRCoder, servicios FTP/SMTP
+- `Schemas`: clases generadas de los esquemas XSD del SAT (CFDI 4.0 y complementos)
 
 ---
 
@@ -77,8 +84,9 @@ MIT — Gratis para uso personal y comercial.
 
 ## 🙏 Agradecimientos
 
+- [Avalonia UI](https://avaloniaui.net/) — Interfaz multiplataforma
 - [QuestPDF](https://www.questpdf.com/) — Motor PDF
 - [QRCoder](https://github.com/codebude/QRCoder) — Generador QR
 - [FluentFTP](https://github.com/robinrodricks/FluentFTP) — Cliente FTP
 - [MailKit](https://mimekit.net/) — Cliente SMTP
-- [SAT](https://www.sat.gob.mx/) — Estándares CFDI de nómina en México
+- [SAT](https://www.sat.gob.mx/) — Estándares CFDI en México
