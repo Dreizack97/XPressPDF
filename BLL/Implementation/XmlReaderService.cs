@@ -1,11 +1,9 @@
-﻿using BLL.Interfaces;
+using BLL.Interfaces;
 using BLL.Utilities;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Schemas.Base;
-using System.Diagnostics;
-using System.Globalization;
 
 namespace BLL.Implementation
 {
@@ -13,6 +11,12 @@ namespace BLL.Implementation
     {
         private readonly ComplementService _complementService;
         private readonly XmlDeserializer _xmlDeserializer;
+
+        static XmlReaderService()
+        {
+            // La licencia se configura una sola vez por proceso, no por archivo procesado.
+            Settings.License = LicenseType.Community;
+        }
 
         public XmlReaderService()
         {
@@ -25,31 +29,31 @@ namespace BLL.Implementation
             if (!File.Exists(xmlPath))
                 throw new FileNotFoundException("File not found.", xmlPath);
 
-            try
-            {
-                string xmlContent = await File.ReadAllTextAsync(xmlPath);
+            string xmlContent = await File.ReadAllTextAsync(xmlPath);
 
-                Comprobante? comprobante = _xmlDeserializer.Deserialize<Comprobante>(xmlContent)
-                    ?? throw new InvalidOperationException($"Failed to deserialize file: {xmlPath}. The XML may be invalid or not match the schema.");
+            Comprobante comprobante = _xmlDeserializer.Deserialize<Comprobante>(xmlContent)
+                ?? throw new InvalidOperationException($"Failed to deserialize file: {xmlPath}. The XML may be invalid or not match the schema.");
 
-                comprobante = _complementService.GetComplements(comprobante);
+            comprobante = _complementService.GetComplements(comprobante);
 
-                FileInfo fileInfo = new FileInfo(xmlPath);
+            IDocument document = CreateDocument(comprobante);
 
-                Settings.License = LicenseType.Community;
-                PdfGenerator document = new PdfGenerator(comprobante);
+            string newFileName = string.IsNullOrWhiteSpace(comprobante.TimbreFiscalDigital?.UUID)
+                ? Path.ChangeExtension(Path.GetFileName(xmlPath), ".pdf")
+                : $"{comprobante.TimbreFiscalDigital.UUID}.pdf";
 
-                string newFileName = $"{comprobante.TimbreFiscalDigital?.UUID}.pdf" ?? fileInfo.Name.Replace(".xml", ".pdf", true, CultureInfo.InvariantCulture);
-                string pdfFilePath = Path.Combine(fileInfo.DirectoryName!, newFileName);
+            string pdfFilePath = Path.Combine(Path.GetDirectoryName(xmlPath)!, newFileName);
 
-                document.GeneratePdf(pdfFilePath);
+            document.GeneratePdf(pdfFilePath);
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+            return true;
         }
+
+        private static IDocument CreateDocument(Comprobante comprobante) => comprobante switch
+        {
+            { Nomina: not null } => new PdfGenerator(comprobante),
+            { ValesDespensa: not null } => new ValesDespensaDocument(comprobante),
+            _ => new InvoiceDocument(comprobante)
+        };
     }
 }
