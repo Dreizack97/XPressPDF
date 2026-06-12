@@ -1,6 +1,6 @@
 ﻿using AppUI.Objects;
 using BLL.Implementation;
-using BLL.Objetcs;
+using BLL.Objects;
 using BLL.Utilities;
 using System.Text;
 
@@ -59,7 +59,8 @@ namespace AppUI
 
             try
             {
-                XmlReaderService xmlReader = new XmlReaderService();
+                XmlDeserializer xmlDeserializer = new XmlDeserializer();
+                XmlReaderService xmlReader = new XmlReaderService(new ComplementService(xmlDeserializer), xmlDeserializer);
 
                 for (int i = 0; i < xmlFiles.Count; i++)
                 {
@@ -98,7 +99,7 @@ namespace AppUI
 
             try
             {
-                FtpService ftpService = new FtpService();
+                FtpService ftpService = new FtpService(new ConfigManager(), new LogManager());
                 List<FileUploadResult> results = await ftpService.UploadAsync(pdfFiles, uploadPath);
 
                 int successCount = results.Count(r => r.Success);

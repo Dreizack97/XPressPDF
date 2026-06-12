@@ -12,10 +12,7 @@ namespace AppUI
 
         private void Settings_Load(object sender, EventArgs e)
         {
-            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
-
-            if (!File.Exists(configPath))
-                ConfigManager.CreateDefaultConfig();
+            _ = new ConfigManager().Current;
 
             openFormOnPanel<FtpServer>();
         }

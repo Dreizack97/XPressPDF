@@ -6,6 +6,7 @@ namespace AppUI.Components
 {
     public partial class EmailServer : UserControl
     {
+        private readonly ConfigManager configManager = new ConfigManager();
         private AppConfig config = new AppConfig();
 
         public EmailServer()
@@ -15,7 +16,7 @@ namespace AppUI.Components
 
         private void EmailServer_Load(object sender, EventArgs e)
         {
-            config = ConfigManager.LoadConfig();
+            config = configManager.Current;
 
             txtAddress.Text = config.MailServer.Address;
             txtPassword.Text = config.MailServer.Password;
@@ -52,14 +53,14 @@ namespace AppUI.Components
             config.MailServer.Port = port;
             config.MailServer.SSL = checkBoxSSL.Checked;
 
-            ConfigManager.SaveConfig(config);
+            configManager.Save(config);
 
             MessageBox.Show("Settings have been saved successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private async void btnTest_Click(object sender, EventArgs e)
         {
-            EmailService emailService = new EmailService();
+            EmailService emailService = new EmailService(configManager, new LogManager());
 
             try
             {

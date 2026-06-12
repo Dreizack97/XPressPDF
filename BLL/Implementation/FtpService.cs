@@ -1,47 +1,46 @@
-﻿using BLL.Interfaces;
+using BLL.Interfaces;
 using BLL.Objects;
-using BLL.Objetcs;
 using FluentFTP;
 using FluentFTP.Exceptions;
 
-namespace BLL.Utilities
+namespace BLL.Implementation
 {
     public class FtpService : IFtpService
     {
-        private readonly FtpServerConfig ftpServerConfig;
-        private readonly FtpClient ftpClient;
+        private readonly IConfigManager _configManager;
+        private readonly ILogManager _logManager;
 
-        public FtpService()
+        public FtpService(IConfigManager configManager, ILogManager logManager)
         {
-            AppConfig config = ConfigManager.LoadConfig();
-            ftpServerConfig = config.FtpServer;
-
-            ftpClient = new FtpClient(ftpServerConfig.Host, ftpServerConfig.User, ftpServerConfig.Password, ftpServerConfig.Port);
+            _configManager = configManager;
+            _logManager = logManager;
         }
 
         public async Task<bool> ConnectAsync()
         {
+            await using AsyncFtpClient ftpClient = CreateClient();
+
             try
             {
-                ftpClient.Connect();
+                await ftpClient.Connect();
                 return ftpClient.IsConnected;
             }
             catch (FtpException ex)
             {
-                await LogManager.LogAsync($"FATAL ERROR: Failed to connect to FTP server - {ex.Message}", "CRITICAL");
+                await _logManager.LogAsync($"FATAL ERROR: Failed to connect to FTP server - {ex.Message}", "CRITICAL");
                 throw;
             }
             catch (Exception ex)
             {
-                await LogManager.LogAsync($"FATAL ERROR: An unexpected error occurred during multiple file upload - {ex.Message}", "CRITICAL");
+                await _logManager.LogAsync($"FATAL ERROR: An unexpected error occurred while connecting to FTP server - {ex.Message}", "CRITICAL");
                 throw;
             }
             finally
             {
                 if (ftpClient.IsConnected)
                 {
-                    ftpClient.Disconnect();
-                    await LogManager.LogAsync("Disconnected from FTP server.", "INFO");
+                    await ftpClient.Disconnect();
+                    await _logManager.LogAsync("Disconnected from FTP server.", "INFO");
                 }
             }
         }
@@ -54,32 +53,34 @@ namespace BLL.Utilities
             ArgumentNullException.ThrowIfNull(filesPath);
             ArgumentNullException.ThrowIfNull(uploadPath);
 
+            await using AsyncFtpClient ftpClient = CreateClient();
+
             try
             {
-                ftpClient.Connect();
-                await LogManager.LogAsync($"Successfully connected to FTP server.", "INFO");
+                await ftpClient.Connect();
+                await _logManager.LogAsync("Successfully connected to FTP server.", "INFO");
 
                 List<FileUploadResult> results = new List<FileUploadResult>();
 
-                string remoteBaseDirectory = Path.Combine(ftpServerConfig.RootPath, uploadPath).Replace(@"\", "/");
-                await LogManager.LogAsync($"Starting multiple file upload to: {remoteBaseDirectory}", "INFO");
+                string remoteBaseDirectory = Path.Combine(_configManager.Current.FtpServer.RootPath, uploadPath).Replace(@"\", "/");
+                await _logManager.LogAsync($"Starting multiple file upload to: {remoteBaseDirectory}", "INFO");
 
                 foreach (string filePath in filesPath)
                 {
                     string fileName = Path.GetFileName(filePath);
-                    string remotePath = Path.Combine(remoteBaseDirectory, fileName);
+                    string remotePath = Path.Combine(remoteBaseDirectory, fileName).Replace(@"\", "/");
 
-                    FtpStatus status = ftpClient.UploadFile(filePath, remotePath, FtpRemoteExists.Overwrite, true);
+                    FtpStatus status = await ftpClient.UploadFile(filePath, remotePath, FtpRemoteExists.Overwrite, true);
 
                     if (status == FtpStatus.Success)
                     {
                         results.Add(new FileUploadResult(filePath, remotePath, true));
-                        await LogManager.LogAsync($"SUCCESS: '{filePath}' uploaded.", "INFO");
+                        await _logManager.LogAsync($"SUCCESS: '{filePath}' uploaded.", "INFO");
                     }
                     else
                     {
                         results.Add(new FileUploadResult(filePath, remotePath, false, $"FTP upload failed. Status: {status}"));
-                        await LogManager.LogAsync($"FAILED: '{filePath}' - Status: {status}", "ERROR");
+                        await _logManager.LogAsync($"FAILED: '{filePath}' - Status: {status}", "ERROR");
                     }
                 }
 
@@ -87,24 +88,33 @@ namespace BLL.Utilities
             }
             catch (FtpException ex)
             {
-                await LogManager.LogAsync($"FATAL ERROR: Failed to connect to FTP server - {ex.Message}", "CRITICAL");
+                await _logManager.LogAsync($"FATAL ERROR: Failed to connect to FTP server - {ex.Message}", "CRITICAL");
                 throw;
             }
             catch (Exception ex)
             {
-                await LogManager.LogAsync($"FATAL ERROR: An unexpected error occurred during multiple file upload - {ex.Message}", "CRITICAL");
+                await _logManager.LogAsync($"FATAL ERROR: An unexpected error occurred during multiple file upload - {ex.Message}", "CRITICAL");
                 throw;
             }
             finally
             {
                 if (ftpClient.IsConnected)
                 {
-                    ftpClient.Disconnect();
-                    await LogManager.LogAsync("Disconnected from FTP server.", "INFO");
+                    await ftpClient.Disconnect();
+                    await _logManager.LogAsync("Disconnected from FTP server.", "INFO");
                 }
 
-                await LogManager.LogAsync("Finished multiple file upload operation.", "INFO");
+                await _logManager.LogAsync("Finished multiple file upload operation.", "INFO");
             }
+        }
+
+        // El cliente se crea por operación para usar siempre la configuración vigente,
+        // que puede cambiar desde la pantalla de configuración durante la sesión.
+        private AsyncFtpClient CreateClient()
+        {
+            FtpServerConfig config = _configManager.Current.FtpServer;
+
+            return new AsyncFtpClient(config.Host, config.User, config.Password, config.Port);
         }
     }
 }

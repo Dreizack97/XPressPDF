@@ -1,10 +1,12 @@
-﻿using BLL.Objects;
+﻿using BLL.Implementation;
+using BLL.Objects;
 using BLL.Utilities;
 
 namespace AppUI.Components
 {
     public partial class FtpServer : UserControl
     {
+        private readonly ConfigManager configManager = new ConfigManager();
         private AppConfig config = new AppConfig();
 
         public FtpServer()
@@ -14,7 +16,7 @@ namespace AppUI.Components
 
         private void FtpServer_Load(object sender, EventArgs e)
         {
-            config = ConfigManager.LoadConfig();
+            config = configManager.Current;
 
             txtHost.Text = config.FtpServer.Host;
             txtUser.Text = config.FtpServer.User;
@@ -49,14 +51,14 @@ namespace AppUI.Components
             config.FtpServer.Port = port;
             config.FtpServer.RootPath = txtRootPath.Text;
 
-            ConfigManager.SaveConfig(config);
+            configManager.Save(config);
 
             MessageBox.Show("Settings have been saved successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private async void btnTest_Click(object sender, EventArgs e)
         {
-            FtpService ftpService = new FtpService();
+            FtpService ftpService = new FtpService(configManager, new LogManager());
 
             try
             {

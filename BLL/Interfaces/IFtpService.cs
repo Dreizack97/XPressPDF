@@ -1,11 +1,9 @@
-﻿using BLL.Objetcs;
+﻿using BLL.Objects;
 
 namespace BLL.Interfaces
 {
-    public interface IFtpService
+    public interface IFtpService : IConnectionTestable
     {
-        Task<bool> ConnectAsync();
-
         Task<List<FileUploadResult>> UploadAsync(string filePath, string uploadPath);
 
         Task<List<FileUploadResult>> UploadAsync(string[] filesPath, string uploadPath);
