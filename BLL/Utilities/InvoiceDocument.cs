@@ -240,7 +240,8 @@ namespace BLL.Utilities
             {
                 row.Spacing(2);
                 row.AutoItem().Text(label).Style(LabelStyle);
-                row.AutoItem().Text(value).Style(ValueStyle);
+                // RelativeItem permite que los valores largos de catálogo hagan salto de línea.
+                row.RelativeItem().Text(value).Style(ValueStyle);
             });
         }
 

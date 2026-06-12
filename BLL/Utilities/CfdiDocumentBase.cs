@@ -48,9 +48,28 @@ namespace BLL.Utilities
                 page.Size(PageSizes.Letter);
                 page.Margin(1.5F, Unit.Centimetre);
 
-                page.Header().Element(ComposeHeader);
-                page.Content().Element(ComposeContent);
-                page.Footer().Element(ComposeFooter);
+                // El encabezado y el bloque del timbre fluyen con el contenido para que
+                // aparezcan solo en la primera y en la última página respectivamente.
+                page.Content().Column(column =>
+                {
+                    column.Item().Element(ComposeHeader);
+                    column.Item().Element(ComposeContent);
+                    column.Item().Element(ComposeFooter);
+                });
+
+                page.Footer().Row(row =>
+                {
+                    row.RelativeItem().Text("Este documento es una representación impresa de un CFDI").Style(SmallValueStyle);
+
+                    row.AutoItem().Text(text =>
+                    {
+                        text.DefaultTextStyle(SmallValueStyle);
+                        text.Span("Página ");
+                        text.CurrentPageNumber();
+                        text.Span(" de ");
+                        text.TotalPages();
+                    });
+                });
             });
         }
 
@@ -93,11 +112,10 @@ namespace BLL.Utilities
             });
         }
 
+        /// <summary>Bloque del Timbre Fiscal Digital; se coloca al final del contenido (última página).</summary>
         protected virtual void ComposeFooter(IContainer container)
         {
-            container.Column(column =>
-            {
-                column.Item().Border(0.75F, Colors.Grey.Lighten3).CornerRadius(3).Padding(5).Row(row =>
+            container.PaddingTop(10).ShowEntire().Border(0.75F, Colors.Grey.Lighten3).CornerRadius(3).Padding(5).Row(row =>
                 {
                     row.Spacing(5);
 
@@ -154,21 +172,6 @@ namespace BLL.Utilities
                         });
                     });
                 });
-
-                column.Item().PaddingTop(2).Row(row =>
-                {
-                    row.RelativeItem().Text("Este documento es una representación impresa de un CFDI").Style(SmallValueStyle);
-
-                    row.AutoItem().Text(text =>
-                    {
-                        text.DefaultTextStyle(SmallValueStyle);
-                        text.Span("Página ");
-                        text.CurrentPageNumber();
-                        text.Span(" de ");
-                        text.TotalPages();
-                    });
-                });
-            });
         }
 
         protected static string FormatMoney(decimal amount) => amount.ToString("C", MxCulture);
