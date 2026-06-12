@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AppUI.Avalonia.ViewModels"
+        xmlns:views="using:AppUI.Avalonia.Views"
+        x:Class="AppUI.Avalonia.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Configuración"
+        Width="480" Height="560"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <TabControl Margin="5">
+        <TabItem Header="Servidor FTP">
+            <views:FtpSettingsView DataContext="{Binding Ftp}" />
+        </TabItem>
+        <TabItem Header="Correo electrónico">
+            <views:EmailSettingsView DataContext="{Binding Email}" />
+        </TabItem>
+    </TabControl>
+</Window>
