@@ -70,13 +70,14 @@ namespace BLL.Utilities
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.ConstantColumn(55);  // Identificador
-                        columns.ConstantColumn(60);  // Fecha
-                        columns.ConstantColumn(80);  // RFC
-                        columns.ConstantColumn(100); // CURP
-                        columns.RelativeColumn(2);   // Nombre
-                        columns.RelativeColumn(1);   // NSS
-                        columns.RelativeColumn(1);   // Importe
+                        // Identificador, fecha, RFC y CURP tienen longitud fija; las columnas
+                        // proporcionales garantizan que ningún valor haga salto de línea.
+                        columns.RelativeColumn(1.1F); // Identificador
+                        columns.RelativeColumn(0.9F); // Fecha
+                        columns.RelativeColumn(1.3F); // RFC
+                        columns.RelativeColumn(1.7F); // CURP
+                        columns.RelativeColumn(2.2F); // Nombre
+                        columns.RelativeColumn(1.0F); // Importe
                     });
 
                     table.Header(header =>
@@ -86,7 +87,6 @@ namespace BLL.Utilities
                         header.Cell().Element(HeaderCellStyle).Text("RFC").Style(LabelStyle);
                         header.Cell().Element(HeaderCellStyle).Text("CURP").Style(LabelStyle);
                         header.Cell().Element(HeaderCellStyle).Text("Nombre").Style(LabelStyle);
-                        header.Cell().Element(HeaderCellStyle).Text("NSS").Style(LabelStyle);
                         header.Cell().Element(HeaderCellStyle).Text("Importe").Style(LabelStyle).AlignRight();
                     });
 
@@ -97,13 +97,12 @@ namespace BLL.Utilities
                         table.Cell().Element(BodyCellStyle).Text(concepto.rfc).Style(ValueStyle);
                         table.Cell().Element(BodyCellStyle).Text(concepto.curp).Style(ValueStyle);
                         table.Cell().Element(BodyCellStyle).Text(concepto.nombre?.Trim()).Style(ValueStyle);
-                        table.Cell().Element(BodyCellStyle).Text(concepto.numSeguridad).Style(ValueStyle);
                         table.Cell().Element(BodyCellStyle).Text(FormatMoney(concepto.importe)).Style(ValueStyle).AlignRight();
                     }
 
                     table.Footer(footer =>
                     {
-                        footer.Cell().ColumnSpan(6).Element(HeaderCellStyle).Text("Total").Style(LabelStyle).AlignRight();
+                        footer.Cell().ColumnSpan(5).Element(HeaderCellStyle).Text("Total").Style(LabelStyle).AlignRight();
                         footer.Cell().Element(HeaderCellStyle).Text(FormatMoney(vales.Total)).Style(LabelStyle).AlignRight();
                     });
                 });
