@@ -1,6 +1,5 @@
-﻿using BLL.Interfaces;
+using BLL.Interfaces;
 using BLL.Objects;
-using BLL.Utilities;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -8,33 +7,35 @@ namespace BLL.Implementation
 {
     public class EmailService : IEmailService
     {
-        private readonly MailServerConfig _mailServerConfig;
-        private readonly AppConfig _config;
+        private readonly IConfigManager _configManager;
+        private readonly ILogManager _logManager;
 
-        public EmailService()
+        public EmailService(IConfigManager configManager, ILogManager logManager)
         {
-            _config = ConfigManager.LoadConfig();
-
-            _mailServerConfig = _config.MailServer;
+            _configManager = configManager;
+            _logManager = logManager;
         }
+
+        private MailServerConfig MailServer => _configManager.Current.MailServer;
 
         public async Task<bool> ConnectAsync()
         {
-            using (SmtpClient smtpClient = new SmtpClient())
+            using SmtpClient smtpClient = new SmtpClient();
+
+            try
             {
-                try
-                {
-                    await smtpClient.ConnectAsync(_mailServerConfig.Host, _mailServerConfig.Port, _mailServerConfig.SSL);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
+                await smtpClient.ConnectAsync(MailServer.Host, MailServer.Port, MailServer.SSL);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _logManager.LogAsync($"ERROR: Failed to connect to SMTP server - {ex.Message}", "ERROR");
+                throw;
+            }
+            finally
+            {
+                if (smtpClient.IsConnected)
                     await smtpClient.DisconnectAsync(true);
-                }
             }
         }
 
@@ -43,8 +44,10 @@ namespace BLL.Implementation
 
         public async Task<bool> SendEmailAsync(List<string> addresses, string subject, string body, List<string>? attachments = null)
         {
+            MailServerConfig mailServer = MailServer;
+
             MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_mailServerConfig.DisplayName, _mailServerConfig.Address));
+            message.From.Add(new MailboxAddress(mailServer.DisplayName, mailServer.Address));
 
             foreach (string address in addresses)
                 message.To.Add(MailboxAddress.Parse(address));
@@ -60,20 +63,21 @@ namespace BLL.Implementation
 
             message.Body = builder.ToMessageBody();
 
-            using (SmtpClient smtpClient = new SmtpClient())
+            using SmtpClient smtpClient = new SmtpClient();
+
+            try
             {
-                try
-                {
-                    await smtpClient.ConnectAsync(_mailServerConfig.Host, _mailServerConfig.Port, _mailServerConfig.SSL);
-                    await smtpClient.AuthenticateAsync(_mailServerConfig.Address, _mailServerConfig.Password);
-                    await smtpClient.SendAsync(message);
-                    await smtpClient.DisconnectAsync(true);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                await smtpClient.ConnectAsync(mailServer.Host, mailServer.Port, mailServer.SSL);
+                await smtpClient.AuthenticateAsync(mailServer.Address, mailServer.Password);
+                await smtpClient.SendAsync(message);
+                await smtpClient.DisconnectAsync(true);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _logManager.LogAsync($"ERROR: Failed to send email - {ex.Message}", "ERROR");
+                throw;
             }
         }
     }

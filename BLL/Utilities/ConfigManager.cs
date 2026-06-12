@@ -1,51 +1,119 @@
-﻿using BLL.Objects;
+using BLL.Interfaces;
+using BLL.Objects;
 using System.Text.Json;
 
 namespace BLL.Utilities
 {
-    public static class ConfigManager
+    public class ConfigManager : IConfigManager
     {
-        private static readonly string CONFIG_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { WriteIndented = true };
 
-        public static void CreateDefaultConfig()
+        private readonly string _configPath;
+        private readonly object _sync = new object();
+        private AppConfig? _current;
+
+        public ConfigManager()
+            : this(AppPaths.ConfigFile)
         {
-            AppConfig defaultConfig = new AppConfig()
+        }
+
+        public ConfigManager(string configPath)
+        {
+            _configPath = configPath;
+        }
+
+        public AppConfig Current
+        {
+            get
             {
-                FtpServer = new FtpServerConfig
+                lock (_sync)
                 {
-                    Host = "",
-                    User = "",
-                    Password = "",
-                    Port = 21,
-                    RootPath = ""
-                },
-                MailServer = new MailServerConfig
-                {
-                    Address = "",
-                    Password = "",
-                    DisplayName = "",
-                    Host = "",
-                    Port = 587,
-                    SSL = true
+                    return _current ??= LoadOrCreate();
                 }
-            };
-
-            string json = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(CONFIG_PATH, json);
+            }
         }
 
-        public static AppConfig LoadConfig()
+        public void Save(AppConfig config)
         {
-            string json = File.ReadAllText(CONFIG_PATH);
-
-            return JsonSerializer.Deserialize<AppConfig>(json)
-                ?? throw new JsonException();
+            lock (_sync)
+            {
+                WriteConfig(config);
+                _current = config;
+            }
         }
 
-        public static void SaveConfig(AppConfig config)
+        public void Reload()
         {
-            string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(CONFIG_PATH, json);
+            lock (_sync)
+            {
+                _current = null;
+            }
         }
+
+        private AppConfig LoadOrCreate()
+        {
+            MigrateLegacyConfig();
+
+            if (File.Exists(_configPath))
+            {
+                string json = File.ReadAllText(_configPath);
+
+                return JsonSerializer.Deserialize<AppConfig>(json)
+                    ?? throw new JsonException($"Invalid configuration file: {_configPath}");
+            }
+
+            AppConfig defaultConfig = CreateDefaultConfig();
+            WriteConfig(defaultConfig);
+
+            return defaultConfig;
+        }
+
+        private void WriteConfig(AppConfig config)
+        {
+            string? directory = Path.GetDirectoryName(_configPath);
+
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
+            string json = JsonSerializer.Serialize(config, SerializerOptions);
+            File.WriteAllText(_configPath, json);
+        }
+
+        /// <summary>Migra el config.json que versiones anteriores guardaban junto al ejecutable.</summary>
+        private void MigrateLegacyConfig()
+        {
+            string legacyPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+
+            if (File.Exists(_configPath) || !File.Exists(legacyPath))
+                return;
+
+            string? directory = Path.GetDirectoryName(_configPath);
+
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
+            File.Copy(legacyPath, _configPath);
+        }
+
+        private static AppConfig CreateDefaultConfig() => new AppConfig
+        {
+            FtpServer = new FtpServerConfig
+            {
+                Host = "",
+                User = "",
+                Password = "",
+                Port = 21,
+                RootPath = ""
+            },
+            MailServer = new MailServerConfig
+            {
+                Address = "",
+                Password = "",
+                DisplayName = "",
+                Host = "",
+                Port = 587,
+                SSL = true
+            }
+        };
     }
 }

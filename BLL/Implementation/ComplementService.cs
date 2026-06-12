@@ -9,7 +9,12 @@ namespace BLL.Implementation
 {
     public class ComplementService : IComplementService
     {
-        private readonly XmlDeserializer _invoiceDeserializer = new XmlDeserializer();
+        private readonly IXmlDeserializer _invoiceDeserializer;
+
+        public ComplementService(IXmlDeserializer xmlDeserializer)
+        {
+            _invoiceDeserializer = xmlDeserializer;
+        }
 
         public Comprobante GetComplements(Comprobante comprobante)
         {

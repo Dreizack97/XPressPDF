@@ -1,9 +1,7 @@
 ﻿namespace BLL.Interfaces
 {
-    public interface IEmailService
+    public interface IEmailService : IConnectionTestable
     {
-        Task<bool> ConnectAsync();
-
         Task<bool> SendEmailAsync(string addresses, string subject, string body, List<string>? attachments = null);
 
         Task<bool> SendEmailAsync(List<string> addresses, string subject, string body, List<string>? attachments = null);

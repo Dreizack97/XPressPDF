@@ -9,8 +9,8 @@ namespace BLL.Implementation
 {
     public class XmlReaderService : IXmlReaderService
     {
-        private readonly ComplementService _complementService;
-        private readonly XmlDeserializer _xmlDeserializer;
+        private readonly IComplementService _complementService;
+        private readonly IXmlDeserializer _xmlDeserializer;
 
         static XmlReaderService()
         {
@@ -18,10 +18,10 @@ namespace BLL.Implementation
             Settings.License = LicenseType.Community;
         }
 
-        public XmlReaderService()
+        public XmlReaderService(IComplementService complementService, IXmlDeserializer xmlDeserializer)
         {
-            _complementService = new ComplementService();
-            _xmlDeserializer = new XmlDeserializer();
+            _complementService = complementService;
+            _xmlDeserializer = xmlDeserializer;
         }
 
         public async Task<bool> Read(string xmlPath)

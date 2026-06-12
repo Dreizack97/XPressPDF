@@ -1,59 +1,76 @@
-﻿namespace BLL.Utilities
+using BLL.Interfaces;
+
+namespace BLL.Utilities
 {
-    public static class LogManager
+    public class LogManager : ILogManager
     {
-        private static string _logDirectory = Path.Combine(AppContext.BaseDirectory, "Logs");
-        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly string _logDirectory;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        public static void Initialize()
+        public LogManager()
+            : this(AppPaths.LogDirectory)
         {
-            if (!Directory.Exists(_logDirectory))
-                Directory.CreateDirectory(_logDirectory);
         }
 
-        public static void Log(string message, string logLevel = "INFO")
+        public LogManager(string logDirectory)
         {
-            Initialize();
-
-            string logFileName = $"Log-{DateTime.Now:yyyyMMdd}.txt";
-            string fullLogPath = Path.Combine(_logDirectory, logFileName);
-
-            lock (_semaphore)
-            {
-                try
-                {
-                    File.AppendAllText(fullLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{logLevel}] {message}{Environment.NewLine}");
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"Error writing to log file {fullLogPath}: {ex.Message}");
-                    Console.Error.WriteLine($"Original log message: {message}");
-                }
-            }
+            _logDirectory = logDirectory;
         }
 
-        public static async Task LogAsync(string message, string logLevel = "INFO")
+        public void Log(string message, string logLevel = "INFO")
         {
-            Initialize();
+            string fullLogPath = GetLogFilePath();
 
-            string logFileName = $"Log-{DateTime.Now:yyyyMMdd}.txt";
-            string fullLogPath = Path.Combine(_logDirectory, logFileName);
-
-            await _semaphore.WaitAsync();
+            _semaphore.Wait();
 
             try
             {
-                await File.AppendAllTextAsync(fullLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{logLevel}] {message}{Environment.NewLine}");
+                File.AppendAllText(fullLogPath, FormatEntry(message, logLevel));
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error writing to log file {fullLogPath}: {ex.Message}");
-                Console.Error.WriteLine($"Original log message: {message}");
+                ReportFailure(fullLogPath, message, ex);
             }
             finally
             {
                 _semaphore.Release();
             }
+        }
+
+        public async Task LogAsync(string message, string logLevel = "INFO")
+        {
+            string fullLogPath = GetLogFilePath();
+
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await File.AppendAllTextAsync(fullLogPath, FormatEntry(message, logLevel));
+            }
+            catch (Exception ex)
+            {
+                ReportFailure(fullLogPath, message, ex);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private string GetLogFilePath()
+        {
+            Directory.CreateDirectory(_logDirectory);
+
+            return Path.Combine(_logDirectory, $"Log-{DateTime.Now:yyyyMMdd}.txt");
+        }
+
+        private static string FormatEntry(string message, string logLevel) =>
+            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{logLevel}] {message}{Environment.NewLine}";
+
+        private static void ReportFailure(string logPath, string message, Exception ex)
+        {
+            Console.Error.WriteLine($"Error writing to log file {logPath}: {ex.Message}");
+            Console.Error.WriteLine($"Original log message: {message}");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BLL.Objetcs
+﻿namespace BLL.Objects
 {
     public class FileUploadResult
     {
