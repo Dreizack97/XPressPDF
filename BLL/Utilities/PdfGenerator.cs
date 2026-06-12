@@ -1,5 +1,4 @@
-﻿using QRCoder;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Schemas.Base;
@@ -7,71 +6,16 @@ using Schemas.Complements.Nomina;
 
 namespace BLL.Utilities
 {
-    public class PdfGenerator : IDocument
+    public class PdfGenerator : CfdiDocumentBase
     {
-        public static Image? LogoImage { get; set; }
-
-        public Comprobante Comprobante { get; }
-
         public PdfGenerator(Comprobante comprobante, string? logoImagePath = null)
+            : base(comprobante, logoImagePath)
         {
-            Comprobante = comprobante;
-
-            if (!string.IsNullOrWhiteSpace(logoImagePath))
-                LogoImage = Image.FromFile(logoImagePath);
         }
 
-        public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+        protected override string DocumentTitle => "CFDI de Nómina";
 
-        public void Compose(IDocumentContainer container)
-        {
-            container.Page(page =>
-            {
-                page.Size(PageSizes.Letter);
-                page.Margin(1.5F, Unit.Centimetre);
-
-                page.Header().Element(ComposeHeader);
-                page.Content().Element(ComposeContent);
-                page.Footer().Element(ComposeFooter);
-            });
-        }
-
-        private void ComposeHeader(IContainer container)
-        {
-            container.Row(row =>
-            {
-                row.Spacing(10);
-
-                // Logo Here!
-                row.RelativeItem();
-
-                row.RelativeItem().Border(0.75F, Colors.Grey.Lighten2).CornerRadius(3).Column(column =>
-                {
-                    column.Item().Background(Colors.Grey.Lighten2).Padding(3)
-                        .Text("CFDI de Nómina").FontFamily(Fonts.Arial).FontSize(10).FontColor(Colors.Grey.Darken3).Bold().AlignCenter();
-
-                    column.Item().Background(Colors.Grey.Lighten3).PaddingHorizontal(5).PaddingVertical(3).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem(15).Text("Serie").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2).Bold();
-                        row.RelativeItem(20).Text("Folio").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2).Bold();
-                        row.RelativeItem(25).Text("Lugar").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2).Bold();
-                        row.RelativeItem(40).Text("Fecha y Hora").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2).Bold().AlignEnd();
-                    });
-
-                    column.Item().PaddingHorizontal(5).PaddingVertical(2).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem(15).Text(Comprobante.Serie).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem(20).Text(Comprobante.Folio).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem(25).Text(Comprobante.LugarExpedicion.ToString()).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem(40).Text(Comprobante.Fecha.ToString("yyyy-MM-ddTHH:mm:ss")).FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken2).AlignEnd();
-                    });
-                });
-            });
-        }
-
-        private void ComposeContent(IContainer container)
+        protected override void ComposeContent(IContainer container)
         {
             container.PaddingVertical(10).Column(column =>
             {
@@ -153,72 +97,6 @@ namespace BLL.Utilities
             });
         }
 
-        private void ComposeFooter(IContainer container)
-        {
-            container.Border(0.75F, Colors.Grey.Lighten3).CornerRadius(3).Padding(5).Row(row =>
-            {
-                row.Spacing(5);
-
-                row.RelativeItem(20).Column(column =>
-                {
-                    string url = $"https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id={Comprobante.TimbreFiscalDigital?.UUID}&re={Comprobante.Emisor.Rfc}" +
-                        $"&rr={Comprobante.Receptor.Rfc}&tt={Comprobante.Total}&fe={Comprobante.TimbreFiscalDigital?.SelloCFD.Substring(336)}";
-
-                    byte[] qrCode = QrCodeGenerator(url);
-
-                    column.Item().Image(qrCode);
-                });
-
-                row.RelativeItem(80).Column(column =>
-                {
-                    column.Item().Background(Colors.Grey.Lighten3).CornerRadius(3).PaddingHorizontal(5).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem().Text("Folio Fiscal:").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                        row.RelativeItem().Text("Número de Certificado SAT").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                        row.RelativeItem().Text("Fecha y Hora de Certificación").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                    });
-
-                    column.Item().PaddingHorizontal(5).PaddingBottom(10).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.UUID).FontFamily(Fonts.Arial).FontSize(6).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.NoCertificadoSAT).FontFamily(Fonts.Arial).FontSize(6).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.FechaTimbrado.ToString("yyyy-MM-ddTHH:mm:ss")).FontFamily(Fonts.Arial).FontSize(6).FontColor(Colors.Grey.Darken2);
-                    });
-
-                    column.Item().Background(Colors.Grey.Lighten3).CornerRadius(3).PaddingHorizontal(5).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem().Text("RFC Proveedor de Certificación").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                        row.RelativeItem().Text("Sello Digital del SAT").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                        row.RelativeItem().Text("Sello Digital del CFDI").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                    });
-
-                    column.Item().PaddingHorizontal(5).PaddingBottom(10).Row(row =>
-                    {
-                        row.Spacing(10);
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.RfcProvCertif).FontFamily(Fonts.Arial).FontSize(6).FontColor(Colors.Grey.Darken2);
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.SelloSAT).FontFamily(Fonts.Arial).FontSize(4).FontColor(Colors.Grey.Darken2).Justify();
-                        row.RelativeItem().Text(Comprobante.TimbreFiscalDigital?.SelloCFD).FontFamily(Fonts.Arial).FontSize(4).FontColor(Colors.Grey.Darken2).Justify();
-                    });
-
-                    column.Item().Background(Colors.Grey.Lighten3).CornerRadius(3).PaddingHorizontal(5).Row(row =>
-                    {
-                        row.RelativeItem().Text("Cadena Original del Timbre").FontFamily(Fonts.Arial).FontSize(8).FontColor(Colors.Grey.Darken3).Bold();
-                    });
-
-                    column.Item().PaddingHorizontal(5).Row(row =>
-                    {
-                        string cadenaTimbre = $"||{Comprobante.TimbreFiscalDigital?.Version}|{Comprobante.TimbreFiscalDigital?.UUID}|{Comprobante.TimbreFiscalDigital?.FechaTimbrado.ToString("yyyy-MM-ddTHH:mm:ss")}|" +
-                            $"{Comprobante.TimbreFiscalDigital?.RfcProvCertif}|{Comprobante.TimbreFiscalDigital?.SelloCFD}|{Comprobante.TimbreFiscalDigital?.NoCertificadoSAT}||";
-
-                        row.RelativeItem().Text(cadenaTimbre).FontFamily(Fonts.Arial).FontSize(4).FontColor(Colors.Grey.Darken2).Justify();
-                    });
-                });
-            });
-        }
-
         private void SummaryPayrroll(IContainer container)
         {
             container.Table(table =>
@@ -288,19 +166,6 @@ namespace BLL.Utilities
             });
         }
 
-        private static byte[] QrCodeGenerator(string text)
-        {
-            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-            {
-                using (QRCodeData qRCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q))
-                {
-                    using (PngByteQRCode qrCode = new PngByteQRCode(qRCodeData))
-                    {
-                        return qrCode.GetGraphic(20, false);
-                    }
-                }
-            }
-        }
     }
 
     public class CompanyComponent : IComponent
