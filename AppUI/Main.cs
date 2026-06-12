@@ -54,28 +54,27 @@ namespace AppUI
                 return;
             }
 
-            int i = 0;
             btnConvert.Enabled = false;
             Cursor = Cursors.WaitCursor;
 
             try
             {
-                await Task.Run(async () =>
+                XmlReaderService xmlReader = new XmlReaderService();
+
+                for (int i = 0; i < xmlFiles.Count; i++)
                 {
-                    XmlReaderService xmlReader = new XmlReaderService();
+                    string filePath = xmlFiles[i].Path;
 
-                    foreach (XmlFile xmlFile in xmlFiles)
+                    try
                     {
-                        await xmlReader.Read(xmlFile.Path);
-
+                        await Task.Run(() => xmlReader.Read(filePath));
                         dataGrid.Rows[i].Cells[4].Value = "Complete";
-                        i++;
                     }
-                });
-            }
-            catch (Exception ex)
-            {
-                dataGrid.Rows[i].Cells[4].Value = ex.Message;
+                    catch (Exception ex)
+                    {
+                        dataGrid.Rows[i].Cells[4].Value = ex.Message;
+                    }
+                }
             }
             finally
             {
