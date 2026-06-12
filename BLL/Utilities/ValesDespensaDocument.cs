@@ -90,7 +90,10 @@ namespace BLL.Utilities
                         header.Cell().Element(HeaderCellStyle).Text("Importe").Style(LabelStyle).AlignRight();
                     });
 
-                    foreach (ValesDeDespensaConceptosConcepto concepto in conceptos)
+                    IOrderedEnumerable<ValesDeDespensaConceptosConcepto> conceptosOrdenados =
+                        conceptos.OrderBy(c => c.nombre?.Trim(), StringComparer.Create(MxCulture, ignoreCase: true));
+
+                    foreach (ValesDeDespensaConceptosConcepto concepto in conceptosOrdenados)
                     {
                         table.Cell().Element(BodyCellStyle).Text(concepto.identificador).Style(ValueStyle);
                         table.Cell().Element(BodyCellStyle).Text(concepto.fecha.ToString("yyyy-MM-dd")).Style(ValueStyle);
