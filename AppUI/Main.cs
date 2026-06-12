@@ -106,7 +106,7 @@ namespace AppUI
                 int failedCount = results.Count(r => !r.Success);
 
                 string logFileName = $"Log-{DateTime.Now:yyyyMMdd}.txt";
-                string fullLogFilePath = Path.Combine(AppContext.BaseDirectory, "Logs", logFileName);
+                string fullLogFilePath = Path.Combine(AppPaths.LogDirectory, logFileName);
 
                 StringBuilder messageBuilder = new StringBuilder();
                 messageBuilder.AppendLine("FTP Upload Results:");

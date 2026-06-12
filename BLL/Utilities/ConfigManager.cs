@@ -13,7 +13,7 @@ namespace BLL.Utilities
         private AppConfig? _current;
 
         public ConfigManager()
-            : this(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"))
+            : this(AppPaths.ConfigFile)
         {
         }
 
@@ -52,6 +52,8 @@ namespace BLL.Utilities
 
         private AppConfig LoadOrCreate()
         {
+            MigrateLegacyConfig();
+
             if (File.Exists(_configPath))
             {
                 string json = File.ReadAllText(_configPath);
@@ -68,8 +70,29 @@ namespace BLL.Utilities
 
         private void WriteConfig(AppConfig config)
         {
+            string? directory = Path.GetDirectoryName(_configPath);
+
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
             string json = JsonSerializer.Serialize(config, SerializerOptions);
             File.WriteAllText(_configPath, json);
+        }
+
+        /// <summary>Migra el config.json que versiones anteriores guardaban junto al ejecutable.</summary>
+        private void MigrateLegacyConfig()
+        {
+            string legacyPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+
+            if (File.Exists(_configPath) || !File.Exists(legacyPath))
+                return;
+
+            string? directory = Path.GetDirectoryName(_configPath);
+
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
+            File.Copy(legacyPath, _configPath);
         }
 
         private static AppConfig CreateDefaultConfig() => new AppConfig

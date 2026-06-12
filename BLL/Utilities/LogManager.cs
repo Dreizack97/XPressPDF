@@ -8,7 +8,7 @@ namespace BLL.Utilities
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public LogManager()
-            : this(Path.Combine(AppContext.BaseDirectory, "Logs"))
+            : this(AppPaths.LogDirectory)
         {
         }
 
