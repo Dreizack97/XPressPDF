@@ -1,0 +1,50 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Shared.Controls.Forms.ErpSearchInput"
+             x:Name="Root">
+
+    <Border Height="{StaticResource ControlHeightMd}"
+            Background="{DynamicResource SurfaceFieldBrush}"
+            BorderBrush="{DynamicResource LineDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource FieldRadius}"
+            Padding="12,0"
+            Focusable="False">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+            <!-- Icono de Búsqueda -->
+            <display:ErpIcon Grid.Column="0"
+                           Kind="Search"
+                           Size="16"
+                           Foreground="{DynamicResource InkMutedBrush}"
+                           VerticalAlignment="Center" />
+
+            <!-- Input de Texto (Avalonia 12 PlaceholderText) -->
+            <TextBox Grid.Column="1"
+                     Text="{Binding Text, ElementName=Root, Mode=TwoWay}"
+                     PlaceholderText="{Binding PlaceholderText, ElementName=Root}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="0"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     FontFamily="{StaticResource FiraSansFontFamily}"
+                     FontSize="{StaticResource FontSize300}"
+                     Foreground="{DynamicResource InkStrongBrush}" />
+
+            <!-- Botón Limpiar (Visible cuando hay texto) -->
+            <actions:ErpButton Grid.Column="2"
+                               Variant="Ghost"
+                               Size="Sm"
+                               IsIconOnly="True"
+                               Width="24" Height="24"
+                               Click="OnClearClick"
+                               IsVisible="{Binding Text, ElementName=Root, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               VerticalAlignment="Center">
+                <display:ErpIcon Kind="X" Size="14" Foreground="{DynamicResource InkMutedBrush}" />
+            </actions:ErpButton>
+        </Grid>
+    </Border>
+</UserControl>

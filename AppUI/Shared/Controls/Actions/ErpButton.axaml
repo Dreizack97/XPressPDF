@@ -1,0 +1,210 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:actions="using:AppUI.Shared.Controls.Actions"
+                    xmlns:display="using:AppUI.Shared.Controls.Display">
+
+    <ControlTheme x:Key="{x:Type actions:ErpButton}" TargetType="actions:ErpButton">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="CornerRadius" Value="{StaticResource ButtonRadius}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+                <BrushTransition Property="BorderBrush" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+            </Transitions>
+        </Setter>
+
+        <!-- Template -->
+        <Setter Property="Template">
+            <ControlTemplate TargetType="actions:ErpButton">
+                <Border x:Name="PART_RootBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <!-- Contenido Normal -->
+                        <StackPanel x:Name="PART_ContentPanel"
+                                    Orientation="Horizontal"
+                                    Spacing="8"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    IsVisible="{Binding !IsLoading, RelativeSource={RelativeSource TemplatedParent}}">
+                            <display:ErpIcon Kind="{TemplateBinding LeadingIcon}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Size="16"
+                                           IsVisible="{Binding LeadingIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                            <ContentPresenter x:Name="PART_ContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="Center"
+                                              IsVisible="{Binding !IsIconOnly, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <display:ErpIcon Kind="{TemplateBinding TrailingIcon}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Size="16"
+                                           IsVisible="{Binding TrailingIcon, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                        </StackPanel>
+
+                        <!-- Indicador de Carga (Spinner) -->
+                        <display:ErpIcon x:Name="PART_Spinner"
+                                       Kind="RefreshCw"
+                                       Size="16"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       IsVisible="{TemplateBinding IsLoading}">
+                            <display:ErpIcon.Styles>
+                                <Style Selector="display|ErpIcon">
+                                    <Style.Animations>
+                                        <Animation Duration="0:0:1" IterationCount="Infinite">
+                                            <KeyFrame Cue="0%">
+                                                <Setter Property="RotateTransform.Angle" Value="0.0" />
+                                            </KeyFrame>
+                                            <KeyFrame Cue="100%">
+                                                <Setter Property="RotateTransform.Angle" Value="360.0" />
+                                            </KeyFrame>
+                                        </Animation>
+                                    </Style.Animations>
+                                </Style>
+                            </display:ErpIcon.Styles>
+                        </display:ErpIcon>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Tamaños -->
+        <Style Selector="^[Size=Sm]">
+            <Setter Property="Height" Value="{StaticResource ControlHeightSm}" />
+            <Setter Property="Padding" Value="{StaticResource ButtonPaddingSm}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSize200}" />
+        </Style>
+        <Style Selector="^[Size=Md]">
+            <Setter Property="Height" Value="{StaticResource ControlHeightMd}" />
+            <Setter Property="Padding" Value="{StaticResource ButtonPaddingMd}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSize300}" />
+        </Style>
+        <Style Selector="^[Size=Lg]">
+            <Setter Property="Height" Value="{StaticResource ControlHeightLg}" />
+            <Setter Property="Padding" Value="{StaticResource ButtonPaddingLg}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSize400}" />
+        </Style>
+        <Style Selector="^[IsIconOnly=True][Size=Sm]">
+            <Setter Property="Width" Value="{StaticResource ControlHeightSm}" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="^[IsIconOnly=True][Size=Md]">
+            <Setter Property="Width" Value="{StaticResource ControlHeightMd}" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="^[IsIconOnly=True][Size=Lg]">
+            <Setter Property="Width" Value="{StaticResource ControlHeightLg}" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <!-- ==========================================
+             VARIANTES CROMÁTICAS
+             ========================================== -->
+        <!-- 1. Primary -->
+        <Style Selector="^[Variant=Primary]">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#1D4ED8" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="^[Variant=Primary]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
+        </Style>
+
+        <!-- 2. Secondary -->
+        <Style Selector="^[Variant=Secondary]">
+            <Setter Property="Background" Value="{DynamicResource Surface1Brush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LineDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource InkBodyBrush}" />
+        </Style>
+        <Style Selector="^[Variant=Secondary]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LineStrongBrush}" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
+        </Style>
+
+        <!-- 3. Soft -->
+        <Style Selector="^[Variant=Soft]">
+            <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource InkBodyBrush}" />
+        </Style>
+        <Style Selector="^[Variant=Soft]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource Surface3Brush}" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
+        </Style>
+
+        <!-- 4. Ghost -->
+        <Style Selector="^[Variant=Ghost]">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+        </Style>
+        <Style Selector="^[Variant=Ghost]:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource InkStrongBrush}" />
+        </Style>
+        <Style Selector="^[Variant=Ghost]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+        </Style>
+
+        <!-- 5. Danger -->
+        <Style Selector="^[Variant=Danger]">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="^[Variant=Danger]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
+        </Style>
+
+        <!-- 6. SoftDanger -->
+        <Style Selector="^[Variant=SoftDanger]">
+            <Setter Property="Background" Value="{DynamicResource ToneRedSurfaceSubtleBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToneRedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToneRedInkStrongBrush}" />
+        </Style>
+        <Style Selector="^[Variant=SoftDanger]:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource ToneRedSurfaceSoftBrush}" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
+        </Style>
+
+        <!-- 7. Link -->
+        <Style Selector="^[Variant=Link]">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource LinkBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Height" Value="NaN" />
+        </Style>
+        <Style Selector="^[Variant=Link]:pointerover">
+            <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+        </Style>
+
+        <!-- Estado Pressed (Firma háptica de escala 0.98) -->
+        <Style Selector="^:pressed /template/ Border#PART_RootBorder">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+
+        <!-- Estado Disabled -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="{StaticResource ButtonDisabledOpacity}" />
+            <Setter Property="Cursor" Value="Arrow" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

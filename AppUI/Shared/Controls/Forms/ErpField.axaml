@@ -1,0 +1,42 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:forms="using:AppUI.Shared.Controls.Forms">
+
+    <ControlTheme x:Key="{x:Type forms:ErpField}" TargetType="forms:ErpField">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="forms:ErpField">
+                <StackPanel Spacing="6">
+                    <!-- Etiqueta superior -->
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding Label, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{TemplateBinding Label}"
+                                   Classes="text-caption ink-body"
+                                   FontWeight="Medium" />
+                        <TextBlock Text="*"
+                                   Foreground="{DynamicResource ToneRedInkBrush}"
+                                   FontWeight="Bold"
+                                   IsVisible="{TemplateBinding IsRequired}" />
+                    </StackPanel>
+
+                    <!-- Control de entrada anidado -->
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+
+                    <!-- Texto de ayuda (Hint) -->
+                    <TextBlock Text="{TemplateBinding HintText}"
+                               Classes="text-caption ink-muted"
+                               IsVisible="{Binding HintText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Mensaje de error de validación -->
+                    <TextBlock Text="{TemplateBinding ErrorText}"
+                               Classes="text-caption"
+                               Foreground="{DynamicResource ToneRedInkBrush}"
+                               FontWeight="Medium"
+                               IsVisible="{Binding ErrorText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

@@ -1,0 +1,56 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:overlays="using:AppUI.Shared.Controls.Overlays"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Shared.Controls.Overlays.ErpDrawer"
+             x:Name="Root"
+             IsVisible="{Binding IsOpen, ElementName=Root}">
+
+    <Grid>
+        <!-- Fondo Scrim con desenfoque / oscurecimiento -->
+        <Border Background="{DynamicResource ScrimBrush}"
+                PointerPressed="OnScrimPointerPressed" />
+
+        <!-- Panel Lateral Deslizante -->
+        <Border Width="{StaticResource DrawerWidth}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
+                Background="{DynamicResource Surface1Brush}"
+                BorderBrush="{DynamicResource LineDefaultBrush}"
+                BorderThickness="1,0,0,0"
+                BoxShadow="{StaticResource ElevationShadowXl}">
+            <DockPanel LastChildFill="True">
+                <!-- Cabecera del Drawer -->
+                <Border DockPanel.Dock="Top"
+                        Height="{StaticResource NavbarHeight}"
+                        BorderBrush="{DynamicResource LineSubtleBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="24,0">
+                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding Title, ElementName=Root}"
+                                   Classes="text-heading"
+                                   VerticalAlignment="Center" />
+
+                        <actions:ErpButton Grid.Column="1"
+                                           Variant="Ghost"
+                                           Size="Sm"
+                                           IsIconOnly="True"
+                                           Click="OnCloseClick"
+                                           VerticalAlignment="Center">
+                            <display:ErpIcon Kind="X" Size="16" Foreground="{DynamicResource InkSecondaryBrush}" />
+                        </actions:ErpButton>
+                    </Grid>
+                </Border>
+
+                <!-- Contenido con scroll -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Padding="24">
+                    <ContentPresenter Content="{Binding DrawerContent, ElementName=Root}" />
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Shared.Controls.Actions.ErpThemeToggle"
+             x:Name="Root">
+    <actions:ErpButton Variant="Ghost"
+                       Size="Sm"
+                       IsIconOnly="True"
+                       Click="OnClick"
+                       ToolTip.Tip="Cambiar tema (Claro / Oscuro)">
+        <display:ErpIcon Kind="{Binding IconKind, ElementName=Root}"
+                       Size="18"
+                       Foreground="{DynamicResource InkSecondaryBrush}" />
+    </actions:ErpButton>
+</UserControl>

@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+                    xmlns:converters="using:AppUI.Shared.Converters">
+
+    <converters:ToneToBrushConverter x:Key="ToneInkBrushConverter" Variant="Ink" />
+
+    <ControlTheme x:Key="{x:Type feedback:ErpProgressBar}" TargetType="feedback:ErpProgressBar">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="feedback:ErpProgressBar">
+                <StackPanel Spacing="6">
+                    <!-- Cabecera de la Barra (Label a la izquierda, % a la derecha) -->
+                    <Grid ColumnDefinitions="*,Auto"
+                          IsVisible="{Binding Label, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0"
+                                   Text="{TemplateBinding Label}"
+                                   Classes="text-caption ink-body" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}{0:0}%'}"
+                                   Classes="font-mono text-caption ink-strong" />
+                    </Grid>
+
+                    <!-- Riel y Relleno -->
+                    <ProgressBar Height="8"
+                                 CornerRadius="{StaticResource RadiusFull}"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Value="{TemplateBinding Value}"
+                                 IsIndeterminate="{TemplateBinding IsIndeterminate}"
+                                 Background="{DynamicResource SurfaceInsetBrush}"
+                                 Foreground="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneInkBrushConverter}}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

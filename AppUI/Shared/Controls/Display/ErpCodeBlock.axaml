@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Shared.Controls.Display.ErpCodeBlock"
+             x:Name="Root">
+
+    <Border Background="{DynamicResource SurfaceInsetBrush}"
+            BorderBrush="{DynamicResource LineDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource RadiusMd}"
+            Padding="14,12">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      MaxHeight="260">
+            <SelectableTextBlock Text="{Binding Text, ElementName=Root}"
+                                 FontFamily="{StaticResource FiraCodeFontFamily}"
+                                 FontSize="{StaticResource FontSize200}"
+                                 Foreground="{DynamicResource InkPrimaryBrush}"
+                                 TextWrapping="Wrap" />
+        </ScrollViewer>
+    </Border>
+</UserControl>
