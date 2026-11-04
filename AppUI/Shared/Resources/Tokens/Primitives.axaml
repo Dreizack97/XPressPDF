@@ -1,0 +1,154 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- =======================================================================
+         NIVEL 1: TOKENS PRIMITIVOS (Primitives.axaml)
+         Paridad con Smart-Enterprise-ERP-Design-System (src/styles/tokens/primitive.css)
+         ======================================================================= -->
+
+    <!-- ==========================================
+         1. TIPOGRAFÍA
+         ========================================== -->
+    <FontFamily x:Key="FiraSansFontFamily">avares://AppUI/Assets/Fonts#Fira Sans, Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif</FontFamily>
+    <FontFamily x:Key="FiraCodeFontFamily">avares://AppUI/Assets/Fonts#Fira Code, Cascadia Code, Consolas, monospace</FontFamily>
+
+    <!-- Escala tipográfica en 7 escalones -->
+    <x:Double x:Key="FontSize100">11</x:Double> <!-- Overline -->
+    <x:Double x:Key="FontSize200">12</x:Double> <!-- Caption -->
+    <x:Double x:Key="FontSize300">14</x:Double> <!-- Body (Base) -->
+    <x:Double x:Key="FontSize400">16</x:Double> <!-- Subheading -->
+    <x:Double x:Key="FontSize500">20</x:Double> <!-- Heading -->
+    <x:Double x:Key="FontSize600">24</x:Double> <!-- Title -->
+    <x:Double x:Key="FontSize700">30</x:Double> <!-- Display -->
+
+    <!-- ==========================================
+         2. RADIOS DE ESQUINA (Desplazados un escalón)
+         ========================================== -->
+    <CornerRadius x:Key="RadiusSm">6</CornerRadius>
+    <CornerRadius x:Key="RadiusMd">8</CornerRadius>
+    <CornerRadius x:Key="RadiusLg">12</CornerRadius>
+    <CornerRadius x:Key="RadiusXl">16</CornerRadius>
+    <CornerRadius x:Key="Radius2xl">24</CornerRadius>
+    <CornerRadius x:Key="RadiusFull">9999</CornerRadius>
+
+    <!-- ==========================================
+         3. TIEMPOS Y CURVAS DE MOVIMIENTO
+         ========================================== -->
+    <sys:TimeSpan x:Key="DurationInstant">0:0:0.120</sys:TimeSpan>
+    <sys:TimeSpan x:Key="DurationFast">0:0:0.200</sys:TimeSpan>
+    <sys:TimeSpan x:Key="DurationNormal">0:0:0.300</sys:TimeSpan>
+    <sys:TimeSpan x:Key="DurationSlow">0:0:0.500</sys:TimeSpan>
+
+    <SplineEasing x:Key="EaseOutQuart" X1="0.25" Y1="1.0" X2="0.5" Y2="1.0" />
+
+    <!-- ==========================================
+         4. PALETAS CROMÁTICAS BASE
+         ========================================== -->
+    <!-- Primary (Azul Profesional) -->
+    <Color x:Key="ColorPrimary50">#EFF6FF</Color>
+    <Color x:Key="ColorPrimary100">#DBEAFE</Color>
+    <Color x:Key="ColorPrimary200">#BFDBFE</Color>
+    <Color x:Key="ColorPrimary300">#93C5FD</Color>
+    <Color x:Key="ColorPrimary400">#60A5FA</Color>
+    <Color x:Key="ColorPrimary500">#3B82F6</Color>
+    <Color x:Key="ColorPrimary600">#2563EB</Color>
+    <Color x:Key="ColorPrimary700">#1D4ED8</Color>
+    <Color x:Key="ColorPrimary800">#1E40AF</Color>
+    <Color x:Key="ColorPrimary900">#1E3A8A</Color>
+    <Color x:Key="ColorPrimary950">#172554</Color>
+
+    <!-- Secondary (Slate) -->
+    <Color x:Key="ColorSecondary50">#F8FAFC</Color>
+    <Color x:Key="ColorSecondary100">#F1F5F9</Color>
+    <Color x:Key="ColorSecondary200">#E2E8F0</Color>
+    <Color x:Key="ColorSecondary300">#CBD5E1</Color>
+    <Color x:Key="ColorSecondary400">#94A3B8</Color>
+    <Color x:Key="ColorSecondary500">#64748B</Color>
+    <Color x:Key="ColorSecondary600">#475569</Color>
+    <Color x:Key="ColorSecondary700">#334155</Color>
+    <Color x:Key="ColorSecondary800">#1E293B</Color>
+    <Color x:Key="ColorSecondary900">#0F172A</Color>
+    <Color x:Key="ColorSecondary950">#020617</Color>
+
+    <!-- Accent (Emerald) -->
+    <Color x:Key="ColorAccent50">#ECFDF5</Color>
+    <Color x:Key="ColorAccent100">#D1FAE5</Color>
+    <Color x:Key="ColorAccent200">#A7F3D0</Color>
+    <Color x:Key="ColorAccent300">#6EE7B7</Color>
+    <Color x:Key="ColorAccent400">#34D399</Color>
+    <Color x:Key="ColorAccent500">#10B981</Color>
+    <Color x:Key="ColorAccent600">#059669</Color>
+    <Color x:Key="ColorAccent700">#047857</Color>
+    <Color x:Key="ColorAccent800">#065F46</Color>
+    <Color x:Key="ColorAccent900">#064E3B</Color>
+
+    <!-- Green (Success) -->
+    <Color x:Key="ColorGreen50">#ECFDF5</Color>
+    <Color x:Key="ColorGreen100">#D1FAE5</Color>
+    <Color x:Key="ColorGreen200">#A7F3D0</Color>
+    <Color x:Key="ColorGreen300">#6EE7B7</Color>
+    <Color x:Key="ColorGreen400">#34D399</Color>
+    <Color x:Key="ColorGreen500">#10B981</Color>
+    <Color x:Key="ColorGreen600">#059669</Color>
+    <Color x:Key="ColorGreen700">#047857</Color>
+    <Color x:Key="ColorGreen800">#065F46</Color>
+    <Color x:Key="ColorGreen900">#064E3B</Color>
+
+    <!-- Yellow (Warning) -->
+    <Color x:Key="ColorYellow50">#FEFCE8</Color>
+    <Color x:Key="ColorYellow100">#FEF9C3</Color>
+    <Color x:Key="ColorYellow200">#FEF08A</Color>
+    <Color x:Key="ColorYellow300">#FDE047</Color>
+    <Color x:Key="ColorYellow400">#FACC15</Color>
+    <Color x:Key="ColorYellow500">#EAB308</Color>
+    <Color x:Key="ColorYellow600">#CA8A04</Color>
+    <Color x:Key="ColorYellow700">#A16207</Color>
+    <Color x:Key="ColorYellow800">#854D0E</Color>
+    <Color x:Key="ColorYellow900">#713F12</Color>
+
+    <!-- Red (Danger) -->
+    <Color x:Key="ColorRed50">#FEF2F2</Color>
+    <Color x:Key="ColorRed100">#FEE2E2</Color>
+    <Color x:Key="ColorRed200">#FECACA</Color>
+    <Color x:Key="ColorRed300">#FCA5A5</Color>
+    <Color x:Key="ColorRed400">#F87171</Color>
+    <Color x:Key="ColorRed500">#EF4444</Color>
+    <Color x:Key="ColorRed600">#DC2626</Color>
+    <Color x:Key="ColorRed700">#B91C1C</Color>
+    <Color x:Key="ColorRed800">#991B1B</Color>
+    <Color x:Key="ColorRed900">#7F1D1D</Color>
+
+    <!-- Orange -->
+    <Color x:Key="ColorOrange50">#FFF7ED</Color>
+    <Color x:Key="ColorOrange100">#FFEDD5</Color>
+    <Color x:Key="ColorOrange200">#FED7AA</Color>
+    <Color x:Key="ColorOrange300">#FDBA74</Color>
+    <Color x:Key="ColorOrange400">#FB923C</Color>
+    <Color x:Key="ColorOrange500">#F97316</Color>
+    <Color x:Key="ColorOrange600">#EA580C</Color>
+    <Color x:Key="ColorOrange700">#C2410C</Color>
+    <Color x:Key="ColorOrange800">#9A3412</Color>
+    <Color x:Key="ColorOrange900">#7C2D12</Color>
+
+    <!-- Purple -->
+    <Color x:Key="ColorPurple50">#FAF5FF</Color>
+    <Color x:Key="ColorPurple100">#F3E8FF</Color>
+    <Color x:Key="ColorPurple200">#E9D5FF</Color>
+    <Color x:Key="ColorPurple300">#D8B4FE</Color>
+    <Color x:Key="ColorPurple400">#C084FC</Color>
+    <Color x:Key="ColorPurple500">#A855F7</Color>
+    <Color x:Key="ColorPurple600">#9333EA</Color>
+    <Color x:Key="ColorPurple700">#7E22CE</Color>
+    <Color x:Key="ColorPurple800">#6B21A8</Color>
+    <Color x:Key="ColorPurple900">#581C87</Color>
+
+    <!-- ==========================================
+         5. SOMBRAS (ELEVACIÓN)
+         ========================================== -->
+    <BoxShadows x:Key="ElevationShadowSm">0 1 2 0 #1A0F172A</BoxShadows>
+    <BoxShadows x:Key="ElevationShadowMd">0 4 6 -1 #1A0F172A, 0 2 4 -2 #1A0F172A</BoxShadows>
+    <BoxShadows x:Key="ElevationShadowLg">0 10 15 -3 #1A0F172A, 0 4 6 -4 #1A0F172A</BoxShadows>
+    <BoxShadows x:Key="ElevationShadowXl">0 20 25 -5 #1A0F172A, 0 8 10 -6 #1A0F172A</BoxShadows>
+
+</ResourceDictionary>

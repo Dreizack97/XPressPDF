@@ -1,0 +1,13 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Transiciones predeterminadas con la curva EaseOutQuart del sistema -->
+    <Style Selector=":is(Control).animate-fade">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+</Styles>

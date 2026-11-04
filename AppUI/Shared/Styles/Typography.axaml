@@ -1,0 +1,80 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- =======================================================================
+         CLASES TIPOGRÁFICAS (Typography.axaml)
+         Paridad con Smart-Enterprise-ERP-Design-System (src/styles/tokens/semantic.css)
+         ======================================================================= -->
+
+    <Style Selector="TextBlock.text-display">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize700}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkStrongBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-title">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize600}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkStrongBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-heading">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize500}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-subheading">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize400}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-body">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize300}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource InkBodyBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-caption">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize200}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.text-overline">
+        <Setter Property="FontFamily" Value="{StaticResource FiraSansFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize100}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkMutedBrush}" />
+    </Style>
+
+    <!-- Fuente monoespaciada para importes, UUIDs, RFCs y cifras tabulares -->
+    <Style Selector="TextBlock.font-mono">
+        <Setter Property="FontFamily" Value="{StaticResource FiraCodeFontFamily}" />
+    </Style>
+
+    <!-- Clases utilitarias de color de tinta -->
+    <Style Selector="TextBlock.ink-strong">
+        <Setter Property="Foreground" Value="{DynamicResource InkStrongBrush}" />
+    </Style>
+    <Style Selector="TextBlock.ink-primary">
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.ink-body">
+        <Setter Property="Foreground" Value="{DynamicResource InkBodyBrush}" />
+    </Style>
+    <Style Selector="TextBlock.ink-secondary">
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.ink-muted">
+        <Setter Property="Foreground" Value="{DynamicResource InkMutedBrush}" />
+    </Style>
+
+</Styles>
