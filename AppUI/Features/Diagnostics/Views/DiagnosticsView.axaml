@@ -13,7 +13,8 @@
         <StackPanel Spacing="24" Margin="24">
 
             <!-- Encabezado de Página -->
-            <pageHeader:ErpPageHeader Title="Bitácora de Diagnóstico"
+            <pageHeader:ErpPageHeader Category="SISTEMA"
+                                      Title="Bitácora de Diagnóstico"
                                       Subtitle="Registros detallados de lectura de esquemas, parsing de XML y generación de PDF.">
                 <pageHeader:ErpPageHeader.PrimaryActions>
                     <StackPanel Orientation="Horizontal" Spacing="10">
@@ -51,12 +52,9 @@
                             <ComboBox Grid.Column="1"
                                       Height="{StaticResource ControlHeightMd}"
                                       CornerRadius="{StaticResource FieldRadius}"
-                                      SelectedItem="{Binding SelectedLevelFilter, Mode=TwoWay}">
-                                <ComboBoxItem Content="Todos" />
-                                <ComboBoxItem Content="INFO" />
-                                <ComboBoxItem Content="WARN" />
-                                <ComboBoxItem Content="ERROR" />
-                            </ComboBox>
+                                      ItemsSource="{Binding LevelFilterOptions}"
+                                      SelectedItem="{Binding SelectedLevelFilter, Mode=TwoWay}"
+                                      MinWidth="140" />
                         </Grid>
                     </Border>
 

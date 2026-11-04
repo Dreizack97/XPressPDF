@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AppUI.Core.Models;
@@ -17,6 +18,8 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string _selectedTheme = "System";
+
+    public IReadOnlyList<string> ThemeOptions { get; } = ["System", "Light", "Dark"];
 
     [ObservableProperty]
     private bool _isCustomOutputDirectory;

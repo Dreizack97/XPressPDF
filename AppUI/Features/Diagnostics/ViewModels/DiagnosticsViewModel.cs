@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,8 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     [ObservableProperty]
     private string _selectedLevelFilter = "Todos"; // Todos, INFO, WARN, ERROR
+
+    public IReadOnlyList<string> LevelFilterOptions { get; } = ["Todos", "INFO", "WARN", "ERROR"];
 
     public DiagnosticsViewModel(IProcessLauncherService processLauncher, IToastService toastService)
     {

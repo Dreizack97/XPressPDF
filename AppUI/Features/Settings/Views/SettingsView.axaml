@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AppUI.Features.Settings.ViewModels"
              xmlns:actions="using:AppUI.Shared.Controls.Actions"
@@ -13,7 +13,8 @@
         <StackPanel Spacing="24" Margin="24" MaxWidth="800" HorizontalAlignment="Left">
 
             <!-- Encabezado de Página -->
-            <pageHeader:ErpPageHeader Title="Configuración del Motor"
+            <pageHeader:ErpPageHeader Category="SISTEMA"
+                                      Title="Configuración del Motor"
                                       Subtitle="Personaliza la apariencia del PDF generado, directorio de destino y preferencias del sistema.">
                 <pageHeader:ErpPageHeader.PrimaryActions>
                     <actions:ErpButton Variant="Primary"
@@ -116,12 +117,9 @@
                     <forms:ErpField Label="Tema de Color">
                         <ComboBox Height="{StaticResource ControlHeightMd}"
                                   CornerRadius="{StaticResource FieldRadius}"
+                                  ItemsSource="{Binding ThemeOptions}"
                                   SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                                  Width="240">
-                            <ComboBoxItem Content="System" />
-                            <ComboBoxItem Content="Light" />
-                            <ComboBoxItem Content="Dark" />
-                        </ComboBox>
+                                  Width="240" />
                     </forms:ErpField>
 
                     <!-- Reducir Movimiento -->

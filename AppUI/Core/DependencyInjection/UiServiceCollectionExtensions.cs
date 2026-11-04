@@ -24,9 +24,9 @@ public static class UiServiceCollectionExtensions
         services.AddSingleton<INavigationService, NavigationService>();
 
         // 3. Registrar ViewModels
-        services.AddTransient<ConversionWorkspaceViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<DiagnosticsViewModel>();
+        services.AddSingleton<ConversionWorkspaceViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<DiagnosticsViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
         return services;
