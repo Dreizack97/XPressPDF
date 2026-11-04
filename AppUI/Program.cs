@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using System;
 
 namespace AppUI;
@@ -17,6 +17,5 @@ sealed class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithDeveloperTools()
-            .WithInterFont()
             .LogToTrace();
 }
