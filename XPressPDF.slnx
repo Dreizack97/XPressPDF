@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".gitmessage" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/scripts/">
+    <File Path="scripts/setup-gitflow.ps1" />
+    <File Path="scripts/setup-gitflow.sh" />
+  </Folder>
+  <Project Path="AppUI/AppUI.csproj" Id="3560d171-8e89-4ceb-bba3-f3251ec56abd" />
+  <Project Path="Core/Core.csproj" />
+  <Project Path="IoC/IoC.csproj" Id="02921126-e58d-4d54-977e-e876cfeb0455" />
+</Solution>
