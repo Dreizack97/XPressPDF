@@ -1,9 +1,11 @@
 namespace Core.Models.Base;
 
 using Core.Abstractions;
+using Core.Models.ConceptComplements.InstitucionesEducativas10;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Xml.Serialization;
 
 [Serializable]
@@ -39,6 +41,9 @@ public partial class ComprobanteConcepto
         conceptComplement = GetConceptComplement<T>();
         return conceptComplement is not null;
     }
+
+    [XmlIgnore]
+    public InstEducativas? InstitucionesEducativas => GetConceptComplement<InstEducativas>();
 
     [XmlAttribute]
     public string ClaveProdServ { get; set; } = string.Empty;

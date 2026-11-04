@@ -165,6 +165,12 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                             {
                                 descCol.Item().Text($"Cuenta Predial: {predial.Numero}").Style(CfdiPdfTheme.SmallValueStyle);
                             }
+
+                            if (concepto.InstitucionesEducativas is not null)
+                            {
+                                var iedu = concepto.InstitucionesEducativas;
+                                descCol.Item().Text($"[IEDU] Alumno: {iedu.nombreAlumno} | CURP: {iedu.CURP} | Nivel: {iedu.nivelEducativo} | RVOE: {iedu.autRVOE}").Style(CfdiPdfTheme.SmallValueStyle);
+                            }
                         });
 
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(FormatMoney(concepto.ValorUnitario)).Style(CfdiPdfTheme.ValueStyle).AlignRight();

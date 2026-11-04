@@ -21,6 +21,7 @@ public static class CfdiPdfTheme
     public static readonly TextStyle SectionTitleStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(8).FontColor(PrimaryColor).Bold();
     public static readonly TextStyle LabelStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(7.5F).FontColor(PrimaryColor).Bold();
     public static readonly TextStyle ValueStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(7.5F).FontColor(SecondaryColor);
+    public static readonly TextStyle ValueBoldStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(7.5F).FontColor(SecondaryColor).Bold();
     public static readonly TextStyle HeaderLabelStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(7.5F).FontColor(SecondaryColor).Bold();
     public static readonly TextStyle SmallValueStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(6).FontColor(SecondaryColor);
     public static readonly TextStyle SealStyle = TextStyle.Default.FontFamily(PrimaryFont).FontSize(4.5F).FontColor(SecondaryColor);

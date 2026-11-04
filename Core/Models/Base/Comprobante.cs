@@ -1,7 +1,13 @@
 namespace Core.Models.Base;
 
 using Core.Abstractions;
+using Core.Models.Complements.CartaPorte31;
+using Core.Models.Complements.ComercioExterior20;
+using Core.Models.Complements.Divisas10;
+using Core.Models.Complements.ImpuestosLocales10;
+using Core.Models.Complements.LeyendasFiscales10;
 using Core.Models.Complements.Nomina12;
+using Core.Models.Complements.Pagos20;
 using Core.Models.Complements.TimbreFiscalDigital;
 using Core.Models.Complements.ValesDeDespensa10;
 using System.ComponentModel;
@@ -56,6 +62,24 @@ public partial class Comprobante
 
     [XmlIgnore]
     public ValesDeDespensa? ValesDespensa => GetComplement<ValesDeDespensa>();
+
+    [XmlIgnore]
+    public Pagos? Pagos => GetComplement<Pagos>();
+
+    [XmlIgnore]
+    public CartaPorte? CartaPorte => GetComplement<CartaPorte>();
+
+    [XmlIgnore]
+    public ImpuestosLocales? ImpuestosLocales => GetComplement<ImpuestosLocales>();
+
+    [XmlIgnore]
+    public LeyendasFiscales? LeyendasFiscales => GetComplement<LeyendasFiscales>();
+
+    [XmlIgnore]
+    public ComercioExterior? ComercioExterior => GetComplement<ComercioExterior>();
+
+    [XmlIgnore]
+    public Divisas? Divisas => GetComplement<Divisas>();
 
     // --- Atributos XML Oficiales del Comprobante (Anexo 20 CFDI 4.0) ---
     [XmlAttribute]
