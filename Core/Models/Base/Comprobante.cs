@@ -1,7 +1,9 @@
 namespace Core.Models.Base;
 
 using Core.Abstractions;
+using Core.Models.Complements.Nomina12;
 using Core.Models.Complements.TimbreFiscalDigital;
+using Core.Models.Complements.ValesDeDespensa10;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -48,6 +50,12 @@ public partial class Comprobante
     // --- Accesos de conveniencia fuertemente tipados ---
     [XmlIgnore]
     public TimbreFiscalDigital? TimbreFiscalDigital => GetComplement<TimbreFiscalDigital>();
+
+    [XmlIgnore]
+    public Nomina? Nomina => GetComplement<Nomina>();
+
+    [XmlIgnore]
+    public ValesDeDespensa? ValesDespensa => GetComplement<ValesDeDespensa>();
 
     // --- Atributos XML Oficiales del Comprobante (Anexo 20 CFDI 4.0) ---
     [XmlAttribute]

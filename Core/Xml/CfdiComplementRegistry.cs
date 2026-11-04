@@ -1,7 +1,9 @@
 namespace Core.Xml;
 
 using Core.Abstractions;
+using Core.Models.Complements.Nomina12;
 using Core.Models.Complements.TimbreFiscalDigital;
+using Core.Models.Complements.ValesDeDespensa10;
 using System.Collections.Concurrent;
 
 /// <summary>
@@ -14,8 +16,10 @@ public class CfdiComplementRegistry
 
     public CfdiComplementRegistry()
     {
-        // Registro por defecto del Timbre Fiscal Digital
+        // Registro de complementos base
         RegisterComplement<TimbreFiscalDigital>("http://www.sat.gob.mx/TimbreFiscalDigital", "TimbreFiscalDigital");
+        RegisterComplement<Nomina>("http://www.sat.gob.mx/nomina12", "Nomina");
+        RegisterComplement<ValesDeDespensa>("http://www.sat.gob.mx/valesdedespensa", "ValesDeDespensa");
     }
 
     public void RegisterComplement<T>(string xmlNamespace, string localName) where T : class, ICfdiComplement
