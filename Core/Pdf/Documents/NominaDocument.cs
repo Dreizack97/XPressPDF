@@ -1,5 +1,6 @@
 namespace Core.Pdf.Documents;
 
+using Core.Abstractions;
 using Core.Catalogs;
 using Core.Common;
 using Core.Models.Base;
@@ -13,9 +14,15 @@ using QuestPDF.Infrastructure;
 /// </summary>
 public class NominaDocument : CfdiDocumentBase
 {
-    public NominaDocument(Comprobante comprobante, CfdiConversionOptions options)
+    private readonly IEnumerable<ICfdiComplementSectionRenderer> _complementRenderers;
+
+    public NominaDocument(
+        Comprobante comprobante,
+        CfdiConversionOptions options,
+        IEnumerable<ICfdiComplementSectionRenderer>? complementRenderers = null)
         : base(comprobante, options)
     {
+        _complementRenderers = (complementRenderers ?? []).OrderBy(r => r.Order);
     }
 
     protected override string DocumentTitle => "CFDI de Nómina";
@@ -367,6 +374,15 @@ public class NominaDocument : CfdiDocumentBase
                         .Text("Firma del Trabajador").Style(CfdiPdfTheme.LabelStyle);
                 });
             });
+
+            // Complementos modulares inyectados
+            foreach (ICfdiComplementSectionRenderer renderer in _complementRenderers)
+            {
+                if (renderer.CanRender(Comprobante))
+                {
+                    renderer.Render(column, Comprobante);
+                }
+            }
         });
     }
 
