@@ -1,10 +1,37 @@
-﻿<Application xmlns="https://github.com/avaloniaui"
+<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AppUI.App"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Nivel 1: Primitivos (Colores, Fuentes, Radios, Sombras) -->
+                <ResourceInclude Source="avares://AppUI/Shared/Resources/Tokens/Primitives.axaml" />
+                <!-- Nivel 2: Semánticos (Superficies, Tintas, Bordes, 7 Tonos en Light y Dark) -->
+                <ResourceInclude Source="avares://AppUI/Shared/Resources/Tokens/Semantic.axaml" />
+                <!-- Nivel 3: Tokens de Componente (Dimensiones de control, botones, tarjetas) -->
+                <ResourceInclude Source="avares://AppUI/Shared/Resources/Tokens/ComponentTokens.axaml" />
+                <!-- Iconos vectoriales Lucide -->
+                <ResourceInclude Source="avares://AppUI/Shared/Resources/Icons/LucideGeometries.axaml" />
+
+                <!-- ControlThemes del Catálogo de Componentes -->
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Actions/ErpButton.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Containers/ErpSectionCard.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Containers/ErpStatCard.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Feedback/ErpStatusBadge.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Feedback/ErpBadge.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Feedback/ErpProgressBar.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Feedback/ErpEmptyState.axaml" />
+                <ResourceInclude Source="avares://AppUI/Shared/Controls/Forms/ErpField.axaml" />
+                <ResourceInclude Source="avares://AppUI/Layout/Sidebar/ErpSidebarNavItem.axaml" />
+                <ResourceInclude Source="avares://AppUI/Layout/PageHeader/ErpPageHeader.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://AppUI/Shared/Styles/Controls.axaml" />
     </Application.Styles>
 </Application>
