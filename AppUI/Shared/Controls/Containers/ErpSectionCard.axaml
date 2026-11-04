@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:containers="using:AppUI.Shared.Controls.Containers"
                     xmlns:display="using:AppUI.Shared.Controls.Display">
@@ -29,15 +29,20 @@
                                 <StackPanel Grid.Column="0" Spacing="2">
                                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                         <display:ErpIcon Kind="{TemplateBinding IconKind}"
-                                                       Size="18"
-                                                       Foreground="{DynamicResource InkPrimaryBrush}"
-                                                       IsVisible="{Binding IconKind, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                         Size="18"
+                                                         Foreground="{DynamicResource InkPrimaryBrush}"
+                                                         IsVisible="{Binding IconKind, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
                                         <TextBlock Text="{TemplateBinding Title}"
-                                                   Classes="text-heading"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize400}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkStrongBrush}"
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
                                     <TextBlock Text="{TemplateBinding Subtitle}"
-                                               Classes="text-caption ink-secondary"
+                                               FontFamily="{StaticResource FiraSansFontFamily}"
+                                               FontSize="{StaticResource FontSize200}"
+                                               Foreground="{DynamicResource InkSecondaryBrush}"
                                                IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 </StackPanel>
 

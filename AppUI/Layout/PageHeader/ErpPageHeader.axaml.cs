@@ -5,6 +5,9 @@ namespace AppUI.Layout.PageHeader;
 
 public class ErpPageHeader : ContentControl
 {
+    public static readonly StyledProperty<string?> CategoryProperty =
+        AvaloniaProperty.Register<ErpPageHeader, string?>(nameof(Category));
+
     public static readonly StyledProperty<string> TitleProperty =
         AvaloniaProperty.Register<ErpPageHeader, string>(nameof(Title), string.Empty);
 
@@ -13,6 +16,12 @@ public class ErpPageHeader : ContentControl
 
     public static readonly StyledProperty<object?> PrimaryActionsProperty =
         AvaloniaProperty.Register<ErpPageHeader, object?>(nameof(PrimaryActions));
+
+    public string? Category
+    {
+        get => GetValue(CategoryProperty);
+        set => SetValue(CategoryProperty, value);
+    }
 
     public string Title
     {

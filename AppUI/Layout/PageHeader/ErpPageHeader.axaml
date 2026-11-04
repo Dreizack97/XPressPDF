@@ -5,21 +5,43 @@
     <ControlTheme x:Key="{x:Type pageHeader:ErpPageHeader}" TargetType="pageHeader:ErpPageHeader">
         <Setter Property="Template">
             <ControlTemplate TargetType="pageHeader:ErpPageHeader">
-                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,24" VerticalAlignment="Center">
-                    <!-- Título y Subtítulo a la izquierda -->
-                    <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                        <TextBlock Text="{TemplateBinding Title}"
-                                   Classes="text-title" />
-                        <TextBlock Text="{TemplateBinding Subtitle}"
-                                   Classes="text-body ink-secondary"
-                                   IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    </StackPanel>
+                <Border BorderBrush="{DynamicResource LineDefaultBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="0,0,0,16"
+                        Margin="0,0,0,16">
+                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <!-- Título y Subtítulo a la izquierda -->
+                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                            <!-- Categoría superior en overline -->
+                            <TextBlock Text="{TemplateBinding Category}"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize100}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource InkMutedBrush}"
+                                       IsVisible="{Binding Category, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                    <!-- Acciones principales a la derecha -->
-                    <ContentPresenter Grid.Column="1"
-                                      Content="{TemplateBinding PrimaryActions}"
-                                      VerticalAlignment="Center" />
-                </Grid>
+                            <!-- Título principal -->
+                            <TextBlock Text="{TemplateBinding Title}"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize600}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource InkStrongBrush}" />
+
+                            <!-- Subtítulo / descripción -->
+                            <TextBlock Text="{TemplateBinding Subtitle}"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize300}"
+                                       FontWeight="Normal"
+                                       Foreground="{DynamicResource InkSecondaryBrush}"
+                                       IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        </StackPanel>
+
+                        <!-- Acciones principales a la derecha -->
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{TemplateBinding PrimaryActions}"
+                                          VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
             </ControlTemplate>
         </Setter>
     </ControlTheme>

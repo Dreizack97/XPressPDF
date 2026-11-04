@@ -14,10 +14,15 @@
                           IsVisible="{Binding Label, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                         <TextBlock Grid.Column="0"
                                    Text="{TemplateBinding Label}"
-                                   Classes="text-caption ink-body" />
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize200}"
+                                   Foreground="{DynamicResource InkBodyBrush}" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, StringFormat='{}{0:0}%'}"
-                                   Classes="font-mono text-caption ink-strong" />
+                                   FontFamily="{StaticResource FiraCodeFontFamily}"
+                                   FontSize="{StaticResource FontSize200}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource InkStrongBrush}" />
                     </Grid>
 
                     <!-- Riel y Relleno -->
