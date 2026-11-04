@@ -42,6 +42,14 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedTypeFilter = "Todos"; // Todos, I, E, P, N, T
 
+    public IReadOnlyList<string> StatusFilterOptions { get; } = ["Todos", "Pendientes", "Completados", "Con Error"];
+
+    public IReadOnlyList<string> TypeFilterOptions { get; } = ["Todos", "I", "E", "P", "N", "T"];
+
+    public bool HasItems => Items.Count > 0;
+    public bool HasFilteredItems => FilteredItems.Count > 0;
+    public bool HasNoFilterMatches => HasItems && FilteredItems.Count == 0;
+
     // KPIs en Vivo
     [ObservableProperty]
     private int _totalCount;
@@ -175,6 +183,9 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
         }
 
         FilteredItems = new ObservableCollection<CfdiQueueItemViewModel>(query);
+        OnPropertyChanged(nameof(HasItems));
+        OnPropertyChanged(nameof(HasFilteredItems));
+        OnPropertyChanged(nameof(HasNoFilterMatches));
     }
 
     public void UpdateKpis()
@@ -183,6 +194,9 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
         CompletedCount = Items.Count(i => i.Status == StatusTone.Success);
         PendingCount = Items.Count(i => i.Status == StatusTone.Neutral || i.Status == StatusTone.Info);
         ErrorCount = Items.Count(i => i.Status == StatusTone.Danger);
+        OnPropertyChanged(nameof(HasItems));
+        OnPropertyChanged(nameof(HasFilteredItems));
+        OnPropertyChanged(nameof(HasNoFilterMatches));
     }
 
     [RelayCommand]
