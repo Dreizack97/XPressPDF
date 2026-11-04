@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:navbar="using:AppUI.Layout.Navbar"
              xmlns:actions="using:AppUI.Shared.Controls.Actions"
@@ -11,19 +11,31 @@
     <Border Background="{DynamicResource Surface1Brush}"
             BorderBrush="{DynamicResource LineDefaultBrush}"
             BorderThickness="0,0,0,1"
-            Padding="24,0">
+            Padding="16,0,24,0">
         <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-            <!-- 1. Marca de la Aplicación -->
+            <!-- 1. Izquierda: Botón Menú + Marca de la Aplicación -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <!-- Botón de Alternancia de la Barra Lateral -->
+                <actions:ErpButton x:Name="ToggleSidebarButton"
+                                   Variant="Ghost"
+                                   Size="Sm"
+                                   IsIconOnly="True"
+                                   LeadingIcon="Menu"
+                                   Click="OnToggleSidebarClick"
+                                   ToolTip.Tip="Alternar menú lateral" />
+
+                <!-- Separador vertical sutil -->
+                <Border Width="1" Height="20" Background="{DynamicResource LineSubtleBrush}" Margin="0,0,4,0" />
+
                 <!-- Icono de Marca XPressPDF -->
                 <Border Width="36" Height="36"
                         CornerRadius="{StaticResource RadiusMd}"
                         Background="#2563EB">
                     <display:ErpIcon Kind="Zap"
-                                   Size="20"
-                                   Foreground="#FFFFFF"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
+                                     Size="20"
+                                     Foreground="#FFFFFF"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center" />
                 </Border>
 
                 <!-- Título y Versión -->
@@ -39,23 +51,26 @@
                                            Size="Sm" />
                     </StackPanel>
                     <TextBlock Text="Conversor Masivo de XML a PDF"
-                               Classes="text-caption ink-muted" />
+                               FontFamily="{StaticResource FiraSansFontFamily}"
+                               FontSize="{StaticResource FontSize200}"
+                               Foreground="{DynamicResource InkMutedBrush}" />
                 </StackPanel>
             </StackPanel>
 
-            <!-- 2. Centro: Indicador de Motor -->
-            <StackPanel Grid.Column="1"
-                        Orientation="Horizontal"
-                        Spacing="8"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+            <!-- 2. Espacio central vacío -->
+            <Panel Grid.Column="1" />
+
+            <!-- 3. Acciones a la Derecha: Indicador de Motor + Selector de Tema -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                <!-- Indicador de Motor alineado a la derecha -->
                 <feedback:ErpStatusBadge Status="Success"
                                          Text="Motor .NET 10 Activo"
                                          Size="Sm" />
-            </StackPanel>
 
-            <!-- 3. Acciones a la Derecha (Selector de Tema) -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <!-- Separador vertical -->
+                <Border Width="1" Height="20" Background="{DynamicResource LineSubtleBrush}" />
+
+                <!-- Switch Rápido de Tema (Claro / Oscuro) -->
                 <actions:ErpThemeToggle x:Name="ThemeToggleControl" />
             </StackPanel>
         </Grid>

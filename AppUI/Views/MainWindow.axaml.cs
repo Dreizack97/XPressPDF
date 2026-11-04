@@ -9,6 +9,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        NavbarControl.ToggleSidebarRequested += (_, _) => SidebarControl.ToggleCollapse();
     }
 
     public void AttachServices(IStorageService storageService, IThemeService themeService, INavigationService navigationService, IToastService toastService)
@@ -18,4 +19,6 @@ public partial class MainWindow : Window
         SidebarControl.AttachNavigationService(navigationService);
         ToastHostControl.AttachToastService(toastService);
     }
+
+    public void ToggleSidebar() => SidebarControl.ToggleCollapse();
 }

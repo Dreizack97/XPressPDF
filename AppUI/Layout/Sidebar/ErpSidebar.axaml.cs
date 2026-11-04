@@ -7,17 +7,29 @@ namespace AppUI.Layout.Sidebar;
 
 public partial class ErpSidebar : UserControl
 {
+    private const double ExpandedWidth = 240.0;
+    private const double CollapsedWidth = 72.0;
+
     public static readonly StyledProperty<bool> IsCollapsedProperty =
-        AvaloniaProperty.Register<ErpSidebar, bool>(nameof(IsCollapsed));
+        AvaloniaProperty.Register<ErpSidebar, bool>(nameof(IsCollapsed), false);
+
+    public static readonly StyledProperty<double> CurrentWidthProperty =
+        AvaloniaProperty.Register<ErpSidebar, double>(nameof(CurrentWidth), ExpandedWidth);
 
     public static readonly StyledProperty<NavigationTarget> CurrentTargetProperty =
         AvaloniaProperty.Register<ErpSidebar, NavigationTarget>(nameof(CurrentTarget), NavigationTarget.Conversion);
 
     private INavigationService? _navigationService;
 
+    static ErpSidebar()
+    {
+        IsCollapsedProperty.Changed.AddClassHandler<ErpSidebar>((s, e) => s.OnIsCollapsedChanged());
+    }
+
     public ErpSidebar()
     {
         InitializeComponent();
+        CurrentWidth = IsCollapsed ? CollapsedWidth : ExpandedWidth;
     }
 
     public bool IsCollapsed
@@ -26,10 +38,26 @@ public partial class ErpSidebar : UserControl
         set => SetValue(IsCollapsedProperty, value);
     }
 
+    public double CurrentWidth
+    {
+        get => GetValue(CurrentWidthProperty);
+        private set => SetValue(CurrentWidthProperty, value);
+    }
+
     public NavigationTarget CurrentTarget
     {
         get => GetValue(CurrentTargetProperty);
         set => SetValue(CurrentTargetProperty, value);
+    }
+
+    public void ToggleCollapse()
+    {
+        IsCollapsed = !IsCollapsed;
+    }
+
+    private void OnIsCollapsedChanged()
+    {
+        CurrentWidth = IsCollapsed ? CollapsedWidth : ExpandedWidth;
     }
 
     public void AttachNavigationService(INavigationService navigationService)
@@ -50,6 +78,6 @@ public partial class ErpSidebar : UserControl
 
     private void OnToggleCollapse(object? sender, RoutedEventArgs e)
     {
-        IsCollapsed = !IsCollapsed;
+        ToggleCollapse();
     }
 }
