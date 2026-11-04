@@ -14,6 +14,11 @@ using System.Threading.Tasks;
 /// </summary>
 public class CfdiPdfGenerator : ICfdiPdfGenerator
 {
+    static CfdiPdfGenerator()
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+    }
+
     private readonly ICfdiPdfDocumentFactory _documentFactory;
 
     public CfdiPdfGenerator(ICfdiPdfDocumentFactory documentFactory)

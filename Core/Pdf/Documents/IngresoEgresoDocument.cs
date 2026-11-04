@@ -45,7 +45,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
             }
 
             // 3. CFDI Relacionados (crucial para Notas de Crédito / Egreso y sustituciones)
-            if (Comprobante.CfdiRelacionados.Length > 0)
+            if (Comprobante.CfdiRelacionados is { Length: > 0 })
             {
                 column.Item().Component(new RelatedCfdiComponent(Comprobante.CfdiRelacionados));
             }
@@ -156,14 +156,20 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                                 descCol.Item().Text($"No. Identificación: {concepto.NoIdentificacion}").Style(CfdiPdfTheme.SmallValueStyle);
                             }
 
-                            foreach (var aduana in concepto.InformacionAduanera)
+                            if (concepto.InformacionAduanera != null)
                             {
-                                descCol.Item().Text($"Pedimento Aduanal: {aduana.NumeroPedimento}").Style(CfdiPdfTheme.SmallValueStyle);
+                                foreach (var aduana in concepto.InformacionAduanera)
+                                {
+                                    descCol.Item().Text($"Pedimento Aduanal: {aduana.NumeroPedimento}").Style(CfdiPdfTheme.SmallValueStyle);
+                                }
                             }
 
-                            foreach (var predial in concepto.CuentaPredial)
+                            if (concepto.CuentaPredial != null)
                             {
-                                descCol.Item().Text($"Cuenta Predial: {predial.Numero}").Style(CfdiPdfTheme.SmallValueStyle);
+                                foreach (var predial in concepto.CuentaPredial)
+                                {
+                                    descCol.Item().Text($"Cuenta Predial: {predial.Numero}").Style(CfdiPdfTheme.SmallValueStyle);
+                                }
                             }
 
                             if (concepto.InstitucionesEducativas is not null)

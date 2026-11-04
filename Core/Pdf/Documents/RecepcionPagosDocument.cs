@@ -39,7 +39,7 @@ public class RecepcionPagosDocument : CfdiDocumentBase
             column.Item().Component(new IssuerRecipientComponent(Comprobante));
 
             // 2. CFDI Relacionados (si existen)
-            if (Comprobante.CfdiRelacionados.Length > 0)
+            if (Comprobante.CfdiRelacionados is { Length: > 0 })
             {
                 column.Item().Component(new RelatedCfdiComponent(Comprobante.CfdiRelacionados));
             }

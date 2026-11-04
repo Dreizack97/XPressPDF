@@ -20,8 +20,12 @@ public static class DependencyInjection
     public static IServiceCollection AddXPressPdfCore(
         this IServiceCollection services,
         Action<CfdiComplementRegistry>? configureComplements = null,
-        string? logDirectory = null)
+        string? logDirectory = null,
+        QuestPDF.Infrastructure.LicenseType licenseType = QuestPDF.Infrastructure.LicenseType.Community)
     {
+        // 0. Configuración de licencia QuestPDF
+        QuestPDF.Settings.License = licenseType;
+
         // 1. Registro de complementos XML
         var complementRegistry = new CfdiComplementRegistry();
         configureComplements?.Invoke(complementRegistry);
