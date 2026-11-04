@@ -1,0 +1,396 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AppUI.Features.Conversion.ViewModels"
+             xmlns:models="using:AppUI.Features.Conversion.Models"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:containers="using:AppUI.Shared.Controls.Containers"
+             xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             xmlns:overlays="using:AppUI.Shared.Controls.Overlays"
+             xmlns:pageHeader="using:AppUI.Layout.PageHeader"
+             xmlns:converters="using:AppUI.Shared.Converters"
+             x:Class="AppUI.Features.Conversion.Views.ConversionWorkspaceView"
+             x:DataType="vm:ConversionWorkspaceViewModel">
+
+    <UserControl.Resources>
+        <converters:FileSizeFormatterConverter x:Key="FileSizeConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Contenido Principal con Scroll -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="24" Margin="24">
+
+                <!-- 1. Encabezado de Página -->
+                <pageHeader:ErpPageHeader Title="Conversor de CFDI 4.0 a PDF"
+                                          Subtitle="Procesa comprobantes fiscales individuales o lotes masivos con generación vectorial de alta velocidad.">
+                    <pageHeader:ErpPageHeader.PrimaryActions>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <actions:ErpButton Variant="Secondary"
+                                               Size="Md"
+                                               LeadingIcon="FilePlus"
+                                               Content="Agregar XML"
+                                               Command="{Binding PickFilesCommand}"
+                                               IsEnabled="{Binding !IsConverting}" />
+                            <actions:ErpButton Variant="Secondary"
+                                               Size="Md"
+                                               LeadingIcon="FolderOpen"
+                                               Content="Agregar Carpeta"
+                                               Command="{Binding PickFolderCommand}"
+                                               IsEnabled="{Binding !IsConverting}" />
+                            <actions:ErpButton Variant="Primary"
+                                               Size="Md"
+                                               LeadingIcon="Zap"
+                                               Content="Convertir a PDF"
+                                               Command="{Binding ConvertAllCommand}"
+                                               IsLoading="{Binding IsConverting}" />
+                        </StackPanel>
+                    </pageHeader:ErpPageHeader.PrimaryActions>
+                </pageHeader:ErpPageHeader>
+
+                <!-- 2. Fila de KPIs en Tiempo Real -->
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="16">
+                    <containers:ErpStatCard Grid.Column="0"
+                                            Label="EN COLA"
+                                            Value="{Binding TotalCount, StringFormat='{}{0:N0}'}"
+                                            Description="Total de archivos cargados"
+                                            IconKind="Files"
+                                            Tone="Blue" />
+                    <containers:ErpStatCard Grid.Column="1"
+                                            Label="COMPLETADOS"
+                                            Value="{Binding CompletedCount, StringFormat='{}{0:N0}'}"
+                                            Description="PDFs generados con éxito"
+                                            IconKind="CircleCheck"
+                                            Tone="Green" />
+                    <containers:ErpStatCard Grid.Column="2"
+                                            Label="PENDIENTES"
+                                            Value="{Binding PendingCount, StringFormat='{}{0:N0}'}"
+                                            Description="Archivos por procesar"
+                                            IconKind="Clock"
+                                            Tone="Yellow" />
+                    <containers:ErpStatCard Grid.Column="3"
+                                            Label="INCIDENCIAS"
+                                            Value="{Binding ErrorCount, StringFormat='{}{0:N0}'}"
+                                            Description="Archivos con error de esquema"
+                                            IconKind="CircleAlert"
+                                            Tone="Red" />
+                </Grid>
+
+                <!-- 3. Zona de Carga por Arrastre (Dropzone) -->
+                <forms:ErpFileUploadDropzone FilesDropped="OnDropzoneFilesDropped"
+                                            BrowseFilesCommand="{Binding PickFilesCommand}"
+                                            BrowseFolderCommand="{Binding PickFolderCommand}" />
+
+                <!-- 4. Barra de Progreso de Conversión Masiva -->
+                <containers:ErpSectionCard Title="Progreso del Lote"
+                                           IconKind="Zap"
+                                           IsVisible="{Binding IsConverting}">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+                        <feedback:ErpProgressBar Grid.Row="0"
+                                                 Value="{Binding ProgressPercentage}"
+                                                 Label="{Binding ProgressText}"
+                                                 Tone="Blue" />
+                        <actions:ErpButton Grid.Row="1"
+                                           Variant="Danger"
+                                           Size="Sm"
+                                           LeadingIcon="X"
+                                           Content="Cancelar Conversión"
+                                           Command="{Binding CancelConversionCommand}"
+                                           HorizontalAlignment="Right" />
+                    </Grid>
+                </containers:ErpSectionCard>
+
+                <!-- 5. Tabla / Lista Enriquecida de Comprobantes -->
+                <containers:ErpSectionCard Title="Comprobantes en Cola"
+                                           Subtitle="Revisa metadatos fiscales, previsualiza o abre los PDFs generados."
+                                           IconKind="List"
+                                           IsFlush="True">
+                    <containers:ErpSectionCard.HeaderActions>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <actions:ErpButton Variant="Soft"
+                                               Size="Sm"
+                                               LeadingIcon="Check"
+                                               Content="Limpiar Completados"
+                                               Command="{Binding ClearCompletedCommand}"
+                                               IsEnabled="{Binding CompletedCount, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter=0}" />
+                            <actions:ErpButton Variant="SoftDanger"
+                                               Size="Sm"
+                                               LeadingIcon="Trash2"
+                                               Content="Vaciar Cola"
+                                               Command="{Binding ClearAllCommand}"
+                                               IsEnabled="{Binding TotalCount, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter=0}" />
+                        </StackPanel>
+                    </containers:ErpSectionCard.HeaderActions>
+
+                    <DockPanel LastChildFill="True">
+                        <!-- Barra de Herramientas y Filtros -->
+                        <Border DockPanel.Dock="Top"
+                                BorderBrush="{DynamicResource LineSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="20,14"
+                                Background="{DynamicResource Surface2Brush}">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+                                <!-- Buscador Rápido -->
+                                <forms:ErpSearchInput Grid.Column="0"
+                                                      Text="{Binding SearchQuery, Mode=TwoWay}"
+                                                      PlaceholderText="Buscar por RFC, UUID, nombre o archivo..." />
+
+                                <!-- Selector de Filtro de Estado -->
+                                <ComboBox Grid.Column="1"
+                                          Height="{StaticResource ControlHeightMd}"
+                                          CornerRadius="{StaticResource FieldRadius}"
+                                          SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"
+                                          VerticalAlignment="Center">
+                                    <ComboBoxItem Content="Todos" />
+                                    <ComboBoxItem Content="Pendientes" />
+                                    <ComboBoxItem Content="Completados" />
+                                    <ComboBoxItem Content="Con Error" />
+                                </ComboBox>
+
+                                <!-- Selector de Tipo CFDI -->
+                                <ComboBox Grid.Column="2"
+                                          Height="{StaticResource ControlHeightMd}"
+                                          CornerRadius="{StaticResource FieldRadius}"
+                                          SelectedItem="{Binding SelectedTypeFilter, Mode=TwoWay}"
+                                          VerticalAlignment="Center">
+                                    <ComboBoxItem Content="Todos" />
+                                    <ComboBoxItem Content="I" />
+                                    <ComboBoxItem Content="E" />
+                                    <ComboBoxItem Content="P" />
+                                    <ComboBoxItem Content="N" />
+                                    <ComboBoxItem Content="T" />
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                        <!-- Estado Vacío cuando no hay elementos filtrados -->
+                        <feedback:ErpEmptyState IsVisible="{Binding FilteredItems.Count, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=0}"
+                                                IconKind="Files"
+                                                Title="No hay comprobantes para mostrar"
+                                                Description="Agrega archivos XML de CFDI 4.0 arrastrándolos aquí o ajusta tus criterios de búsqueda.">
+                            <actions:ErpButton Variant="Primary"
+                                               Size="Md"
+                                               LeadingIcon="FilePlus"
+                                               Content="Agregar Archivos XML"
+                                               Command="{Binding PickFilesCommand}" />
+                        </feedback:ErpEmptyState>
+
+                        <!-- Listado de Filas Virtualizadas -->
+                        <ItemsControl ItemsSource="{Binding FilteredItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:CfdiQueueItemViewModel">
+                                    <Border BorderBrush="{DynamicResource LineSubtleBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="20,14"
+                                            Background="{DynamicResource Surface1Brush}">
+                                        <Border.Styles>
+                                            <Style Selector="Border:pointerover">
+                                                <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+                                            </Style>
+                                        </Border.Styles>
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+                                            <!-- 1. Tipo de Comprobante Badge -->
+                                            <feedback:ErpBadge Grid.Column="0"
+                                                               Text="{Binding TipoDeComprobante, FallbackValue='CFDI'}"
+                                                               Tone="Blue"
+                                                               Size="Sm"
+                                                               VerticalAlignment="Center" />
+
+                                            <!-- 2. Información del Archivo y Emisor/Receptor -->
+                                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock Text="{Binding FileName}"
+                                                               Classes="text-body ink-strong"
+                                                               FontWeight="SemiBold"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding FileSizeBytes, Converter={StaticResource FileSizeConverter}}"
+                                                               Classes="font-mono text-caption ink-muted"
+                                                               VerticalAlignment="Center" />
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                                    <!-- Emisor -> Receptor -->
+                                                    <TextBlock Classes="text-caption ink-secondary">
+                                                        <Run Text="{Binding EmisorRfc, FallbackValue='Emisor'}" FontWeight="Medium" />
+                                                        <Run Text=" ➔ " Foreground="{DynamicResource InkMutedBrush}" />
+                                                        <Run Text="{Binding ReceptorRfc, FallbackValue='Receptor'}" FontWeight="Medium" />
+                                                    </TextBlock>
+
+                                                    <!-- Complementos -->
+                                                    <TextBlock Text="{Binding ComplementosResumen, FallbackValue='Estándar'}"
+                                                               Classes="text-caption ink-muted"
+                                                               IsVisible="{Binding ComplementosResumen, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                </StackPanel>
+
+                                                <!-- UUID Fiscal -->
+                                                <TextBlock Text="{Binding Uuid, FallbackValue='Sin timbrar o analizando...'}"
+                                                           Classes="font-mono text-caption ink-muted"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           IsVisible="{Binding Uuid, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                            </StackPanel>
+
+                                            <!-- 3. Importe Total en Fira Code -->
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding TotalFormatted, FallbackValue='-'}"
+                                                       Classes="font-mono text-body ink-strong"
+                                                       FontWeight="SemiBold"
+                                                       VerticalAlignment="Center" />
+
+                                            <!-- 4. Insignia de Estado -->
+                                            <feedback:ErpStatusBadge Grid.Column="3"
+                                                                     Status="{Binding Status}"
+                                                                     Text="{Binding StatusText}"
+                                                                     Size="Sm"
+                                                                     VerticalAlignment="Center" />
+
+                                            <!-- 5. Acciones por Fila -->
+                                            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <actions:ErpButton Variant="Ghost"
+                                                                   Size="Sm"
+                                                                   IsIconOnly="True"
+                                                                   LeadingIcon="Eye"
+                                                                   Command="{Binding InspectCommand}"
+                                                                   ToolTip.Tip="Inspeccionar datos fiscales o error" />
+
+                                                <actions:ErpButton Variant="Ghost"
+                                                                   Size="Sm"
+                                                                   IsIconOnly="True"
+                                                                   LeadingIcon="Download"
+                                                                   Command="{Binding OpenPdfCommand}"
+                                                                   IsVisible="{Binding OutputPdfPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                   ToolTip.Tip="Abrir archivo PDF generado" />
+
+                                                <actions:ErpButton Variant="Ghost"
+                                                                   Size="Sm"
+                                                                   IsIconOnly="True"
+                                                                   LeadingIcon="Folder"
+                                                                   Command="{Binding OpenFolderCommand}"
+                                                                   ToolTip.Tip="Mostrar en explorador de archivos" />
+
+                                                <actions:ErpButton Variant="Ghost"
+                                                                   Size="Sm"
+                                                                   IsIconOnly="True"
+                                                                   LeadingIcon="Trash2"
+                                                                   Command="{Binding RemoveCommand}"
+                                                                   ToolTip.Tip="Quitar de la cola" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </containers:ErpSectionCard>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 6. Inspector Fiscal Lateral (ErpDrawer) -->
+        <overlays:ErpDrawer Title="Detalle del Comprobante"
+                            IsOpen="{Binding IsInspectorOpen, Mode=TwoWay}">
+            <overlays:ErpDrawer.DrawerContent>
+                <StackPanel Spacing="20" DataContext="{Binding SelectedItemForInspection}">
+                    <!-- Encabezado de Archivo -->
+                    <Border Background="{DynamicResource Surface2Brush}"
+                            CornerRadius="{StaticResource RadiusMd}"
+                            Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding FileName}"
+                                       Classes="text-subheading"
+                                       FontWeight="Bold" />
+                            <TextBlock Text="{Binding FilePath}"
+                                       Classes="font-mono text-caption ink-muted"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding FileSizeBytes, Converter={StaticResource FileSizeConverter}}"
+                                       Classes="font-mono text-caption ink-secondary" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Detalle de Error (Visible solo si falló) -->
+                    <containers:ErpSectionCard Title="Incidencia de Conversión"
+                                               IconKind="CircleAlert"
+                                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <display:ErpCodeBlock Text="{Binding ErrorMessage}" />
+                    </containers:ErpSectionCard>
+
+                    <!-- Datos Fiscales del CFDI -->
+                    <containers:ErpSectionCard Title="Datos Fiscales SAT" IconKind="Info">
+                        <StackPanel Spacing="14">
+                            <!-- Tipo y UUID -->
+                            <forms:ErpField Label="Tipo de Comprobante">
+                                <TextBlock Classes="text-body ink-strong font-mono">
+                                    <Run Text="{Binding TipoDeComprobante, FallbackValue='-'}" FontWeight="Bold" />
+                                    <Run Text=" - " />
+                                    <Run Text="{Binding TipoDeComprobanteDescripcion, FallbackValue='No determinado'}" />
+                                </TextBlock>
+                            </forms:ErpField>
+
+                            <forms:ErpField Label="Folio Fiscal (UUID)">
+                                <TextBlock Text="{Binding Uuid, FallbackValue='Sin Timbre Fiscal Digital'}"
+                                           Classes="font-mono text-caption ink-strong"
+                                           TextWrapping="Wrap" />
+                            </forms:ErpField>
+
+                            <Separator Background="{DynamicResource LineSubtleBrush}" />
+
+                            <!-- Emisor -->
+                            <forms:ErpField Label="Emisor">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding EmisorRfc, FallbackValue='-'}"
+                                               Classes="font-mono text-body ink-strong"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding EmisorNombre, FallbackValue='-'}"
+                                               Classes="text-caption ink-secondary"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </forms:ErpField>
+
+                            <!-- Receptor -->
+                            <forms:ErpField Label="Receptor">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding ReceptorRfc, FallbackValue='-'}"
+                                               Classes="font-mono text-body ink-strong"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding ReceptorNombre, FallbackValue='-'}"
+                                               Classes="text-caption ink-secondary"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </forms:ErpField>
+
+                            <Separator Background="{DynamicResource LineSubtleBrush}" />
+
+                            <!-- Importe Total -->
+                            <forms:ErpField Label="Importe Total">
+                                <TextBlock Text="{Binding TotalFormatted, FallbackValue='-'}"
+                                           Classes="font-mono text-heading ink-strong"
+                                           FontWeight="Bold" />
+                            </forms:ErpField>
+
+                            <!-- Complementos -->
+                            <forms:ErpField Label="Complementos">
+                                <TextBlock Text="{Binding ComplementosResumen, FallbackValue='Ninguno'}"
+                                           Classes="text-body ink-secondary" />
+                            </forms:ErpField>
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                    <!-- Acciones del Inspector -->
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                        <actions:ErpButton Variant="Primary"
+                                           Size="Md"
+                                           LeadingIcon="Download"
+                                           Content="Abrir PDF"
+                                           Command="{Binding OpenPdfCommand}"
+                                           IsVisible="{Binding OutputPdfPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <actions:ErpButton Variant="Secondary"
+                                           Size="Md"
+                                           LeadingIcon="Folder"
+                                           Content="Abrir Carpeta"
+                                           Command="{Binding OpenFolderCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </overlays:ErpDrawer.DrawerContent>
+        </overlays:ErpDrawer>
+    </Grid>
+</UserControl>
