@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:pageHeader="using:AppUI.Layout.PageHeader">
+
+    <ControlTheme x:Key="{x:Type pageHeader:ErpPageHeader}" TargetType="pageHeader:ErpPageHeader">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="pageHeader:ErpPageHeader">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,24" VerticalAlignment="Center">
+                    <!-- Título y Subtítulo a la izquierda -->
+                    <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="{TemplateBinding Title}"
+                                   Classes="text-title" />
+                        <TextBlock Text="{TemplateBinding Subtitle}"
+                                   Classes="text-body ink-secondary"
+                                   IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+
+                    <!-- Acciones principales a la derecha -->
+                    <ContentPresenter Grid.Column="1"
+                                      Content="{TemplateBinding PrimaryActions}"
+                                      VerticalAlignment="Center" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

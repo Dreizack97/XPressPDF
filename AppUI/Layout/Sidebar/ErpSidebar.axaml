@@ -1,0 +1,92 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sidebar="using:AppUI.Layout.Sidebar"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             xmlns:services="using:AppUI.Core.Services"
+             x:Class="AppUI.Layout.Sidebar.ErpSidebar"
+             x:Name="Root">
+
+    <Border Background="{DynamicResource Surface1Brush}"
+            BorderBrush="{DynamicResource LineDefaultBrush}"
+            BorderThickness="0,0,1,0"
+            Width="{Binding IsCollapsed, ElementName=Root, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:True}, FallbackValue=256}">
+        <Border.Styles>
+            <!-- Transición suave de ancho al colapsar -->
+            <Style Selector="sidebar|ErpSidebar[IsCollapsed=False] /template/ Border, sidebar|ErpSidebar[IsCollapsed=False] Border">
+                <Setter Property="Width" Value="{StaticResource SidebarWidth}" />
+            </Style>
+            <Style Selector="sidebar|ErpSidebar[IsCollapsed=True] /template/ Border, sidebar|ErpSidebar[IsCollapsed=True] Border">
+                <Setter Property="Width" Value="{StaticResource SidebarWidthCollapsed}" />
+            </Style>
+        </Border.Styles>
+
+        <DockPanel LastChildFill="True" Margin="12,16">
+            <!-- 1. Pie de la Barra Lateral: Botón Colapsar / Expandir -->
+            <Border DockPanel.Dock="Bottom"
+                    BorderBrush="{DynamicResource LineSubtleBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="0,12,0,0">
+                <actions:ErpButton Variant="Ghost"
+                                   Size="Sm"
+                                   HorizontalAlignment="Stretch"
+                                   Click="OnToggleCollapse"
+                                   ToolTip.Tip="Contraer / Expandir barra lateral">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <display:ErpIcon Kind="ChevronLeft"
+                                       Size="16"
+                                       Foreground="{DynamicResource InkSecondaryBrush}"
+                                       IsVisible="{Binding !IsCollapsed, ElementName=Root}" />
+                        <display:ErpIcon Kind="ChevronRight"
+                                       Size="16"
+                                       Foreground="{DynamicResource InkSecondaryBrush}"
+                                       IsVisible="{Binding IsCollapsed, ElementName=Root}" />
+                        <TextBlock Text="Contraer menú"
+                                   Classes="text-caption ink-secondary"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding !IsCollapsed, ElementName=Root}" />
+                    </StackPanel>
+                </actions:ErpButton>
+            </Border>
+
+            <!-- 2. Menú de Navegación (3 Vistas Operativas) -->
+            <StackPanel Spacing="6" VerticalAlignment="Top">
+                <!-- Sección: Operaciones -->
+                <TextBlock Text="OPERACIONES"
+                           Classes="text-overline"
+                           Margin="12,4,0,4"
+                           IsVisible="{Binding !IsCollapsed, ElementName=Root}" />
+
+                <!-- 1. Conversor CFDI -->
+                <sidebar:ErpSidebarNavItem Title="Conversor CFDI"
+                                           IconKind="Files"
+                                           IsCollapsed="{Binding IsCollapsed, ElementName=Root}"
+                                           IsSelected="{Binding CurrentTarget, ElementName=Root, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static services:NavigationTarget.Conversion}}"
+                                           Click="OnNavConversion"
+                                           ToolTip.Tip="Conversor de CFDI 4.0 a PDF" />
+
+                <!-- Sección: Sistema -->
+                <TextBlock Text="SISTEMA"
+                           Classes="text-overline"
+                           Margin="12,16,0,4"
+                           IsVisible="{Binding !IsCollapsed, ElementName=Root}" />
+
+                <!-- 2. Configuración PDF -->
+                <sidebar:ErpSidebarNavItem Title="Configuración"
+                                           IconKind="Settings"
+                                           IsCollapsed="{Binding IsCollapsed, ElementName=Root}"
+                                           IsSelected="{Binding CurrentTarget, ElementName=Root, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static services:NavigationTarget.Settings}}"
+                                           Click="OnNavSettings"
+                                           ToolTip.Tip="Configuración de PDF, Logo y Preferencias" />
+
+                <!-- 3. Bitácora / Diagnóstico -->
+                <sidebar:ErpSidebarNavItem Title="Bitácora de Logs"
+                                           IconKind="FileText"
+                                           IsCollapsed="{Binding IsCollapsed, ElementName=Root}"
+                                           IsSelected="{Binding CurrentTarget, ElementName=Root, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static services:NavigationTarget.Diagnostics}}"
+                                           Click="OnNavDiagnostics"
+                                           ToolTip.Tip="Historial y registros de eventos" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>
