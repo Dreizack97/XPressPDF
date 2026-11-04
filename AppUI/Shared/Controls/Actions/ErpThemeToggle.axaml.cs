@@ -11,6 +11,9 @@ public partial class ErpThemeToggle : UserControl
     public static readonly StyledProperty<LucideIconKind> IconKindProperty =
         AvaloniaProperty.Register<ErpThemeToggle, LucideIconKind>(nameof(IconKind), LucideIconKind.Moon);
 
+    public static readonly StyledProperty<string> TooltipTextProperty =
+        AvaloniaProperty.Register<ErpThemeToggle, string>(nameof(TooltipText), "Cambiar tema (Claro / Oscuro)");
+
     private IThemeService? _themeService;
 
     public ErpThemeToggle()
@@ -26,6 +29,12 @@ public partial class ErpThemeToggle : UserControl
         private set => SetValue(IconKindProperty, value);
     }
 
+    public string TooltipText
+    {
+        get => GetValue(TooltipTextProperty);
+        private set => SetValue(TooltipTextProperty, value);
+    }
+
     public void AttachThemeService(IThemeService themeService)
     {
         _themeService = themeService;
@@ -37,6 +46,7 @@ public partial class ErpThemeToggle : UserControl
     {
         var isDark = ActualThemeVariant == ThemeVariant.Dark;
         IconKind = isDark ? LucideIconKind.Sun : LucideIconKind.Moon;
+        TooltipText = isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
     }
 
     private void OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
