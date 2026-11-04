@@ -1,0 +1,84 @@
+#!/bin/sh
+# Valida el mensaje contra el manual de mensajes de commit (versión 2.0.0).
+# Es una ayuda local: la validación vinculante es la de integración continua.
+
+archivo="$1"
+
+# Git invoca el hook antes de limpiar el mensaje: hay que descartar el diff de
+# "git commit -v", los comentarios de la plantilla y las líneas en blanco iniciales.
+# Un editor de Windows puede guardarlo con CRLF.
+mensaje=$(tr -d '\r' < "$archivo" \
+  | sed '/^# -\{24\} >8 -\{24\}$/,$d' \
+  | grep -v '^#' \
+  | sed '/./,$!d')
+
+asunto=$(printf '%s\n' "$mensaje" | sed -n '1s/[[:space:]]*$//p')
+segunda_linea=$(printf '%s\n' "$mensaje" | sed -n '2p')
+
+error() {
+  {
+    printf 'commit-msg: %s\n' "$1"
+    printf '  Asunto: %s\n' "$asunto"
+    printf '  Formato: <tipo>[(<ámbito>)][!]: <infinitivo en minúscula, sin punto, máx. 72>\n'
+    printf '  Recuperar el mensaje: git commit -e -F "%s"\n' "$archivo"
+  } >&2
+  exit 1
+}
+
+case "$asunto" in
+  # Git cancela por sí mismo un commit sin mensaje.
+  "") exit 0 ;;
+  # Fusión generada por git merge; git flow ya usa el formato del manual.
+  "Merge "*) exit 0 ;;
+  # Commits temporales que desaparecen con git rebase --autosquash.
+  "fixup! "*|"squash! "*|"amend! "*) exit 0 ;;
+  "Revert "*) error 'Reescribir la reversión como "revert: revertir <asunto>" con el pie "Refs: <hash>" (sección 9).' ;;
+esac
+
+tipos='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+
+if ! printf '%s\n' "$asunto" | LC_ALL=C grep -Eq "^($tipos)(\([a-z0-9._/-]+\))?!?: "; then
+  error "Tipo, ámbito o separador no válidos. Tipos: $(printf '%s' "$tipos" | tr '|' ' ')."
+fi
+
+# El primer carácter se compara byte a byte para no depender de la configuración
+# regional: en C, [a-z] no reconoce las vocales acentuadas.
+descripcion=${asunto#*: }
+case "$descripcion" in
+  [a-z]*|á*|é*|í*|ó*|ú*|ü*|ñ*) ;;
+  *) error "La descripción empieza en minúscula, con el verbo en infinitivo (sección 2.3)." ;;
+esac
+
+case "$asunto" in
+  *.) error "El asunto no lleva punto final (sección 2.4)." ;;
+esac
+
+# ${#asunto} cuenta bytes: se descartan los bytes de continuación de UTF-8 para
+# contar caracteres.
+longitud=$(printf '%s' "$asunto" | LC_ALL=C tr -d '\200-\277' | wc -c | tr -d ' ')
+if [ "$longitud" -gt 72 ]; then
+  error "El asunto tiene $longitud caracteres; el máximo son 72 (sección 2.5)."
+fi
+
+if [ -n "$segunda_linea" ]; then
+  error "Separar el asunto del cuerpo con una línea en blanco (sección 1.2)."
+fi
+
+# Sección 5: la organización exige el ! y el pie BREAKING CHANGE juntos.
+if printf '%s\n' "$asunto" | LC_ALL=C grep -Eq '^[a-z]+(\([^)]*\))?!: '; then
+  tiene_signo=1
+else
+  tiene_signo=0
+fi
+
+if printf '%s\n' "$mensaje" | grep -Eq '^BREAKING[ -]CHANGE: '; then
+  tiene_pie=1
+else
+  tiene_pie=0
+fi
+
+if [ "$tiene_signo" -ne "$tiene_pie" ]; then
+  error "Un cambio incompatible lleva ! en el asunto y el pie BREAKING CHANGE (sección 5)."
+fi
+
+exit 0

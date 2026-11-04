@@ -1,0 +1,9 @@
+# <tipo>[(<ámbito>)][!]: <infinitivo, minúscula, sin punto, máx. 72>
+#
+# Cuerpo: qué problema había, cómo lo resuelve, qué se descartó.
+# Ajustar a 72 columnas.
+#
+# Pie: Refs: JIRA-000 · Closes: #000 · BREAKING CHANGE: ...
+# Un cambio incompatible lleva ! en el asunto y el pie BREAKING CHANGE.
+#
+# Tipos: feat fix docs style refactor perf test build ci chore revert
