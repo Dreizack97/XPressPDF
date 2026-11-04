@@ -1,4 +1,4 @@
-namespace XPressPDF.IoC;
+namespace IoC;
 
 using Core.Abstractions;
 using Core.Pdf;
