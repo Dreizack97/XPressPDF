@@ -7,7 +7,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 /// <summary>
-/// Componente de dos columnas con la información fiscal del Emisor y Receptor.
+/// Componente de dos columnas con la información fiscal del Emisor y Receptor con alturas simétricas.
 /// </summary>
 public class IssuerRecipientComponent : IComponent
 {
@@ -71,6 +71,7 @@ public class IssuerRecipientComponent : IComponent
 
     private static void LabeledRow(ColumnDescriptor col, string label, string? value)
     {
+        if (string.IsNullOrWhiteSpace(value)) return;
         col.Item().Row(row =>
         {
             row.Spacing(2);
