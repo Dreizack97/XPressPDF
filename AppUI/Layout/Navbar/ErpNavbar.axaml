@@ -11,7 +11,8 @@
     <Border Background="{DynamicResource Surface1Brush}"
             BorderBrush="{DynamicResource LineDefaultBrush}"
             BorderThickness="0,0,0,1"
-            Padding="16,0,24,0">
+            Padding="16,0,16,0"
+            PointerPressed="OnNavbarPointerPressed">
         <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
             <!-- 1. Izquierda: Botón Menú + Marca de la Aplicación -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
@@ -60,8 +61,8 @@
             <!-- 2. Espacio central vacío -->
             <Panel Grid.Column="1" />
 
-            <!-- 3. Acciones a la Derecha: Indicador de Motor + Selector de Tema -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+            <!-- 3. Acciones a la Derecha: Indicador de Motor + Selector de Tema + Controles de Ventana -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
                 <!-- Indicador de Motor alineado a la derecha -->
                 <feedback:ErpStatusBadge Status="Success"
                                          Text="Motor .NET 10 Activo"
@@ -72,6 +73,12 @@
 
                 <!-- Switch Rápido de Tema (Claro / Oscuro) -->
                 <actions:ErpThemeToggle x:Name="ThemeToggleControl" />
+
+                <!-- Separador vertical -->
+                <Border Width="1" Height="20" Background="{DynamicResource LineSubtleBrush}" />
+
+                <!-- Controles de Ventana (Minimizar, Maximizar / Restaurar, Cerrar) -->
+                <navbar:ErpWindowControls x:Name="WindowControls" />
             </StackPanel>
         </Grid>
     </Border>

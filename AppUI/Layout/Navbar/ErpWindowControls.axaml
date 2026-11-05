@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Layout.Navbar.ErpWindowControls"
+             x:Name="Root">
+
+    <UserControl.Styles>
+        <!-- Estilo especial para el botón Cerrar: Transición a rojo (#DC2626) en :pointerover -->
+        <Style Selector="actions|ErpButton.close-btn:pointerover">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="actions|ErpButton.close-btn:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#DC2626" />
+        </Style>
+        <Style Selector="actions|ErpButton.close-btn:pressed /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+        <!-- 1. Botón Minimizar -->
+        <actions:ErpButton x:Name="MinimizeButton"
+                           Variant="Ghost"
+                           Size="Sm"
+                           IsIconOnly="True"
+                           LeadingIcon="Minus"
+                           Click="OnMinimizeClick"
+                           ToolTip.Tip="Minimizar" />
+
+        <!-- 2. Botón Maximizar / Restaurar -->
+        <actions:ErpButton x:Name="MaximizeRestoreButton"
+                           Variant="Ghost"
+                           Size="Sm"
+                           IsIconOnly="True"
+                           LeadingIcon="{Binding MaximizeRestoreIcon, ElementName=Root}"
+                           Click="OnMaximizeRestoreClick"
+                           ToolTip.Tip="{Binding MaximizeRestoreTooltip, ElementName=Root}" />
+
+        <!-- 3. Botón Cerrar -->
+        <actions:ErpButton x:Name="CloseButton"
+                           Classes="close-btn"
+                           Variant="Ghost"
+                           Size="Sm"
+                           IsIconOnly="True"
+                           LeadingIcon="X"
+                           Click="OnCloseClick"
+                           ToolTip.Tip="Cerrar" />
+    </StackPanel>
+</UserControl>
