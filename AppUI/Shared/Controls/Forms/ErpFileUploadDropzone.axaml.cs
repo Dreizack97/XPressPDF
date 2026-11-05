@@ -96,7 +96,11 @@ public partial class ErpFileUploadDropzone : UserControl
 
     private void OnDragLeave(object? sender, DragEventArgs e)
     {
-        IsDragOver = false;
+        var pos = e.GetPosition(this);
+        if (pos.X < 0 || pos.Y < 0 || pos.X >= Bounds.Width || pos.Y >= Bounds.Height)
+        {
+            IsDragOver = false;
+        }
     }
 
     private void OnDrop(object? sender, DragEventArgs e)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AppUI.Features.Conversion.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
@@ -46,41 +47,57 @@ public partial class ConversionWorkspaceView : UserControl
 
     private void OnDragLeave(object? sender, DragEventArgs e)
     {
-        IsDragOverActive = false;
+        var pos = e.GetPosition(this);
+        if (pos.X < 0 || pos.Y < 0 || pos.X >= Bounds.Width || pos.Y >= Bounds.Height)
+        {
+            IsDragOverActive = false;
+        }
     }
 
-    private void OnDrop(object? sender, DragEventArgs e)
+    private async void OnDrop(object? sender, DragEventArgs e)
     {
         IsDragOverActive = false;
 
         var files = e.DataTransfer.TryGetFiles();
         if (files == null) return;
 
-        var paths = new List<string>();
+        var rawPaths = new List<string>();
         foreach (var file in files)
         {
-            var localPath = file.Path.LocalPath;
-            if (File.Exists(localPath) && localPath.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
-            {
-                paths.Add(localPath);
-            }
-            else if (Directory.Exists(localPath))
-            {
-                try
-                {
-                    var xmls = Directory.GetFiles(localPath, "*.xml", SearchOption.AllDirectories);
-                    paths.AddRange(xmls);
-                }
-                catch
-                {
-                    // Ignorar carpetas sin permisos de lectura
-                }
-            }
+            rawPaths.Add(file.Path.LocalPath);
         }
 
-        if (paths.Count > 0 && DataContext is ConversionWorkspaceViewModel vm)
+        if (rawPaths.Count > 0 && DataContext is ConversionWorkspaceViewModel vm)
         {
-            vm.AddXmlFiles(paths);
+            var resolvedPaths = await Task.Run(() =>
+            {
+                var result = new List<string>();
+                foreach (var path in rawPaths)
+                {
+                    if (File.Exists(path) && path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Add(path);
+                    }
+                    else if (Directory.Exists(path))
+                    {
+                        try
+                        {
+                            var xmls = Directory.GetFiles(path, "*.xml", SearchOption.AllDirectories);
+                            result.AddRange(xmls);
+                        }
+                        catch
+                        {
+                            // Ignorar directorios sin permisos
+                        }
+                    }
+                }
+                return result;
+            });
+
+            if (resolvedPaths.Count > 0)
+            {
+                vm.AddXmlFiles(resolvedPaths);
+            }
         }
     }
 
