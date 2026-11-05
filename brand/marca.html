@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manual de marca · XPress PDF</title>
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+    <style>
+      @font-face {
+        font-family: 'Fira Sans';
+        font-weight: 400;
+        src: url('../AppUI/Assets/Fonts/FiraSans-Regular.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Fira Sans';
+        font-weight: 500;
+        src: url('../AppUI/Assets/Fonts/FiraSans-Medium.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Fira Sans';
+        font-weight: 600;
+        src: url('../AppUI/Assets/Fonts/FiraSans-SemiBold.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'Fira Code';
+        font-weight: 400;
+        src: url('../AppUI/Assets/Fonts/FiraCode-Regular.ttf') format('truetype');
+      }
+
+      :root {
+        --canvas: #f8fafc;
+        --surface: #ffffff;
+        --line: #e2e8f0;
+        --ink: #0f172a;
+        --ink-muted: #475569;
+        --brand: #2563eb;
+        --dark: #0f172a;
+        --bad: #dc2626;
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font: 400 15px/1.55 'Fira Sans', system-ui, sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 56px 16px 96px;
+      }
+      header.cover {
+        display: grid;
+        gap: 32px;
+        padding-bottom: 48px;
+        border-bottom: 1px solid var(--line);
+      }
+      header.cover img {
+        width: min(380px, 100%);
+        height: auto;
+      }
+      h1 {
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+        margin: 0;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      section {
+        padding: 56px 0 0;
+      }
+      section > p {
+        max-width: 68ch;
+        color: var(--ink-muted);
+        margin: 0 0 24px;
+      }
+      code {
+        font: 400 13px 'Fira Code', monospace;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      figure {
+        margin: 0;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .stage {
+        display: grid;
+        place-items: center;
+        min-height: 200px;
+        padding: 32px;
+      }
+      .stage img {
+        max-width: 100%;
+        height: auto;
+        max-height: 140px;
+      }
+      .stage.tall img {
+        max-height: 180px;
+      }
+      .stage.on-dark {
+        background: var(--dark);
+      }
+      .stage.on-tint {
+        background: #f1f5f9;
+      }
+      figcaption {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+      figcaption strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .defs {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-bottom: 24px;
+      }
+      .defs div {
+        border-left: 3px solid var(--brand);
+        padding: 4px 0 4px 12px;
+      }
+      .defs b {
+        display: block;
+      }
+      .defs span {
+        color: var(--ink-muted);
+        font-size: 14px;
+      }
+      .swatches {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+      .swatch {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--surface);
+      }
+      .swatch i {
+        display: block;
+        height: 96px;
+      }
+      .swatch p {
+        margin: 0;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+      .swatch p b {
+        display: block;
+        color: var(--ink);
+        font-size: 14px;
+      }
+      .construction {
+        position: relative;
+        width: min(360px, 100%);
+        aspect-ratio: 1;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: calc(100% / 14) calc(100% / 14);
+        border: 1px solid var(--line);
+      }
+      .construction img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .split {
+        display: grid;
+        gap: 32px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        align-items: start;
+      }
+      .clear {
+        display: inline-block;
+        padding: 18px;
+        outline: 1px dashed var(--brand);
+        outline-offset: 0;
+        background: repeating-linear-gradient(45deg, #dbeafe 0 6px, transparent 6px 12px);
+      }
+      .clear img {
+        display: block;
+        background: var(--surface);
+        height: 64px;
+        width: auto;
+      }
+      .sizes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: end;
+      }
+      .sizes span {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        font-size: 12px;
+        color: var(--ink-muted);
+      }
+      .bad .stage {
+        position: relative;
+      }
+      .bad figcaption strong {
+        color: var(--bad);
+      }
+      .bad .stage::after {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        background:
+          linear-gradient(45deg, transparent calc(50% - 1px), var(--bad) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));
+        opacity: 0.55;
+        pointer-events: none;
+      }
+      ul.rules {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--ink-muted);
+      }
+      ul.rules li + li {
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="cover">
+        <h1>Manual de identidad visual · v2.0</h1>
+        <img src="imagotipo/imagotipo-horizontal-color.svg" alt="XPress PDF" />
+        <p style="max-width: 62ch; color: var(--ink-muted); margin: 0">
+          XPress PDF es la solución de alto rendimiento para el procesamiento, validación y conversión masiva de comprobantes fiscales digitales CFDI 4.0 a representaciones
+          impresas PDF de calidad corporativa. La identidad prescinde de siglas y textos incrustados para adoptar un emblema puramente simbólico (<strong style="color: var(--ink)">Prisma
+          de Conversión: pliego documental estructurado con pliegue técnico a 45°, zócalo de soporte y vector aerodinámico de transformación</strong>), donde la solidez de los datos
+          y el azul técnico convergen con la velocidad de ejecución y el verde esmeralda.
+        </p>
+      </header>
+
+      <section>
+        <h2>Concepto y construcción</h2>
+        <p>
+          Retícula de 56 × 56 unidades. Una hoja técnica de documento con pliegue a 45° en la esquina superior derecha y ranuras de datos en negativo descansa sobre un zócalo
+          estructural inferior. En el centro, un vector dinámico de conversión rápida emerge hacia la derecha atravesando el contorno. Un canal de 2 unidades separa las piezas
+          mediante máscaras vectoriales para que se lean con total nitidez aun en una sola tinta; hacia los 16–32 px el canal se refuerza a 3 unidades para evitar el empastado óptico.
+        </p>
+        <div class="split">
+          <div class="construction"><img src="isotipo/isotipo-color.svg" alt="Isotipo sobre retícula de construcción" /></div>
+          <div class="defs" style="grid-template-columns: 1fr">
+            <div><b>Pliego documental · Azul 600</b><span>La estructura formal del comprobante, chaflán de pliegue a 45° y ranuras de datos en negativo.</span></div>
+            <div><b>Zócalo base · Azul 900</b><span>El soporte estructural de datos, estabilidad y contenedor extensible del isologo.</span></div>
+            <div><b>Vector XPress · Esmeralda 500</b><span>Flecha de alta velocidad que representa la transformación instantánea de XML a PDF.</span></div>
+            <div><b>Canales de aire · 2 u / 3 u</b><span>Separación booleana estricta que garantiza legibilidad en sellos, monocromo y microiconos.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Las cuatro piezas</h2>
+        <p>Cada pieza tiene tres variantes: a color para fondos claros, monocromo para una sola tinta (sellos, fax, grabado) y negativo para fondos oscuros.</p>
+        <div class="defs">
+          <div><b>Logotipo</b><span>Solo tipografía. Para espacios donde el símbolo ya está presente.</span></div>
+          <div><b>Isotipo</b><span>Solo el símbolo. Favicon, avatar, icono de app y barra de tareas.</span></div>
+          <div><b>Imagotipo</b><span>Símbolo y nombre, separables. La firma principal en cabeceras y documentos.</span></div>
+          <div><b>Isologo</b><span>El zócalo base contiene el nombre: no se separan. Etiquetas, parches y sellos.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Imagotipo</h2>
+        <p>Versión principal de la marca. La horizontal es la firma por defecto (navbar, documentos oficiales, cabeceras); la vertical, para espacios cuadrados o composiciones centradas.</p>
+        <div class="grid">
+          <figure><div class="stage"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" /></div><figcaption><strong>Horizontal</strong>color</figcaption></figure>
+          <figure><div class="stage"><img src="imagotipo/imagotipo-horizontal-mono.svg" alt="" /></div><figcaption><strong>Horizontal</strong>mono</figcaption></figure>
+          <figure><div class="stage on-dark"><img src="imagotipo/imagotipo-horizontal-negativo.svg" alt="" /></div><figcaption><strong>Horizontal</strong>negativo</figcaption></figure>
+          <figure><div class="stage tall"><img src="imagotipo/imagotipo-vertical-color.svg" alt="" /></div><figcaption><strong>Vertical</strong>color</figcaption></figure>
+          <figure><div class="stage tall"><img src="imagotipo/imagotipo-vertical-mono.svg" alt="" /></div><figcaption><strong>Vertical</strong>mono</figcaption></figure>
+          <figure><div class="stage tall on-dark"><img src="imagotipo/imagotipo-vertical-negativo.svg" alt="" /></div><figcaption><strong>Vertical</strong>negativo</figcaption></figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Isologo</h2>
+        <p>El zócalo de soporte base se extiende horizontal o verticalmente hasta convertirse en el contenedor del nombre. El texto vive dentro de la forma, garantizando contraste sobre cualquier fondo o textura.</p>
+        <div class="grid">
+          <figure><div class="stage"><img src="isologo/isologo-horizontal-color.svg" alt="" /></div><figcaption><strong>Horizontal</strong>color</figcaption></figure>
+          <figure><div class="stage"><img src="isologo/isologo-horizontal-mono.svg" alt="" /></div><figcaption><strong>Horizontal</strong>mono (calado)</figcaption></figure>
+          <figure><div class="stage on-dark"><img src="isologo/isologo-horizontal-negativo.svg" alt="" /></div><figcaption><strong>Horizontal</strong>negativo</figcaption></figure>
+          <figure><div class="stage tall"><img src="isologo/isologo-vertical-color.svg" alt="" /></div><figcaption><strong>Vertical</strong>color</figcaption></figure>
+          <figure><div class="stage tall"><img src="isologo/isologo-vertical-mono.svg" alt="" /></div><figcaption><strong>Vertical</strong>mono (calado)</figcaption></figure>
+          <figure><div class="stage tall on-dark"><img src="isologo/isologo-vertical-negativo.svg" alt="" /></div><figcaption><strong>Vertical</strong>negativo</figcaption></figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Logotipo</h2>
+        <p>Fira Sans SemiBold con interletrado de −0,01 em para «XPress»; «PDF» en Fira Sans Medium en azul primario. En la versión vertical, «PDF» se espacia a 0,30 em como sufijo técnico.</p>
+        <div class="grid">
+          <figure><div class="stage"><img src="logotipo/logotipo-horizontal-color.svg" alt="" /></div><figcaption><strong>Horizontal</strong>color</figcaption></figure>
+          <figure><div class="stage"><img src="logotipo/logotipo-horizontal-mono.svg" alt="" /></div><figcaption><strong>Horizontal</strong>mono</figcaption></figure>
+          <figure><div class="stage on-dark"><img src="logotipo/logotipo-horizontal-negativo.svg" alt="" /></div><figcaption><strong>Horizontal</strong>negativo</figcaption></figure>
+          <figure><div class="stage"><img src="logotipo/logotipo-vertical-color.svg" alt="" /></div><figcaption><strong>Vertical</strong>color</figcaption></figure>
+          <figure><div class="stage"><img src="logotipo/logotipo-vertical-mono.svg" alt="" /></div><figcaption><strong>Vertical</strong>mono</figcaption></figure>
+          <figure><div class="stage on-dark"><img src="logotipo/logotipo-vertical-negativo.svg" alt="" /></div><figcaption><strong>Vertical</strong>negativo</figcaption></figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Isotipo</h2>
+        <p>El símbolo geométrico autónomo. Identifica a la plataforma en espacios reducidos donde el nombre completo no cabe o donde la interfaz ya provee el contexto.</p>
+        <div class="grid">
+          <figure><div class="stage"><img src="isotipo/isotipo-color.svg" alt="" style="height: 112px" /></div><figcaption><strong>Isotipo</strong>color</figcaption></figure>
+          <figure><div class="stage"><img src="isotipo/isotipo-mono.svg" alt="" style="height: 112px" /></div><figcaption><strong>Isotipo</strong>mono</figcaption></figure>
+          <figure><div class="stage on-dark"><img src="isotipo/isotipo-negativo.svg" alt="" style="height: 112px" /></div><figcaption><strong>Isotipo</strong>negativo</figcaption></figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Favicon, app y redes</h2>
+        <p>
+          <code>favicon.svg</code> responde de forma dinámica al esquema de color claro u oscuro del sistema. Los iconos de app (512 px) dejan el símbolo dentro de la zona segura;
+          los avatares (400 px) mantienen el símbolo centrado dentro del recorte circular estándar de plataformas web y perfiles corporativos.
+        </p>
+        <div class="grid">
+          <figure><div class="stage on-tint"><img src="app-icon/app-icon-claro.svg" alt="" style="height: 128px" /></div><figcaption><strong>App</strong>claro</figcaption></figure>
+          <figure><div class="stage on-tint"><img src="app-icon/app-icon-marca.svg" alt="" style="height: 128px" /></div><figcaption><strong>App</strong>marca</figcaption></figure>
+          <figure><div class="stage on-tint"><img src="app-icon/app-icon-oscuro.svg" alt="" style="height: 128px" /></div><figcaption><strong>App</strong>oscuro</figcaption></figure>
+          <figure><div class="stage on-tint"><img src="redes/avatar-claro.svg" alt="" style="height: 128px; border-radius: 50%" /></div><figcaption><strong>Avatar</strong>claro</figcaption></figure>
+          <figure><div class="stage on-tint"><img src="redes/avatar-marca.svg" alt="" style="height: 128px; border-radius: 50%" /></div><figcaption><strong>Avatar</strong>marca</figcaption></figure>
+          <figure><div class="stage on-tint"><img src="redes/avatar-oscuro.svg" alt="" style="height: 128px; border-radius: 50%" /></div><figcaption><strong>Avatar</strong>oscuro</figcaption></figure>
+        </div>
+        <div class="sizes" style="margin-top: 24px">
+          <span><img src="favicon/favicon.svg" alt="" width="16" height="16" />16 px</span>
+          <span><img src="favicon/favicon.svg" alt="" width="24" height="24" />24 px</span>
+          <span><img src="favicon/favicon-32-claro.svg" alt="" width="32" height="32" />32 claro</span>
+          <span><img src="favicon/favicon-32-marca.svg" alt="" width="32" height="32" />32 marca</span>
+          <span><img src="favicon/favicon-32-oscuro.svg" alt="" width="32" height="32" />32 oscuro</span>
+          <span><img src="favicon/favicon.svg" alt="" width="48" height="48" />48 px</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Zona de protección y tamaño mínimo</h2>
+        <p>
+          Alrededor de cualquier pieza se deja libre un margen perimetral mínimo equivalente al módulo del vector (16 de 56 unidades, ≈ 28,5 % de la altura del símbolo).
+          Tamaños mínimos para pantalla: isotipo 16 px, imagotipo horizontal 140 px de ancho, imagotipo vertical 96 px, isologo horizontal 112 px.
+        </p>
+        <div class="split">
+          <div><span class="clear"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="Zona de protección del imagotipo" /></span></div>
+          <div class="sizes">
+            <span><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" style="width: 140px" />140 px</span>
+            <span><img src="imagotipo/imagotipo-vertical-color.svg" alt="" style="width: 96px" />96 px</span>
+            <span><img src="isologo/isologo-horizontal-color.svg" alt="" style="width: 112px" />112 px</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Color</h2>
+        <p>Los valores cromáticos provienen de los tokens primitivos de AppUI (<code>Primitives.axaml</code>). El esmeralda es un acento de acción: ocupa únicamente el vector dinámico, nunca superficies.</p>
+        <div class="swatches">
+          <div class="swatch"><i style="background: #2563eb"></i><p><b>Azul 600</b>#2563EB · primary-600<br />Pliego y sufijo PDF (5,2 : 1)</p></div>
+          <div class="swatch"><i style="background: #1e3a8a"></i><p><b>Azul 900</b>#1E3A8A · primary-900<br />Zócalo y contenedor (10,4 : 1)</p></div>
+          <div class="swatch"><i style="background: #10b981"></i><p><b>Esmeralda 500</b>#10B981 · accent-500<br />Vector de conversión rápida</p></div>
+          <div class="swatch"><i style="background: #0f172a"></i><p><b>Slate 900</b>#0F172A · secondary-900<br />Nombre principal y modo oscuro</p></div>
+          <div class="swatch"><i style="background: #93c5fd"></i><p><b>Azul 300</b>#93C5FD · primary-300<br />Pliego en modo negativo</p></div>
+          <div class="swatch"><i style="background: #34d399"></i><p><b>Esmeralda 400</b>#34D399 · accent-400<br />Vector en modo negativo</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Tipografía</h2>
+        <p>
+          Fira Sans, la misma familia tipográfica de la aplicación en Avalonia UI, garantizando coherencia absoluta entre marca y software. En todos los SVG el texto está convertido
+          a trazos vectoriales independientes.
+        </p>
+        <p style="font-size: 40px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; margin: 0">XPress <span style="color: var(--brand); font-weight: 500">PDF</span></p>
+        <p style="font-family: 'Fira Code'; margin-top: 8px">Aa Bb Cc 0123456789 · Fira Sans 600 / 500 / 400 · Fira Code para datos</p>
+      </section>
+
+      <section>
+        <h2>Usos incorrectos</h2>
+        <p>La marca solo se reproduce desde los archivos normativos del kit. No se deforma, no se recolorea y no se altera su espaciado relativo.</p>
+        <div class="grid">
+          <figure class="bad"><div class="stage"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" style="transform: scaleX(1.4)" /></div><figcaption><strong>No deformar</strong>proporción fija</figcaption></figure>
+          <figure class="bad"><div class="stage"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" style="filter: hue-rotate(140deg)" /></div><figcaption><strong>No recolorear</strong>solo la paleta</figcaption></figure>
+          <figure class="bad"><div class="stage"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" style="transform: rotate(-12deg)" /></div><figcaption><strong>No rotar</strong>siempre horizontal</figcaption></figure>
+          <figure class="bad"><div class="stage on-dark"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" /></div><figcaption><strong>No usar color sobre oscuro</strong>usar negativo</figcaption></figure>
+          <figure class="bad"><div class="stage" style="background: linear-gradient(135deg, #f59e0b, #ec4899)"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" /></div><figcaption><strong>No sobre fondos saturados</strong>usar mono o isologo</figcaption></figure>
+          <figure class="bad"><div class="stage"><img src="imagotipo/imagotipo-horizontal-color.svg" alt="" style="filter: drop-shadow(4px 6px 4px rgb(0 0 0 / 0.45))" /></div><figcaption><strong>No agregar efectos</strong>sin sombras ni brillos</figcaption></figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Archivos del kit</h2>
+        <ul class="rules">
+          <li><code>imagotipo/</code> · <code>logotipo/</code> · <code>isologo/</code>: horizontal y vertical en <code>color</code>, <code>mono</code> y <code>negativo</code>.</li>
+          <li><code>isotipo/</code>: <code>color</code>, <code>mono</code> y <code>negativo</code>, retícula de 56 × 56.</li>
+          <li><code>favicon/favicon.svg</code> adaptable al tema; <code>favicon-32-*</code> con contenedor para pestañas y marcadores.</li>
+          <li><code>app-icon/</code> 512 × 512 y <code>redes/</code> 400 × 400, en <code>claro</code>, <code>marca</code> y <code>oscuro</code>.</li>
+          <li>Todos los SVG llevan <code>viewBox</code> ajustado, <code>&lt;title&gt;</code> accesible, texto en trazos y fondo transparente salvo los iconos con contenedor.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

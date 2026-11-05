@@ -28,25 +28,26 @@
                 <!-- Separador vertical sutil -->
                 <Border Width="1" Height="20" Background="{DynamicResource LineSubtleBrush}" Margin="0,0,4,0" />
 
-                <!-- Icono de Marca XPressPDF -->
-                <Border Width="36" Height="36"
-                        CornerRadius="{StaticResource RadiusMd}"
-                        Background="#2563EB">
-                    <display:ErpIcon Kind="Zap"
-                                     Size="20"
-                                     Foreground="#FFFFFF"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center" />
-                </Border>
+                <!-- Icono de Marca XPress PDF -->
+                <Image Width="36" Height="36"
+                       Source="/Assets/app-icon.png"
+                       VerticalAlignment="Center" />
 
                 <!-- Título y Versión -->
                 <StackPanel VerticalAlignment="Center" Spacing="0">
                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <TextBlock Text="XPressPDF"
-                                   FontFamily="{StaticResource FiraSansFontFamily}"
-                                   FontSize="{StaticResource FontSize400}"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource InkStrongBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Text="XPress"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize400}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource InkStrongBrush}" />
+                            <TextBlock Text="PDF"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize400}"
+                                       FontWeight="Medium"
+                                       Foreground="{DynamicResource ColorPrimary600Brush}" />
+                        </StackPanel>
                         <feedback:ErpBadge Text="CFDI 4.0"
                                            Tone="Blue"
                                            Size="Sm" />
