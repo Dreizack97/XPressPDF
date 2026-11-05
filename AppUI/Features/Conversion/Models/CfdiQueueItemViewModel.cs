@@ -101,8 +101,8 @@ public partial class CfdiQueueItemViewModel : ObservableObject
         {
             var c = await parser.ParseFileAsync(FilePath).ConfigureAwait(false);
 
-            TipoDeComprobante = c.TipoDeComprobante;
-            TipoDeComprobanteDescripcion = c.TipoDeComprobante switch
+            var tipo = c.TipoDeComprobante;
+            var tipoDesc = c.TipoDeComprobante switch
             {
                 "I" => "Ingreso",
                 "E" => "Egreso",
@@ -112,15 +112,14 @@ public partial class CfdiQueueItemViewModel : ObservableObject
                 _ => c.TipoDeComprobante
             };
 
-            EmisorRfc = c.Emisor?.Rfc;
-            EmisorNombre = c.Emisor?.Nombre;
-            ReceptorRfc = c.Receptor?.Rfc;
-            ReceptorNombre = c.Receptor?.Nombre;
+            var emisorRfc = c.Emisor?.Rfc;
+            var emisorNom = c.Emisor?.Nombre;
+            var receptorRfc = c.Receptor?.Rfc;
+            var receptorNom = c.Receptor?.Nombre;
 
-            Total = c.Total;
-            TotalFormatted = c.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("es-MX"));
-
-            Uuid = c.TimbreFiscalDigital?.UUID;
+            var total = c.Total;
+            var totalFmt = c.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("es-MX"));
+            var uuid = c.TimbreFiscalDigital?.UUID;
 
             // Detección de complementos
             var compls = new System.Collections.Generic.List<string>();
@@ -132,12 +131,29 @@ public partial class CfdiQueueItemViewModel : ObservableObject
             if (c.ImpuestosLocales != null) compls.Add("Imp. Locales");
             if (c.LeyendasFiscales != null) compls.Add("Leyendas");
 
-            ComplementosResumen = compls.Count > 0 ? string.Join(", ", compls) : "Estándar";
+            var complsResumen = compls.Count > 0 ? string.Join(", ", compls) : "Estándar";
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                TipoDeComprobante = tipo;
+                TipoDeComprobanteDescripcion = tipoDesc;
+                EmisorRfc = emisorRfc;
+                EmisorNombre = emisorNom;
+                ReceptorRfc = receptorRfc;
+                ReceptorNombre = receptorNom;
+                Total = total;
+                TotalFormatted = totalFmt;
+                Uuid = uuid;
+                ComplementosResumen = complsResumen;
+            }, Avalonia.Threading.DispatcherPriority.Background);
         }
         catch (Exception ex)
         {
-            ComplementosResumen = "Error de lectura";
-            ErrorMessage = ex.Message;
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                ComplementosResumen = "Error de lectura";
+                ErrorMessage = ex.Message;
+            }, Avalonia.Threading.DispatcherPriority.Background);
         }
     }
 

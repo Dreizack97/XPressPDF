@@ -25,6 +25,7 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
     private readonly IToastService _toastService;
     private readonly IProcessLauncherService _processLauncher;
 
+    private readonly SemaphoreSlim _preScanSemaphore = new(Math.Clamp(Environment.ProcessorCount * 2, 4, 16));
     private CancellationTokenSource? _conversionCts;
 
     [ObservableProperty]
@@ -47,8 +48,10 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
     public IReadOnlyList<string> TypeFilterOptions { get; } = ["Todos", "I", "E", "P", "N", "T"];
 
     public bool HasItems => Items.Count > 0;
+    public bool HasCompletedItems => CompletedCount > 0;
     public bool HasFilteredItems => FilteredItems.Count > 0;
     public bool HasNoFilterMatches => HasItems && FilteredItems.Count == 0;
+    public string QueueSummaryText => $"{FilteredItems.Count:N0} de {TotalCount:N0} visibles";
 
     // KPIs en Vivo
     [ObservableProperty]
@@ -98,37 +101,78 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
 
     public void AddXmlFiles(IEnumerable<string> filePaths)
     {
-        var addedCount = 0;
         var existingPaths = new HashSet<string>(Items.Select(i => i.FilePath), StringComparer.OrdinalIgnoreCase);
+        var newItems = new List<CfdiQueueItemViewModel>();
 
         foreach (var path in filePaths)
         {
-            if (!File.Exists(path) || existingPaths.Contains(path)) continue;
+            if (string.IsNullOrWhiteSpace(path) || existingPaths.Contains(path) || !File.Exists(path))
+                continue;
 
             var item = new CfdiQueueItemViewModel(path, _processLauncher);
             item.RequestInspect += OnItemRequestInspect;
             item.RequestRemove += OnItemRequestRemove;
 
-            Items.Add(item);
+            newItems.Add(item);
             existingPaths.Add(path);
-            addedCount++;
-
-            // Pre-lectura de metadatos fiscales en segundo plano
-            if (_preferencesService.Current.PreScanMetadata)
-            {
-                _ = item.PreScanFiscalMetadataAsync(_xmlParser).ContinueWith(_ =>
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => ApplyFilter());
-                });
-            }
         }
 
-        if (addedCount > 0)
+        if (newItems.Count == 0) return;
+
+        foreach (var item in newItems)
         {
-            UpdateKpis();
-            ApplyFilter();
-            _toastService.Info("Archivos Agregados", $"{addedCount} comprobante(s) agregado(s) a la cola.");
+            Items.Add(item);
         }
+
+        UpdateKpis();
+        ApplyFilter();
+        _toastService.Info("Archivos Agregados", $"{newItems.Count:N0} comprobante(s) agregado(s) a la cola.");
+
+        // Pre-lectura de metadatos fiscales en segundo plano con control de concurrencia
+        if (_preferencesService.Current.PreScanMetadata)
+        {
+            _ = Task.Run(async () =>
+            {
+                var tasks = newItems.Select(async item =>
+                {
+                    await _preScanSemaphore.WaitAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await item.PreScanFiscalMetadataAsync(_xmlParser).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        _preScanSemaphore.Release();
+                    }
+                });
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                // Si hay un filtro o búsqueda activa, actualizar una sola vez al terminar el lote
+                if (!string.IsNullOrWhiteSpace(SearchQuery) || SelectedTypeFilter != "Todos")
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(ApplyFilter);
+                }
+            });
+        }
+    }
+
+    public async Task AddXmlFilesAsync(IEnumerable<string> filePaths)
+    {
+        var pathsList = filePaths.ToList();
+        var existingPaths = new HashSet<string>(Items.Select(i => i.FilePath), StringComparer.OrdinalIgnoreCase);
+
+        var validPaths = await Task.Run(() =>
+        {
+            return pathsList.Where(p => !string.IsNullOrWhiteSpace(p) && !existingPaths.Contains(p) && File.Exists(p)).ToList();
+        }).ConfigureAwait(false);
+
+        if (validPaths.Count == 0) return;
+
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            AddXmlFiles(validPaths);
+        });
     }
 
     private void OnItemRequestInspect(CfdiQueueItemViewModel item)
@@ -183,9 +227,7 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
         }
 
         FilteredItems = new ObservableCollection<CfdiQueueItemViewModel>(query);
-        OnPropertyChanged(nameof(HasItems));
-        OnPropertyChanged(nameof(HasFilteredItems));
-        OnPropertyChanged(nameof(HasNoFilterMatches));
+        NotifyCollectionState();
     }
 
     public void UpdateKpis()
@@ -194,9 +236,16 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
         CompletedCount = Items.Count(i => i.Status == StatusTone.Success);
         PendingCount = Items.Count(i => i.Status == StatusTone.Neutral || i.Status == StatusTone.Info);
         ErrorCount = Items.Count(i => i.Status == StatusTone.Danger);
+        NotifyCollectionState();
+    }
+
+    private void NotifyCollectionState()
+    {
         OnPropertyChanged(nameof(HasItems));
+        OnPropertyChanged(nameof(HasCompletedItems));
         OnPropertyChanged(nameof(HasFilteredItems));
         OnPropertyChanged(nameof(HasNoFilterMatches));
+        OnPropertyChanged(nameof(QueueSummaryText));
     }
 
     [RelayCommand]
@@ -217,7 +266,7 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
         {
             try
             {
-                var files = Directory.GetFiles(folder, "*.xml", SearchOption.AllDirectories);
+                var files = await Task.Run(() => Directory.GetFiles(folder, "*.xml", SearchOption.AllDirectories));
                 AddXmlFiles(files);
             }
             catch (Exception ex)
@@ -261,7 +310,7 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
 
         IsConverting = true;
         ProgressPercentage = 0;
-        ProgressText = $"Iniciando lote de {pendingItems.Count} comprobantes...";
+        ProgressText = $"Iniciando lote de {pendingItems.Count:N0} comprobantes...";
         _conversionCts = new CancellationTokenSource();
 
         var prefs = _preferencesService.Current;
@@ -272,10 +321,16 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
             OverwriteExisting = prefs.OverwriteExisting
         };
 
+        var lastProgressReport = DateTime.MinValue;
         var progress = new Progress<CfdiConversionProgress>(p =>
         {
-            ProgressPercentage = p.TotalCount > 0 ? (double)p.ProcessedCount / p.TotalCount * 100 : 0;
-            ProgressText = $"Procesando {p.ProcessedCount} de {p.TotalCount}: {Path.GetFileName(p.CurrentFile)}";
+            var now = DateTime.UtcNow;
+            if (p.ProcessedCount == p.TotalCount || (now - lastProgressReport).TotalMilliseconds >= 50)
+            {
+                lastProgressReport = now;
+                ProgressPercentage = p.TotalCount > 0 ? (double)p.ProcessedCount / p.TotalCount * 100 : 0;
+                ProgressText = $"Procesando {p.ProcessedCount:N0} de {p.TotalCount:N0}: {Path.GetFileName(p.CurrentFile)}";
+            }
         });
 
         var filePaths = pendingItems.Select(i => i.FilePath).ToList();
@@ -314,11 +369,11 @@ public partial class ConversionWorkspaceViewModel : ObservableObject
 
             if (failCount == 0)
             {
-                _toastService.Success("Conversión Completada", $"{successCount} comprobantes convertidos exitosamente a PDF.");
+                _toastService.Success("Conversión Completada", $"{successCount:N0} comprobantes convertidos exitosamente a PDF.");
             }
             else
             {
-                _toastService.Warning("Conversión con Incidencias", $"{successCount} exitosos, {failCount} con errores.");
+                _toastService.Warning("Conversión con Incidencias", $"{successCount:N0} exitosos, {failCount:N0} con errores.");
             }
         }
         catch (OperationCanceledException)
