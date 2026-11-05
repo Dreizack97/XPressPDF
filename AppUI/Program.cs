@@ -14,8 +14,14 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithDeveloperTools()
-            .LogToTrace();
+    {
+        var builder = AppBuilder.Configure<App>()
+            .UsePlatformDetect();
+
+#if DEBUG
+        builder.WithDeveloperTools();
+#endif
+
+        return builder.LogToTrace();
+    }
 }

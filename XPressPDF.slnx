@@ -4,6 +4,9 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".gitmessage" />
+    <File Path="CHANGELOG.md" />
+    <File Path="CODE_OF_CONDUCT.md" />
+    <File Path="CONTRIBUTING.md" />
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
@@ -57,8 +60,14 @@
     <File Path="brand/redes/avatar-oscuro.svg" />
   </Folder>
   <Folder Name="/Elementos de la solución/scripts/">
+    <File Path="scripts/build-release.ps1" />
+    <File Path="scripts/build-release.sh" />
     <File Path="scripts/setup-gitflow.ps1" />
     <File Path="scripts/setup-gitflow.sh" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/workflows/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/release.yml" />
   </Folder>
   <Project Path="AppUI/AppUI.csproj" Id="3560d171-8e89-4ceb-bba3-f3251ec56abd" />
   <Project Path="Core/Core.csproj" />
