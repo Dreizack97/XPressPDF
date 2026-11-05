@@ -36,6 +36,10 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     public IReadOnlyList<string> LevelFilterOptions { get; } = ["Todos", "INFO", "WARN", "ERROR"];
 
+    public bool HasLogs => Logs.Count > 0;
+    public bool HasFilteredLogs => FilteredLogs.Count > 0;
+    public bool HasNoLogs => FilteredLogs.Count == 0;
+
     public DiagnosticsViewModel(IProcessLauncherService processLauncher, IToastService toastService)
     {
         _processLauncher = processLauncher;
@@ -124,6 +128,9 @@ public partial class DiagnosticsViewModel : ObservableObject
         }
 
         FilteredLogs = new ObservableCollection<LogEntry>(query);
+        OnPropertyChanged(nameof(HasLogs));
+        OnPropertyChanged(nameof(HasFilteredLogs));
+        OnPropertyChanged(nameof(HasNoLogs));
     }
 
     [RelayCommand]
