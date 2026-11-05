@@ -8,7 +8,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 /// <summary>
-/// Componente de certificación fiscal: código QR de verificación, datos del Timbre Fiscal Digital, sellos y cadena original.
+/// Componente de certificación fiscal: código QR de verificación responsivo, datos del Timbre Fiscal Digital, sellos y cadena original.
 /// </summary>
 public class TfdFooterComponent : IComponent
 {
@@ -28,77 +28,66 @@ public class TfdFooterComponent : IComponent
 
         container.PaddingTop(6).ShowEntire().Border(0.75F, CfdiPdfTheme.BorderColor).CornerRadius(3).Padding(4).Row(row =>
         {
-            row.Spacing(6);
+            row.Spacing(8);
 
-            // Código QR (20% del ancho)
-            row.RelativeItem(20).Column(col =>
-            {
-                col.Item().Image(qrBytes).FitArea();
-            });
+            // Código QR responsivo ajustado dinámicamente a la altura de los metadatos
+            row.RelativeItem(24).AlignMiddle().Image(qrBytes).FitArea();
 
-            // Metadatos del Timbre y Criptografía (80% del ancho)
-            row.RelativeItem(80).Column(col =>
+            // Metadatos del Timbre y Criptografía (76% del ancho)
+            row.RelativeItem(76).Column(col =>
             {
                 col.Spacing(2);
 
-                // Fila 1: Folio Fiscal, No Certificado SAT, Fecha de Certificación
-                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(3).PaddingVertical(1).Row(r =>
+                // Fila 1: Folio Fiscal (UUID), No. Certificado SAT, Fecha y Hora Certificación
+                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(4).PaddingVertical(1.5F).Row(r =>
                 {
-                    r.Spacing(5);
-                    r.RelativeItem().Text("Folio Fiscal (UUID)").Style(CfdiPdfTheme.LabelStyle);
-                    r.RelativeItem().Text("No. Certificado SAT").Style(CfdiPdfTheme.LabelStyle);
-                    r.RelativeItem().Text("Fecha y Hora Certificación").Style(CfdiPdfTheme.LabelStyle);
+                    r.Spacing(6);
+                    r.RelativeItem(45).Text("Folio Fiscal (UUID)").Style(CfdiPdfTheme.LabelStyle);
+                    r.RelativeItem(28).Text("No. Certificado SAT").Style(CfdiPdfTheme.LabelStyle);
+                    r.RelativeItem(27).Text("Fecha y Hora Certificación").Style(CfdiPdfTheme.LabelStyle);
                 });
 
-                col.Item().PaddingHorizontal(3).Row(r =>
+                col.Item().PaddingHorizontal(4).Row(r =>
                 {
-                    r.Spacing(5);
-                    r.RelativeItem().Text(tfd?.UUID).Style(CfdiPdfTheme.SmallValueStyle);
-                    r.RelativeItem().Text(tfd?.NoCertificadoSAT).Style(CfdiPdfTheme.SmallValueStyle);
-                    r.RelativeItem().Text(tfd?.FechaTimbrado.ToString("yyyy-MM-ddTHH:mm:ss")).Style(CfdiPdfTheme.SmallValueStyle);
+                    r.Spacing(6);
+                    r.RelativeItem(45).Text(tfd?.UUID).Style(CfdiPdfTheme.SmallValueStyle);
+                    r.RelativeItem(28).Text(tfd?.NoCertificadoSAT).Style(CfdiPdfTheme.SmallValueStyle);
+                    r.RelativeItem(27).Text(tfd?.FechaTimbrado.ToString("yyyy-MM-ddTHH:mm:ss")).Style(CfdiPdfTheme.SmallValueStyle);
                 });
 
-                // Fila 2: RFC Proveedor y Leyenda
-                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(3).PaddingVertical(1).Row(r =>
+                // Fila 2: RFC Proveedor de Certificación y Leyenda Fiscal
+                col.Item().PaddingHorizontal(4).Text(t =>
                 {
-                    r.Spacing(5);
-                    r.RelativeItem().Text("RFC Prov. Certificación:").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span("RFC Prov. Certificación: ").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span(tfd?.RfcProvCertif ?? "N/A").Style(CfdiPdfTheme.SmallValueStyle);
+
                     if (!string.IsNullOrWhiteSpace(tfd?.Leyenda))
                     {
-                        r.RelativeItem(2).Text("Leyenda Fiscal:").Style(CfdiPdfTheme.LabelStyle);
+                        t.Span("  |  Leyenda Fiscal: ").Style(CfdiPdfTheme.LabelStyle);
+                        t.Span(tfd.Leyenda).Style(CfdiPdfTheme.SmallValueStyle);
                     }
                 });
 
-                col.Item().PaddingHorizontal(3).Row(r =>
+                // Fila 3: Sellos Digitales del SAT y del CFDI
+                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(4).PaddingVertical(1.5F).Row(r =>
                 {
-                    r.Spacing(5);
-                    r.RelativeItem().Text(tfd?.RfcProvCertif).Style(CfdiPdfTheme.SmallValueStyle);
-                    if (!string.IsNullOrWhiteSpace(tfd?.Leyenda))
-                    {
-                        r.RelativeItem(2).Text(tfd.Leyenda).Style(CfdiPdfTheme.SmallValueStyle);
-                    }
-                });
-
-                // Sellos Digitales
-                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(3).PaddingVertical(1).Row(r =>
-                {
-                    r.Spacing(5);
+                    r.Spacing(6);
                     r.RelativeItem().Text("Sello Digital del SAT").Style(CfdiPdfTheme.LabelStyle);
                     r.RelativeItem().Text("Sello Digital del CFDI").Style(CfdiPdfTheme.LabelStyle);
                 });
 
-                col.Item().PaddingHorizontal(3).Row(r =>
+                col.Item().PaddingHorizontal(4).Row(r =>
                 {
-                    r.Spacing(5);
+                    r.Spacing(6);
                     r.RelativeItem().Text(tfd?.SelloSAT).Style(CfdiPdfTheme.SealStyle).Justify();
                     r.RelativeItem().Text(tfd?.SelloCFD).Style(CfdiPdfTheme.SealStyle).Justify();
                 });
 
-                // Cadena Original del Complemento de Certificación
-                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(3).PaddingVertical(1)
+                // Fila 4: Cadena Original del Timbre Fiscal Digital del SAT
+                col.Item().Background(CfdiPdfTheme.LightBackground).CornerRadius(2).PaddingHorizontal(4).PaddingVertical(1.5F)
                     .Text("Cadena Original del Timbre Fiscal Digital del SAT").Style(CfdiPdfTheme.LabelStyle);
 
-                col.Item().PaddingHorizontal(3)
+                col.Item().PaddingHorizontal(4)
                     .Text(originalString).Style(CfdiPdfTheme.SealStyle).Justify();
             });
         });
