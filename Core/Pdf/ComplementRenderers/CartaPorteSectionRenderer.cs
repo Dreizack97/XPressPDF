@@ -6,6 +6,7 @@ using Core.Models.Complements.CartaPorte31;
 using Core.Pdf.Styling;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Linq;
 
 /// <summary>
 /// Renderizador modular para la sección del complemento de Carta Porte 3.1.
@@ -28,16 +29,20 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
             col.Item().Background(CfdiPdfTheme.HeaderBackground).Padding(2.5F)
                 .Text("Complemento Carta Porte 3.1").Style(CfdiPdfTheme.SectionTitleStyle).AlignCenter();
 
-            col.Item().Padding(3).Row(row =>
+            col.Item().Padding(4).Row(row =>
             {
+                row.Spacing(12);
+
                 row.RelativeItem(2).Column(c =>
                 {
+                    c.Spacing(2);
                     c.Item().Text(t => { t.Span("IdCCP: ").Style(CfdiPdfTheme.LabelStyle); t.Span(cp.IdCCP).Style(CfdiPdfTheme.ValueBoldStyle); });
                     c.Item().Text(t => { t.Span("Transp. Internacional: ").Style(CfdiPdfTheme.LabelStyle); t.Span(cp.TranspInternac).Style(CfdiPdfTheme.ValueStyle); });
                 });
 
                 row.RelativeItem().Column(c =>
                 {
+                    c.Spacing(2);
                     if (cp.TotalDistRecSpecified)
                         c.Item().Text(t => { t.Span("Distancia Recorrida: ").Style(CfdiPdfTheme.LabelStyle); t.Span($"{cp.TotalDistRec:N2} km").Style(CfdiPdfTheme.ValueStyle); });
                     if (cp.Mercancias != null)
@@ -48,6 +53,9 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
             // 2. Ubicaciones (Origen / Destino)
             if (cp.Ubicaciones.Count > 0)
             {
+                col.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(4).PaddingVertical(1.5F)
+                    .Text("Ubicaciones de Origen y Destino").Style(CfdiPdfTheme.LabelStyle);
+
                 col.Item().Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
@@ -83,6 +91,9 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
             // 3. Mercancías
             if (cp.Mercancias?.Mercancia.Count > 0)
             {
+                col.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(4).PaddingVertical(1.5F)
+                    .Text("Bienes y Mercancías Transportadas").Style(CfdiPdfTheme.LabelStyle);
+
                 col.Item().Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
@@ -121,10 +132,16 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
             if (cp.Mercancias?.Autotransporte != null)
             {
                 CartaPorteAutotransporte auto = cp.Mercancias.Autotransporte;
-                col.Item().Padding(3).Row(row =>
+                col.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(4).PaddingVertical(1.5F)
+                    .Text("Identificación del Autotransporte y Seguros").Style(CfdiPdfTheme.LabelStyle);
+
+                col.Item().Padding(4).Row(row =>
                 {
+                    row.Spacing(12);
+
                     row.RelativeItem().Column(c =>
                     {
+                        c.Spacing(2);
                         c.Item().Text(t => { t.Span("Permiso SCT: ").Style(CfdiPdfTheme.LabelStyle); t.Span($"{auto.PermSCT} - {auto.NumPermisoSCT}").Style(CfdiPdfTheme.ValueStyle); });
                         if (auto.IdentificacionVehicular != null)
                             c.Item().Text(t => { t.Span("Vehículo: ").Style(CfdiPdfTheme.LabelStyle); t.Span($"Config: {auto.IdentificacionVehicular.ConfigVehicular} | Placas: {auto.IdentificacionVehicular.PlacaVM} | Modelo: {auto.IdentificacionVehicular.AnioModeloVM}").Style(CfdiPdfTheme.ValueStyle); });
@@ -132,6 +149,7 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
 
                     row.RelativeItem().Column(c =>
                     {
+                        c.Spacing(2);
                         if (auto.Seguros != null)
                             c.Item().Text(t => { t.Span("Aseguradora Resp. Civil: ").Style(CfdiPdfTheme.LabelStyle); t.Span($"{auto.Seguros.AseguraRespCivil} (Póliza: {auto.Seguros.PolizaRespCivil})").Style(CfdiPdfTheme.ValueStyle); });
                         if (auto.Remolques.Count > 0)
@@ -143,9 +161,12 @@ public class CartaPorteSectionRenderer : ICfdiComplementSectionRenderer
             // 5. Figura Transporte (Operadores)
             if (cp.FiguraTransporte.Count > 0)
             {
-                col.Item().Padding(3).Column(figCol =>
+                col.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(4).PaddingVertical(1.5F)
+                    .Text("Operadores / Figuras de Transporte").Style(CfdiPdfTheme.LabelStyle);
+
+                col.Item().Padding(4).Column(figCol =>
                 {
-                    figCol.Item().Text("Operadores / Figuras de Transporte").Style(CfdiPdfTheme.LabelStyle);
+                    figCol.Spacing(2);
                     foreach (CartaPorteTiposFigura fig in cp.FiguraTransporte)
                     {
                         figCol.Item().Text(t =>
