@@ -1,6 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.Styling;
+using Avalonia.Threading;
 
 namespace AppUI.Core.Services;
 
@@ -34,6 +35,12 @@ public sealed class ThemeService : IThemeService
 
     public void SetTheme(ThemeVariant themeVariant)
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => SetTheme(themeVariant));
+            return;
+        }
+
         if (Application.Current != null && Application.Current.RequestedThemeVariant != themeVariant)
         {
             Application.Current.RequestedThemeVariant = themeVariant;

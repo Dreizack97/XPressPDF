@@ -19,7 +19,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddAppUiServices();
@@ -28,7 +28,6 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var mainVm = Services.GetRequiredService<MainWindowViewModel>();
-            await mainVm.InitializeAsync();
 
             var mainWindow = new MainWindow
             {
@@ -43,6 +42,9 @@ public partial class App : Application
             mainWindow.AttachServices(storageService, themeService, navService, toastService);
 
             desktop.MainWindow = mainWindow;
+
+            // Inicialización de preferencias y tema en segundo plano sin retrasar el montaje de la ventana
+            _ = mainVm.InitializeAsync();
         }
 
         base.OnFrameworkInitializationCompleted();
