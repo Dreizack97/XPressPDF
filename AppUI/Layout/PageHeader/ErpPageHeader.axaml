@@ -9,7 +9,7 @@
                         BorderThickness="0,0,0,1"
                         Padding="0,0,0,16"
                         Margin="0,0,0,16">
-                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20" VerticalAlignment="Center">
                         <!-- Título y Subtítulo a la izquierda -->
                         <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
                             <!-- Categoría superior en overline -->
@@ -25,7 +25,8 @@
                                        FontFamily="{StaticResource FiraSansFontFamily}"
                                        FontSize="{StaticResource FontSize600}"
                                        FontWeight="Bold"
-                                       Foreground="{DynamicResource InkStrongBrush}" />
+                                       Foreground="{DynamicResource InkStrongBrush}"
+                                       TextWrapping="Wrap" />
 
                             <!-- Subtítulo / descripción -->
                             <TextBlock Text="{TemplateBinding Subtitle}"
@@ -33,6 +34,7 @@
                                        FontSize="{StaticResource FontSize300}"
                                        FontWeight="Normal"
                                        Foreground="{DynamicResource InkSecondaryBrush}"
+                                       TextWrapping="Wrap"
                                        IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         </StackPanel>
 
