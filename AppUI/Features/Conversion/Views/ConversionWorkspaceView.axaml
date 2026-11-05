@@ -1,0 +1,591 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AppUI.Features.Conversion.ViewModels"
+             xmlns:models="using:AppUI.Features.Conversion.Models"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:containers="using:AppUI.Shared.Controls.Containers"
+             xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             xmlns:overlays="using:AppUI.Shared.Controls.Overlays"
+             xmlns:pageHeader="using:AppUI.Layout.PageHeader"
+             xmlns:converters="using:AppUI.Shared.Converters"
+             x:Class="AppUI.Features.Conversion.Views.ConversionWorkspaceView"
+             x:DataType="vm:ConversionWorkspaceViewModel"
+             x:Name="Root">
+
+    <UserControl.Resources>
+        <converters:FileSizeFormatterConverter x:Key="FileSizeConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Distribución de Pantalla Completa: Encabezado, KPIs, Zona Central (*) y Progreso Inferior -->
+        <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24,18" RowSpacing="14">
+
+            <!-- 1. Encabezado de Página con Categoría y Acciones Primarias -->
+            <pageHeader:ErpPageHeader Grid.Row="0"
+                                      Category="OPERACIONES CFDI 4.0"
+                                      Title="Conversor de CFDI 4.0 a PDF"
+                                      Subtitle="Procesa comprobantes fiscales individuales o lotes masivos con generación vectorial de alta velocidad.">
+                <pageHeader:ErpPageHeader.PrimaryActions>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <actions:ErpButton Variant="Secondary"
+                                           Size="Md"
+                                           LeadingIcon="FilePlus"
+                                           Content="Agregar XML"
+                                           Command="{Binding PickFilesCommand}"
+                                           IsEnabled="{Binding !IsConverting}" />
+                        <actions:ErpButton Variant="Secondary"
+                                           Size="Md"
+                                           LeadingIcon="FolderOpen"
+                                           Content="Agregar Carpeta"
+                                           Command="{Binding PickFolderCommand}"
+                                           IsEnabled="{Binding !IsConverting}" />
+                        <actions:ErpButton Variant="Primary"
+                                           Size="Md"
+                                           LeadingIcon="Zap"
+                                           Content="Convertir a PDF"
+                                           Command="{Binding ConvertAllCommand}"
+                                           IsLoading="{Binding IsConverting}" />
+                    </StackPanel>
+                </pageHeader:ErpPageHeader.PrimaryActions>
+            </pageHeader:ErpPageHeader>
+
+            <!-- 2. Fila de KPIs Compactos en Tiempo Real -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+                <containers:ErpStatCard Grid.Column="0"
+                                        Label="EN COLA"
+                                        Value="{Binding TotalCount, StringFormat='{}{0:N0}'}"
+                                        Description="Total de archivos cargados"
+                                        IconKind="Files"
+                                        Tone="Blue" />
+                <containers:ErpStatCard Grid.Column="1"
+                                        Label="COMPLETADOS"
+                                        Value="{Binding CompletedCount, StringFormat='{}{0:N0}'}"
+                                        Description="PDFs generados con éxito"
+                                        IconKind="CircleCheck"
+                                        Tone="Green" />
+                <containers:ErpStatCard Grid.Column="2"
+                                        Label="PENDIENTES"
+                                        Value="{Binding PendingCount, StringFormat='{}{0:N0}'}"
+                                        Description="Archivos por procesar"
+                                        IconKind="Clock"
+                                        Tone="Yellow" />
+                <containers:ErpStatCard Grid.Column="3"
+                                        Label="INCIDENCIAS"
+                                        Value="{Binding ErrorCount, StringFormat='{}{0:N0}'}"
+                                        Description="Archivos con error de esquema"
+                                        IconKind="CircleAlert"
+                                        Tone="Red" />
+            </Grid>
+
+            <!-- 3. Tarjeta Principal Unificada: Zona de Carga / Comprobantes en Cola (Ocupa todo el alto *) -->
+            <containers:ErpSectionCard Grid.Row="2"
+                                       Title="Comprobantes en Cola"
+                                       Subtitle="Arrastra archivos XML aquí o inspecciona y filtra los comprobantes en proceso."
+                                       IconKind="List"
+                                       IsFlush="True">
+                <containers:ErpSectionCard.HeaderActions>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <actions:ErpButton Variant="Soft"
+                                           Size="Sm"
+                                           LeadingIcon="Check"
+                                           Content="Limpiar Completados"
+                                           Command="{Binding ClearCompletedCommand}"
+                                           IsEnabled="{Binding HasCompletedItems}" />
+                        <actions:ErpButton Variant="SoftDanger"
+                                           Size="Sm"
+                                           LeadingIcon="Trash2"
+                                           Content="Vaciar Cola"
+                                           Command="{Binding ClearAllCommand}"
+                                           IsEnabled="{Binding HasItems}" />
+                    </StackPanel>
+                </containers:ErpSectionCard.HeaderActions>
+
+                <Grid>
+                    <DockPanel LastChildFill="True">
+                        <!-- Barra de Herramientas y Filtros (Top) -->
+                        <Border DockPanel.Dock="Top"
+                                BorderBrush="{DynamicResource LineSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,10"
+                                Background="{DynamicResource Surface2Brush}">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                                <!-- Buscador Rápido -->
+                                <forms:ErpSearchInput Grid.Column="0"
+                                                      Text="{Binding SearchQuery, Mode=TwoWay}"
+                                                      PlaceholderText="Buscar por RFC, UUID, nombre o archivo..." />
+
+                                <!-- Selector de Filtro de Estado -->
+                                <ComboBox Grid.Column="1"
+                                          Height="{StaticResource ControlHeightMd}"
+                                          CornerRadius="{StaticResource FieldRadius}"
+                                          ItemsSource="{Binding StatusFilterOptions}"
+                                          SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"
+                                          MinWidth="140"
+                                          VerticalAlignment="Center" />
+
+                                <!-- Selector de Tipo CFDI -->
+                                <ComboBox Grid.Column="2"
+                                          Height="{StaticResource ControlHeightMd}"
+                                          CornerRadius="{StaticResource FieldRadius}"
+                                          ItemsSource="{Binding TypeFilterOptions}"
+                                          SelectedItem="{Binding SelectedTypeFilter, Mode=TwoWay}"
+                                          MinWidth="100"
+                                          VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Pie de Arrastre Rápido (Bottom - Visible si hay elementos en cola) -->
+                        <Border DockPanel.Dock="Bottom"
+                                BorderBrush="{DynamicResource LineSubtleBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="16,8"
+                                Background="{DynamicResource Surface2Brush}"
+                                IsVisible="{Binding HasItems}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <display:ErpIcon Kind="Upload"
+                                                     Size="14"
+                                                     Foreground="{DynamicResource InkMutedBrush}"
+                                                     VerticalAlignment="Center" />
+                                    <TextBlock Text="Arrastra más archivos XML o carpetas aquí para agregarlos al lote"
+                                               FontFamily="{StaticResource FiraSansFontFamily}"
+                                               FontSize="{StaticResource FontSize200}"
+                                               Foreground="{DynamicResource InkSecondaryBrush}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding QueueSummaryText}"
+                                           FontFamily="{StaticResource FiraCodeFontFamily}"
+                                           FontSize="{StaticResource FontSize200}"
+                                           FontWeight="Medium"
+                                           Foreground="{DynamicResource InkSecondaryBrush}"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- CONTENIDO CENTRAL UNIFICADO (Último hijo del DockPanel -> Llena el 100% del espacio) -->
+                        <Grid>
+                            <!-- CASO A: Cola Totalmente Vacía -> Zona de Carga Centrada y Uniforme -->
+                            <Border IsVisible="{Binding !HasItems}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Padding="32">
+                                <Border Background="{DynamicResource SurfaceFieldBrush}"
+                                        BorderBrush="{DynamicResource LineSubtleBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusLg}"
+                                        Padding="48,40"
+                                        MaxWidth="620"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                    <StackPanel Spacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <!-- Icono central suave -->
+                                        <Border Width="56" Height="56"
+                                                CornerRadius="{StaticResource RadiusFull}"
+                                                Background="{DynamicResource Surface2Brush}"
+                                                BorderBrush="{DynamicResource LineDefaultBrush}"
+                                                BorderThickness="1"
+                                                HorizontalAlignment="Center">
+                                            <display:ErpIcon Kind="Upload"
+                                                             Size="26"
+                                                             Foreground="{DynamicResource InkSecondaryBrush}"
+                                                             HorizontalAlignment="Center"
+                                                             VerticalAlignment="Center" />
+                                        </Border>
+
+                                        <!-- Textos informativos centrados -->
+                                        <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                            <TextBlock Text="Arrastra y suelta tus archivos CFDI 4.0 (.xml) aquí"
+                                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                                       FontSize="{StaticResource FontSize400}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource InkStrongBrush}"
+                                                       TextAlignment="Center" />
+                                            <TextBlock Text="o haz clic en los botones para seleccionar archivos o carpetas completas"
+                                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                                       FontSize="{StaticResource FontSize300}"
+                                                       Foreground="{DynamicResource InkSecondaryBrush}"
+                                                       TextAlignment="Center" />
+                                        </StackPanel>
+
+                                        <!-- Botones de Selección Centrados -->
+                                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,6,0,0">
+                                            <actions:ErpButton Variant="Primary"
+                                                               Size="Md"
+                                                               LeadingIcon="FilePlus"
+                                                               Content="Seleccionar archivos XML"
+                                                               Command="{Binding PickFilesCommand}" />
+                                            <actions:ErpButton Variant="Secondary"
+                                                               Size="Md"
+                                                               LeadingIcon="FolderOpen"
+                                                               Content="Seleccionar carpeta"
+                                                               Command="{Binding PickFolderCommand}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Border>
+
+                            <!-- CASO B: Hay archivos en cola pero los filtros no coinciden -->
+                            <feedback:ErpEmptyState IsVisible="{Binding HasNoFilterMatches}"
+                                                    IconKind="Search"
+                                                    Title="No se encontraron comprobantes"
+                                                    Description="Ningún comprobante coincide con el término de búsqueda o filtros seleccionados.">
+                                <actions:ErpButton Variant="Secondary"
+                                                   Size="Sm"
+                                                   LeadingIcon="RefreshCw"
+                                                   Content="Restablecer Filtros"
+                                                   Click="OnResetFiltersClick" />
+                            </feedback:ErpEmptyState>
+
+                            <!-- CASO C: Tabla con Comprobantes Visibles (Virtualizada) -->
+                            <Grid RowDefinitions="Auto,*"
+                                  IsVisible="{Binding HasFilteredItems}">
+                                <!-- Cabecera Fija de Columnas -->
+                                <Border Grid.Row="0"
+                                        Background="{DynamicResource Surface2Brush}"
+                                        BorderBrush="{DynamicResource LineSubtleBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="18,8">
+                                    <Grid ColumnDefinitions="70,*,140,140,140" ColumnSpacing="16" VerticalAlignment="Center">
+                                        <TextBlock Grid.Column="0" Text="TIPO"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize100}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkMutedBrush}"
+                                                   TextAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="ARCHIVO Y DATOS FISCALES"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize100}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkMutedBrush}" />
+                                        <TextBlock Grid.Column="2" Text="IMPORTE TOTAL"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize100}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkMutedBrush}"
+                                                   TextAlignment="Right" />
+                                        <TextBlock Grid.Column="3" Text="ESTADO"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize100}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkMutedBrush}"
+                                                   TextAlignment="Center" />
+                                        <TextBlock Grid.Column="4" Text="ACCIONES"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize100}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkMutedBrush}"
+                                                   TextAlignment="Right" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- Listado Virtualizado con Scroll Propio -->
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding FilteredItems}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="models:CfdiQueueItemViewModel">
+                                                <Border BorderBrush="{DynamicResource LineSubtleBrush}"
+                                                        BorderThickness="0,0,0,1"
+                                                        Padding="18,12"
+                                                        Background="{DynamicResource Surface1Brush}">
+                                                    <Border.Styles>
+                                                        <Style Selector="Border:pointerover">
+                                                            <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+                                                        </Style>
+                                                    </Border.Styles>
+
+                                                    <Grid ColumnDefinitions="70,*,140,140,140" ColumnSpacing="16" VerticalAlignment="Center">
+                                                        <!-- 1. Tipo de Comprobante Badge -->
+                                                        <feedback:ErpBadge Grid.Column="0"
+                                                                           Text="{Binding TipoDeComprobante, FallbackValue='CFDI'}"
+                                                                           Tone="Blue"
+                                                                           Size="Sm"
+                                                                           HorizontalAlignment="Center"
+                                                                           VerticalAlignment="Center" />
+
+                                                        <!-- 2. Información del Archivo y Emisor/Receptor -->
+                                                        <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                                <TextBlock Text="{Binding FileName}"
+                                                                           FontFamily="{StaticResource FiraSansFontFamily}"
+                                                                           FontSize="{StaticResource FontSize300}"
+                                                                           FontWeight="SemiBold"
+                                                                           Foreground="{DynamicResource InkStrongBrush}"
+                                                                           VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding FileSizeBytes, Converter={StaticResource FileSizeConverter}}"
+                                                                           FontFamily="{StaticResource FiraCodeFontFamily}"
+                                                                           FontSize="{StaticResource FontSize100}"
+                                                                           Foreground="{DynamicResource InkMutedBrush}"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+
+                                                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                                                <!-- Emisor -> Receptor -->
+                                                                <TextBlock FontFamily="{StaticResource FiraSansFontFamily}"
+                                                                           FontSize="{StaticResource FontSize200}"
+                                                                           Foreground="{DynamicResource InkSecondaryBrush}">
+                                                                    <Run Text="{Binding EmisorRfc, FallbackValue='Emisor'}" FontWeight="Medium" />
+                                                                    <Run Text=" ➔ " Foreground="{DynamicResource InkMutedBrush}" />
+                                                                    <Run Text="{Binding ReceptorRfc, FallbackValue='Receptor'}" FontWeight="Medium" />
+                                                                </TextBlock>
+
+                                                                <!-- Complementos -->
+                                                                <TextBlock Text="{Binding ComplementosResumen, FallbackValue='Estándar'}"
+                                                                           FontFamily="{StaticResource FiraSansFontFamily}"
+                                                                           FontSize="{StaticResource FontSize200}"
+                                                                           Foreground="{DynamicResource InkMutedBrush}"
+                                                                           IsVisible="{Binding ComplementosResumen, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                            </StackPanel>
+
+                                                            <!-- UUID Fiscal -->
+                                                            <TextBlock Text="{Binding Uuid, FallbackValue='Sin timbrar o analizando...'}"
+                                                                       FontFamily="{StaticResource FiraCodeFontFamily}"
+                                                                       FontSize="{StaticResource FontSize100}"
+                                                                       Foreground="{DynamicResource InkMutedBrush}"
+                                                                       TextTrimming="CharacterEllipsis"
+                                                                       IsVisible="{Binding Uuid, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                        </StackPanel>
+
+                                                        <!-- 3. Importe Total en Fira Code -->
+                                                        <TextBlock Grid.Column="2"
+                                                                   Text="{Binding TotalFormatted, FallbackValue='-'}"
+                                                                   FontFamily="{StaticResource FiraCodeFontFamily}"
+                                                                   FontSize="{StaticResource FontSize300}"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource InkStrongBrush}"
+                                                                   TextAlignment="Right"
+                                                                   VerticalAlignment="Center" />
+
+                                                        <!-- 4. Insignia de Estado -->
+                                                        <feedback:ErpStatusBadge Grid.Column="3"
+                                                                                 Status="{Binding Status}"
+                                                                                 Text="{Binding StatusText}"
+                                                                                 Size="Sm"
+                                                                                 HorizontalAlignment="Center"
+                                                                                 VerticalAlignment="Center" />
+
+                                                        <!-- 5. Acciones por Fila -->
+                                                        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                            <actions:ErpButton Variant="Ghost"
+                                                                               Size="Sm"
+                                                                               IsIconOnly="True"
+                                                                               LeadingIcon="Eye"
+                                                                               Command="{Binding InspectCommand}"
+                                                                               ToolTip.Tip="Inspeccionar datos fiscales o error" />
+
+                                                            <actions:ErpButton Variant="Ghost"
+                                                                               Size="Sm"
+                                                                               IsIconOnly="True"
+                                                                               LeadingIcon="Download"
+                                                                               Command="{Binding OpenPdfCommand}"
+                                                                               IsVisible="{Binding OutputPdfPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                               ToolTip.Tip="Abrir archivo PDF generado" />
+
+                                                            <actions:ErpButton Variant="Ghost"
+                                                                               Size="Sm"
+                                                                               IsIconOnly="True"
+                                                                               LeadingIcon="Folder"
+                                                                               Command="{Binding OpenFolderCommand}"
+                                                                               ToolTip.Tip="Mostrar en explorador de archivos" />
+
+                                                            <actions:ErpButton Variant="Ghost"
+                                                                               Size="Sm"
+                                                                               IsIconOnly="True"
+                                                                               LeadingIcon="Trash2"
+                                                                               Command="{Binding RemoveCommand}"
+                                                                               ToolTip.Tip="Quitar de la cola" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </DockPanel>
+
+                    <!-- Overlay visual al arrastrar archivos sobre la tarjeta (IsHitTestVisible=False para evitar parpadeo) -->
+                    <Border Background="#F02563EB"
+                            Opacity="0.95"
+                            CornerRadius="{StaticResource CardRadius}"
+                            IsHitTestVisible="False"
+                            IsVisible="{Binding IsDragOverActive, ElementName=Root}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                            <display:ErpIcon Kind="Upload" Size="48" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+                            <TextBlock Text="¡Suelta los archivos aquí!"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize600}"
+                                       FontWeight="Bold"
+                                       Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="Se agregarán automáticamente a la cola de procesamiento"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize300}"
+                                       Foreground="#E0E7FF"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </containers:ErpSectionCard>
+
+            <!-- 4. Barra de Progreso de Conversión Masiva (Ubicada debajo de la Zona de Carga) -->
+            <containers:ErpSectionCard Grid.Row="3"
+                                       Title="Progreso del Lote en Ejecución"
+                                       IconKind="Zap"
+                                       IsVisible="{Binding IsConverting}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+                    <feedback:ErpProgressBar Grid.Column="0"
+                                             Value="{Binding ProgressPercentage}"
+                                             Label="{Binding ProgressText}"
+                                             Tone="Blue"
+                                             VerticalAlignment="Center" />
+                    <actions:ErpButton Grid.Column="1"
+                                       Variant="Danger"
+                                       Size="Sm"
+                                       LeadingIcon="X"
+                                       Content="Cancelar Conversión"
+                                       Command="{Binding CancelConversionCommand}"
+                                       VerticalAlignment="Center" />
+                </Grid>
+            </containers:ErpSectionCard>
+        </Grid>
+
+        <!-- 5. Inspector Fiscal Lateral (ErpDrawer) -->
+        <overlays:ErpDrawer Title="Detalle del Comprobante"
+                            IsOpen="{Binding IsInspectorOpen, Mode=TwoWay}">
+            <overlays:ErpDrawer.DrawerContent>
+                <StackPanel Spacing="20" DataContext="{Binding SelectedItemForInspection}">
+                    <!-- Encabezado de Archivo -->
+                    <Border Background="{DynamicResource Surface2Brush}"
+                            CornerRadius="{StaticResource RadiusMd}"
+                            Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding FileName}"
+                                       FontFamily="{StaticResource FiraSansFontFamily}"
+                                       FontSize="{StaticResource FontSize400}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource InkStrongBrush}" />
+                            <TextBlock Text="{Binding FilePath}"
+                                       FontFamily="{StaticResource FiraCodeFontFamily}"
+                                       FontSize="{StaticResource FontSize200}"
+                                       Foreground="{DynamicResource InkMutedBrush}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding FileSizeBytes, Converter={StaticResource FileSizeConverter}}"
+                                       FontFamily="{StaticResource FiraCodeFontFamily}"
+                                       FontSize="{StaticResource FontSize200}"
+                                       Foreground="{DynamicResource InkSecondaryBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Detalle de Error (Visible solo si falló) -->
+                    <containers:ErpSectionCard Title="Incidencia de Conversión"
+                                               IconKind="CircleAlert"
+                                               IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <display:ErpCodeBlock Text="{Binding ErrorMessage}" />
+                    </containers:ErpSectionCard>
+
+                    <!-- Datos Fiscales del CFDI -->
+                    <containers:ErpSectionCard Title="Datos Fiscales SAT" IconKind="Info">
+                        <StackPanel Spacing="14">
+                            <!-- Tipo y UUID -->
+                            <forms:ErpField Label="Tipo de Comprobante">
+                                <TextBlock FontFamily="{StaticResource FiraCodeFontFamily}"
+                                           FontSize="{StaticResource FontSize300}"
+                                           Foreground="{DynamicResource InkStrongBrush}">
+                                    <Run Text="{Binding TipoDeComprobante, FallbackValue='-'}" FontWeight="Bold" />
+                                    <Run Text=" - " />
+                                    <Run Text="{Binding TipoDeComprobanteDescripcion, FallbackValue='No determinado'}" />
+                                </TextBlock>
+                            </forms:ErpField>
+
+                            <forms:ErpField Label="Folio Fiscal (UUID)">
+                                <TextBlock Text="{Binding Uuid, FallbackValue='Sin Timbre Fiscal Digital'}"
+                                           FontFamily="{StaticResource FiraCodeFontFamily}"
+                                           FontSize="{StaticResource FontSize200}"
+                                           Foreground="{DynamicResource InkStrongBrush}"
+                                           TextWrapping="Wrap" />
+                            </forms:ErpField>
+
+                            <Separator Background="{DynamicResource LineSubtleBrush}" />
+
+                            <!-- Emisor -->
+                            <forms:ErpField Label="Emisor">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding EmisorRfc, FallbackValue='-'}"
+                                               FontFamily="{StaticResource FiraCodeFontFamily}"
+                                               FontSize="{StaticResource FontSize300}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource InkStrongBrush}" />
+                                    <TextBlock Text="{Binding EmisorNombre, FallbackValue='-'}"
+                                               FontFamily="{StaticResource FiraSansFontFamily}"
+                                               FontSize="{StaticResource FontSize200}"
+                                               Foreground="{DynamicResource InkSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </forms:ErpField>
+
+                            <!-- Receptor -->
+                            <forms:ErpField Label="Receptor">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding ReceptorRfc, FallbackValue='-'}"
+                                               FontFamily="{StaticResource FiraCodeFontFamily}"
+                                               FontSize="{StaticResource FontSize300}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource InkStrongBrush}" />
+                                    <TextBlock Text="{Binding ReceptorNombre, FallbackValue='-'}"
+                                               FontFamily="{StaticResource FiraSansFontFamily}"
+                                               FontSize="{StaticResource FontSize200}"
+                                               Foreground="{DynamicResource InkSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </forms:ErpField>
+
+                            <Separator Background="{DynamicResource LineSubtleBrush}" />
+
+                            <!-- Importe Total -->
+                            <forms:ErpField Label="Importe Total">
+                                <TextBlock Text="{Binding TotalFormatted, FallbackValue='-'}"
+                                           FontFamily="{StaticResource FiraCodeFontFamily}"
+                                           FontSize="{StaticResource FontSize500}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource InkStrongBrush}" />
+                            </forms:ErpField>
+
+                            <!-- Complementos -->
+                            <forms:ErpField Label="Complementos">
+                                <TextBlock Text="{Binding ComplementosResumen, FallbackValue='Ninguno'}"
+                                           FontFamily="{StaticResource FiraSansFontFamily}"
+                                           FontSize="{StaticResource FontSize300}"
+                                           Foreground="{DynamicResource InkSecondaryBrush}" />
+                            </forms:ErpField>
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                    <!-- Acciones del Inspector -->
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                        <actions:ErpButton Variant="Primary"
+                                           Size="Md"
+                                           LeadingIcon="Download"
+                                           Content="Abrir PDF"
+                                           Command="{Binding OpenPdfCommand}"
+                                           IsVisible="{Binding OutputPdfPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <actions:ErpButton Variant="Secondary"
+                                           Size="Md"
+                                           LeadingIcon="Folder"
+                                           Content="Abrir Carpeta"
+                                           Command="{Binding OpenFolderCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </overlays:ErpDrawer.DrawerContent>
+        </overlays:ErpDrawer>
+    </Grid>
+</UserControl>

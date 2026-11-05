@@ -1,0 +1,137 @@
+name: Integración Continua (CI)
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validar-commits:
+    name: Validación de Mensajes de Commit (Manual v2.0.0)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código fuente e historial completo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validar formato Conventional Commits
+        shell: bash
+        run: |
+          set -e
+          echo "Verificando mensajes de commit contra el manual interno v2.0.0..."
+
+          # Determinar rango de commits a inspeccionar
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${{ github.base_ref }}"
+            COMMIT_RANGE="$BASE..HEAD"
+          else
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+              COMMIT_RANGE="HEAD~1..HEAD"
+            else
+              COMMIT_RANGE="HEAD"
+            fi
+          fi
+
+          echo "Rango evaluado: $COMMIT_RANGE"
+
+          COMMITS=$(git log --no-merges --format="%H" "$COMMIT_RANGE")
+          if [ -z "$COMMITS" ]; then
+            echo "No hay commits nuevos para validar."
+            exit 0
+          fi
+
+          TIPOS="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+          PATRON="^($TIPOS)(\([a-z0-9._/-]+\))?!?: [a-záéíóúüñ]"
+
+          FALLOS=0
+
+          for HASH in $COMMITS; do
+            ASUNTO=$(git log -1 --format="%s" "$HASH")
+            MENSAJE=$(git log -1 --format="%B" "$HASH")
+            SEGUNDA_LINEA=$(echo "$MENSAJE" | sed -n '2p')
+            
+            echo "Inspeccionando: $HASH - $ASUNTO"
+
+            # 1. Ignorar merges o fixups
+            case "$ASUNTO" in
+              "Merge "*|"fixup! "*|"squash! "*) continue ;;
+            esac
+
+            # 2. Formato básico y verbo en infinitivo con minúscula inicial
+            if ! printf '%s\n' "$ASUNTO" | LC_ALL=C grep -Eq "$PATRON"; then
+              echo "::error file=$HASH::El asunto no cumple con <tipo>[(<ámbito>)][!]: <infinitivo en minúscula>: '$ASUNTO'"
+              FALLOS=$((FALLOS + 1))
+            fi
+
+            # 3. Sin punto final
+            case "$ASUNTO" in
+              *.)
+                echo "::error file=$HASH::El asunto no debe llevar punto final: '$ASUNTO'"
+                FALLOS=$((FALLOS + 1))
+                ;;
+            esac
+
+            # 4. Máximo 72 caracteres
+            LONGITUD=$(printf '%s' "$ASUNTO" | LC_ALL=C tr -d '\200-\277' | wc -c | tr -d ' ')
+            if [ "$LONGITUD" -gt 72 ]; then
+              echo "::error file=$HASH::El asunto excede los 72 caracteres ($LONGITUD car.): '$ASUNTO'"
+              FALLOS=$((FALLOS + 1))
+            fi
+
+            # 5. Línea en blanco antes del cuerpo
+            if [ -n "$SEGUNDA_LINEA" ]; then
+              echo "::error file=$HASH::Debe existir una línea en blanco entre el asunto y el cuerpo del commit."
+              FALLOS=$((FALLOS + 1))
+            fi
+
+            # 6. Paridad ! y BREAKING CHANGE
+            TIENE_SIGNO=0
+            TIENE_PIE=0
+            if printf '%s\n' "$ASUNTO" | LC_ALL=C grep -Eq '^[a-z]+(\([^)]*\))?!: '; then
+              TIENE_SIGNO=1
+            fi
+            if printf '%s\n' "$MENSAJE" | grep -Eq '^BREAKING[ -]CHANGE: '; then
+              TIENE_PIE=1
+            fi
+            if [ "$TIENE_SIGNO" -ne "$TIENE_PIE" ]; then
+              echo "::error file=$HASH::Un cambio incompatible requiere el signo '!' en el asunto y el pie 'BREAKING CHANGE:' en el cuerpo."
+              FALLOS=$((FALLOS + 1))
+            fi
+          done
+
+          if [ "$FALLOS" -gt 0 ]; then
+            echo "Se encontraron $FALLOS violaciones a la convención de commits."
+            exit 1
+          fi
+
+          echo "Todos los commits cumplen estrictamente con el manual v2.0.0."
+
+  compilar:
+    name: Compilación Multiplataforma (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Descargar código fuente
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar dependencias de la solución
+        run: dotnet restore XPressPDF.slnx
+
+      - name: Compilar solución (Release con advertencias como errores)
+        run: dotnet build XPressPDF.slnx -c Release --no-restore -warnaserror

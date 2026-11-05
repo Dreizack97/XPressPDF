@@ -1,0 +1,64 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             xmlns:converters="using:AppUI.Shared.Converters"
+             x:Class="AppUI.Shared.Controls.Feedback.ErpToastHost"
+             x:DataType="feedback:ErpToastHost"
+             IsHitTestVisible="True"
+             HorizontalAlignment="Right"
+             VerticalAlignment="Bottom"
+             Margin="24">
+
+    <UserControl.Resources>
+        <converters:ToneToBrushConverter x:Key="ToneBorderConverter" Variant="Border" />
+        <converters:ToneToBrushConverter x:Key="ToneInkConverter" Variant="Ink" />
+    </UserControl.Resources>
+
+    <ItemsControl ItemsSource="{Binding Toasts}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="feedback:ToastItemViewModel">
+                <Border Width="360"
+                        Margin="0,0,0,10"
+                        Background="{DynamicResource Surface1Brush}"
+                        BorderBrush="{Binding Tone, Converter={StaticResource ToneBorderConverter}}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource CardRadius}"
+                        Padding="16"
+                        BoxShadow="{StaticResource ElevationShadowLg}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <!-- Icono según Tone -->
+                        <display:ErpIcon Grid.Column="0"
+                                       Kind="{Binding IconKind}"
+                                       Size="20"
+                                       Foreground="{Binding Tone, Converter={StaticResource ToneInkConverter}}"
+                                       VerticalAlignment="Top"
+                                       Margin="0,2,0,0" />
+
+                        <!-- Título y Mensaje -->
+                        <StackPanel Grid.Column="1" Spacing="2">
+                            <TextBlock Text="{Binding Title}"
+                                       Classes="text-subheading"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Message}"
+                                       Classes="text-caption ink-secondary"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!-- Botón de Cierre -->
+                        <actions:ErpButton Grid.Column="2"
+                                           Variant="Ghost"
+                                           Size="Sm"
+                                           IsIconOnly="True"
+                                           Command="{Binding ((feedback:ErpToastHost)DataContext).DismissCommand, RelativeSource={RelativeSource AncestorType=feedback:ErpToastHost}}"
+                                           CommandParameter="{Binding}"
+                                           VerticalAlignment="Top">
+                            <display:ErpIcon Kind="X" Size="14" Foreground="{DynamicResource InkMutedBrush}" />
+                        </actions:ErpButton>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

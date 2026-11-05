@@ -1,0 +1,46 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+                    xmlns:converters="using:AppUI.Shared.Converters">
+
+    <converters:StatusToneToBrushConverter x:Key="StatusSoftBrushConverter" Variant="SurfaceSoft" />
+    <converters:StatusToneToBrushConverter x:Key="StatusBorderBrushConverter" Variant="Border" />
+    <converters:StatusToneToBrushConverter x:Key="StatusInkBrushConverter" Variant="Ink" />
+    <converters:StatusToneToBrushConverter x:Key="StatusInkStrongBrushConverter" Variant="InkStrong" />
+
+    <ControlTheme x:Key="{x:Type feedback:ErpStatusBadge}" TargetType="feedback:ErpStatusBadge">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="feedback:ErpStatusBadge">
+                <Border CornerRadius="{StaticResource BadgeRadius}"
+                        BorderThickness="1"
+                        Background="{Binding Status, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusSoftBrushConverter}}"
+                        BorderBrush="{Binding Status, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusBorderBrushConverter}}"
+                        Padding="{StaticResource BadgePaddingMd}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <!-- Punto indicador -->
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{Binding Status, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusInkBrushConverter}}"
+                                 IsVisible="{TemplateBinding ShowDot}"
+                                 VerticalAlignment="Center" />
+
+                        <!-- Texto del badge -->
+                        <TextBlock Text="{TemplateBinding Text}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize200}"
+                                   FontWeight="Medium"
+                                   Foreground="{Binding Status, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusInkStrongBrushConverter}}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Variantes de tamaño -->
+        <Style Selector="^[Size=Sm] /template/ Border">
+            <Setter Property="Padding" Value="{StaticResource BadgePaddingSm}" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+                    xmlns:converters="using:AppUI.Shared.Converters">
+
+    <converters:ToneToBrushConverter x:Key="ToneSoftBrushConverter" Variant="SurfaceSoft" />
+    <converters:ToneToBrushConverter x:Key="ToneBorderBrushConverter" Variant="Border" />
+    <converters:ToneToBrushConverter x:Key="ToneInkStrongBrushConverter" Variant="InkStrong" />
+
+    <ControlTheme x:Key="{x:Type feedback:ErpBadge}" TargetType="feedback:ErpBadge">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="feedback:ErpBadge">
+                <Border CornerRadius="{StaticResource BadgeRadius}"
+                        BorderThickness="1"
+                        Background="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneSoftBrushConverter}}"
+                        BorderBrush="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneBorderBrushConverter}}"
+                        Padding="{StaticResource BadgePaddingMd}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{TemplateBinding Text}"
+                               FontFamily="{StaticResource FiraSansFontFamily}"
+                               FontSize="{StaticResource FontSize200}"
+                               FontWeight="Medium"
+                               Foreground="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneInkStrongBrushConverter}}"
+                               VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Variantes de tamaño -->
+        <Style Selector="^[Size=Sm] /template/ Border">
+            <Setter Property="Padding" Value="{StaticResource BadgePaddingSm}" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

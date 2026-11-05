@@ -1,0 +1,167 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- =======================================================================
+         NIVEL 2: TOKENS SEMÁNTICOS (Semantic.axaml)
+         Paridad con Smart-Enterprise-ERP-Design-System (src/styles/tokens/semantic.css)
+         ======================================================================= -->
+
+    <ResourceDictionary.ThemeDictionaries>
+
+        <!-- ===================================================================
+             MODO CLARO (LIGHT)
+             =================================================================== -->
+        <ResourceDictionary x:Key="Light">
+            <!-- Superficies -->
+            <SolidColorBrush x:Key="SurfaceCanvasBrush" Color="#F8FAFC" />
+            <SolidColorBrush x:Key="Surface1Brush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="Surface2Brush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="Surface3Brush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="SurfaceFieldBrush" Color="#F8FAFC" />
+            <SolidColorBrush x:Key="SurfaceInsetBrush" Color="#F1F5F9" />
+
+            <!-- Líneas y Bordes -->
+            <SolidColorBrush x:Key="LineSubtleBrush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="LineDefaultBrush" Color="#E2E8F0" />
+            <SolidColorBrush x:Key="LineStrongBrush" Color="#CBD5E1" />
+
+            <!-- Tintas (Inks) calibradas WCAG AA -->
+            <SolidColorBrush x:Key="InkStrongBrush" Color="#0F172A" />
+            <SolidColorBrush x:Key="InkPrimaryBrush" Color="#1E293B" />
+            <SolidColorBrush x:Key="InkBodyBrush" Color="#334155" />
+            <SolidColorBrush x:Key="InkSecondaryBrush" Color="#475569" />
+            <SolidColorBrush x:Key="InkMutedBrush" Color="#5E718D" />
+            <SolidColorBrush x:Key="LinkBrush" Color="#2563EB" />
+            <SolidColorBrush x:Key="ScrimBrush" Color="#800F172A" />
+            <SolidColorBrush x:Key="FocusRingBrush" Color="#3B82F6" />
+
+            <!-- Tonos: Neutral -->
+            <SolidColorBrush x:Key="ToneNeutralSurfaceSoftBrush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="ToneNeutralSurfaceSubtleBrush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="ToneNeutralBorderBrush" Color="#E2E8F0" />
+            <SolidColorBrush x:Key="ToneNeutralInkBrush" Color="#1E293B" />
+            <SolidColorBrush x:Key="ToneNeutralInkStrongBrush" Color="#334155" />
+
+            <!-- Tonos: Blue -->
+            <SolidColorBrush x:Key="ToneBlueSurfaceSoftBrush" Color="#DBEAFE" />
+            <SolidColorBrush x:Key="ToneBlueSurfaceSubtleBrush" Color="#EFF6FF" />
+            <SolidColorBrush x:Key="ToneBlueBorderBrush" Color="#BFDBFE" />
+            <SolidColorBrush x:Key="ToneBlueInkBrush" Color="#1D4ED8" />
+            <SolidColorBrush x:Key="ToneBlueInkStrongBrush" Color="#1E40AF" />
+
+            <!-- Tonos: Green -->
+            <SolidColorBrush x:Key="ToneGreenSurfaceSoftBrush" Color="#DCFCE7" />
+            <SolidColorBrush x:Key="ToneGreenSurfaceSubtleBrush" Color="#F0FDF4" />
+            <SolidColorBrush x:Key="ToneGreenBorderBrush" Color="#BBF7D0" />
+            <SolidColorBrush x:Key="ToneGreenInkBrush" Color="#15803D" />
+            <SolidColorBrush x:Key="ToneGreenInkStrongBrush" Color="#166534" />
+
+            <!-- Tonos: Yellow -->
+            <SolidColorBrush x:Key="ToneYellowSurfaceSoftBrush" Color="#FEF9C3" />
+            <SolidColorBrush x:Key="ToneYellowSurfaceSubtleBrush" Color="#FEFCE8" />
+            <SolidColorBrush x:Key="ToneYellowBorderBrush" Color="#FEF08A" />
+            <SolidColorBrush x:Key="ToneYellowInkBrush" Color="#9A5D06" />
+            <SolidColorBrush x:Key="ToneYellowInkStrongBrush" Color="#854D0E" />
+
+            <!-- Tonos: Orange -->
+            <SolidColorBrush x:Key="ToneOrangeSurfaceSoftBrush" Color="#FFEDD5" />
+            <SolidColorBrush x:Key="ToneOrangeSurfaceSubtleBrush" Color="#FFF7ED" />
+            <SolidColorBrush x:Key="ToneOrangeBorderBrush" Color="#FED7AA" />
+            <SolidColorBrush x:Key="ToneOrangeInkBrush" Color="#C2410C" />
+            <SolidColorBrush x:Key="ToneOrangeInkStrongBrush" Color="#9A3412" />
+
+            <!-- Tonos: Red -->
+            <SolidColorBrush x:Key="ToneRedSurfaceSoftBrush" Color="#FEE2E2" />
+            <SolidColorBrush x:Key="ToneRedSurfaceSubtleBrush" Color="#FEF2F2" />
+            <SolidColorBrush x:Key="ToneRedBorderBrush" Color="#FECACA" />
+            <SolidColorBrush x:Key="ToneRedInkBrush" Color="#B91C1C" />
+            <SolidColorBrush x:Key="ToneRedInkStrongBrush" Color="#991B1B" />
+
+            <!-- Tonos: Purple -->
+            <SolidColorBrush x:Key="TonePurpleSurfaceSoftBrush" Color="#F3E8FF" />
+            <SolidColorBrush x:Key="TonePurpleSurfaceSubtleBrush" Color="#FAF5FF" />
+            <SolidColorBrush x:Key="TonePurpleBorderBrush" Color="#E9D5FF" />
+            <SolidColorBrush x:Key="TonePurpleInkBrush" Color="#7E22CE" />
+            <SolidColorBrush x:Key="TonePurpleInkStrongBrush" Color="#6B21A8" />
+        </ResourceDictionary>
+
+        <!-- ===================================================================
+             MODO OSCURO (DARK - ANTI-FATIGA, ELEVACIÓN POR LUMINOSIDAD)
+             =================================================================== -->
+        <ResourceDictionary x:Key="Dark">
+            <!-- Superficies -->
+            <SolidColorBrush x:Key="SurfaceCanvasBrush" Color="#0B1120" />
+            <SolidColorBrush x:Key="Surface1Brush" Color="#16213A" />
+            <SolidColorBrush x:Key="Surface2Brush" Color="#1E293B" />
+            <SolidColorBrush x:Key="Surface3Brush" Color="#273449" />
+            <SolidColorBrush x:Key="SurfaceFieldBrush" Color="#0B1120" />
+            <SolidColorBrush x:Key="SurfaceInsetBrush" Color="#0A0F1C" />
+
+            <!-- Líneas y Bordes -->
+            <SolidColorBrush x:Key="LineSubtleBrush" Color="#1E293B" />
+            <SolidColorBrush x:Key="LineDefaultBrush" Color="#334155" />
+            <SolidColorBrush x:Key="LineStrongBrush" Color="#475569" />
+
+            <!-- Tintas (Inks) calibradas WCAG AA -->
+            <SolidColorBrush x:Key="InkStrongBrush" Color="#F8FAFC" />
+            <SolidColorBrush x:Key="InkPrimaryBrush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="InkBodyBrush" Color="#E2E8F0" />
+            <SolidColorBrush x:Key="InkSecondaryBrush" Color="#AEBAC9" />
+            <SolidColorBrush x:Key="InkMutedBrush" Color="#8E9EB4" />
+            <SolidColorBrush x:Key="LinkBrush" Color="#7DB3FB" />
+            <SolidColorBrush x:Key="ScrimBrush" Color="#99000000" />
+            <SolidColorBrush x:Key="FocusRingBrush" Color="#60A5FA" />
+
+            <!-- Tonos: Neutral (Oscuro) -->
+            <SolidColorBrush x:Key="ToneNeutralSurfaceSoftBrush" Color="#26334155" />
+            <SolidColorBrush x:Key="ToneNeutralSurfaceSubtleBrush" Color="#1A334155" />
+            <SolidColorBrush x:Key="ToneNeutralBorderBrush" Color="#4D475569" />
+            <SolidColorBrush x:Key="ToneNeutralInkBrush" Color="#F1F5F9" />
+            <SolidColorBrush x:Key="ToneNeutralInkStrongBrush" Color="#F8FAFC" />
+
+            <!-- Tonos: Blue (Oscuro) -->
+            <SolidColorBrush x:Key="ToneBlueSurfaceSoftBrush" Color="#2960A5FA" />
+            <SolidColorBrush x:Key="ToneBlueSurfaceSubtleBrush" Color="#1A60A5FA" />
+            <SolidColorBrush x:Key="ToneBlueBorderBrush" Color="#4D60A5FA" />
+            <SolidColorBrush x:Key="ToneBlueInkBrush" Color="#7DB3FB" />
+            <SolidColorBrush x:Key="ToneBlueInkStrongBrush" Color="#93C5FD" />
+
+            <!-- Tonos: Green (Oscuro) -->
+            <SolidColorBrush x:Key="ToneGreenSurfaceSoftBrush" Color="#2934D399" />
+            <SolidColorBrush x:Key="ToneGreenSurfaceSubtleBrush" Color="#1A34D399" />
+            <SolidColorBrush x:Key="ToneGreenBorderBrush" Color="#4D34D399" />
+            <SolidColorBrush x:Key="ToneGreenInkBrush" Color="#34D399" />
+            <SolidColorBrush x:Key="ToneGreenInkStrongBrush" Color="#6EE7B7" />
+
+            <!-- Tonos: Yellow (Oscuro) -->
+            <SolidColorBrush x:Key="ToneYellowSurfaceSoftBrush" Color="#29FBBF24" />
+            <SolidColorBrush x:Key="ToneYellowSurfaceSubtleBrush" Color="#1AFBBF24" />
+            <SolidColorBrush x:Key="ToneYellowBorderBrush" Color="#4DFBBF24" />
+            <SolidColorBrush x:Key="ToneYellowInkBrush" Color="#FBBF24" />
+            <SolidColorBrush x:Key="ToneYellowInkStrongBrush" Color="#FCD34D" />
+
+            <!-- Tonos: Orange (Oscuro) -->
+            <SolidColorBrush x:Key="ToneOrangeSurfaceSoftBrush" Color="#29FB923C" />
+            <SolidColorBrush x:Key="ToneOrangeSurfaceSubtleBrush" Color="#1AFB923C" />
+            <SolidColorBrush x:Key="ToneOrangeBorderBrush" Color="#4DFB923C" />
+            <SolidColorBrush x:Key="ToneOrangeInkBrush" Color="#FDBA74" />
+            <SolidColorBrush x:Key="ToneOrangeInkStrongBrush" Color="#FED7AA" />
+
+            <!-- Tonos: Red (Oscuro) -->
+            <SolidColorBrush x:Key="ToneRedSurfaceSoftBrush" Color="#29F87171" />
+            <SolidColorBrush x:Key="ToneRedSurfaceSubtleBrush" Color="#1AF87171" />
+            <SolidColorBrush x:Key="ToneRedBorderBrush" Color="#4DF87171" />
+            <SolidColorBrush x:Key="ToneRedInkBrush" Color="#FCA5A5" />
+            <SolidColorBrush x:Key="ToneRedInkStrongBrush" Color="#FECACA" />
+
+            <!-- Tonos: Purple (Oscuro) -->
+            <SolidColorBrush x:Key="TonePurpleSurfaceSoftBrush" Color="#29C084FC" />
+            <SolidColorBrush x:Key="TonePurpleSurfaceSubtleBrush" Color="#1AC084FC" />
+            <SolidColorBrush x:Key="TonePurpleBorderBrush" Color="#4DC084FC" />
+            <SolidColorBrush x:Key="TonePurpleInkBrush" Color="#C4B5FD" />
+            <SolidColorBrush x:Key="TonePurpleInkStrongBrush" Color="#DDD6FE" />
+        </ResourceDictionary>
+
+    </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>

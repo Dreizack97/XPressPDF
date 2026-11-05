@@ -1,0 +1,175 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AppUI.Features.Settings.ViewModels"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:containers="using:AppUI.Shared.Controls.Containers"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+             xmlns:pageHeader="using:AppUI.Layout.PageHeader"
+             x:Class="AppUI.Features.Settings.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="20" Margin="24">
+
+            <!-- Encabezado de Página -->
+            <pageHeader:ErpPageHeader Category="SISTEMA"
+                                      Title="Configuración del Motor"
+                                      Subtitle="Personaliza la apariencia del PDF generado, directorio de destino y preferencias del sistema.">
+                <pageHeader:ErpPageHeader.PrimaryActions>
+                    <actions:ErpButton Variant="Primary"
+                                       Size="Md"
+                                       LeadingIcon="Check"
+                                       Content="Guardar Configuración"
+                                       Command="{Binding SaveCommand}" />
+                </pageHeader:ErpPageHeader.PrimaryActions>
+            </pageHeader:ErpPageHeader>
+
+            <!-- Distribución en 2 Columnas al 100% del Ancho -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
+
+                <!-- Columna Izquierda: Identidad y Apariencia -->
+                <StackPanel Grid.Column="0" Spacing="20">
+
+                    <!-- 1. Identidad Corporativa (Logotipo del Emisor) -->
+                    <containers:ErpSectionCard Title="Logotipo del Emisor en el PDF"
+                                               Subtitle="Se incluirá en la esquina superior izquierda de la representación impresa."
+                                               IconKind="Image">
+                        <StackPanel Spacing="16">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+                                <!-- Vista Previa del Logo -->
+                                <Border Grid.Column="0"
+                                        Width="120" Height="90"
+                                        Background="{DynamicResource SurfaceFieldBrush}"
+                                        BorderBrush="{DynamicResource LineDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMd}"
+                                        ClipToBounds="True">
+                                    <Grid>
+                                        <display:ErpIcon Kind="Image"
+                                                         Size="32"
+                                                         Foreground="{DynamicResource InkMutedBrush}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         IsVisible="{Binding LogoPath, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                                        <Image Source="{Binding LogoPath}"
+                                               Stretch="Uniform"
+                                               Margin="8"
+                                               IsVisible="{Binding LogoPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- Controles de Carga -->
+                                <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding LogoPath, FallbackValue='Ningún logotipo seleccionado'}"
+                                               Classes="font-mono text-caption ink-secondary"
+                                               TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <actions:ErpButton Variant="Secondary"
+                                                           Size="Sm"
+                                                           LeadingIcon="Upload"
+                                                           Content="Seleccionar Imagen"
+                                                           Command="{Binding PickLogoCommand}" />
+                                        <actions:ErpButton Variant="SoftDanger"
+                                                           Size="Sm"
+                                                           LeadingIcon="Trash2"
+                                                           Content="Quitar Logo"
+                                                           Command="{Binding ClearLogoCommand}"
+                                                           IsVisible="{Binding LogoPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                    <!-- 2. Apariencia y Accesibilidad -->
+                    <containers:ErpSectionCard Title="Apariencia del Sistema"
+                                               Subtitle="Ajusta el tema visual y las opciones de accesibilidad."
+                                               IconKind="Sun">
+                        <StackPanel Spacing="18">
+                            <!-- Selector de Tema -->
+                            <forms:ErpField Label="Tema de Color">
+                                <ComboBox Height="{StaticResource ControlHeightMd}"
+                                          CornerRadius="{StaticResource FieldRadius}"
+                                          ItemsSource="{Binding ThemeOptions}"
+                                          SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch" />
+                            </forms:ErpField>
+
+                            <!-- Reducir Movimiento -->
+                            <forms:ErpToggleSwitch Label="Reducir movimiento"
+                                                   Description="Desactiva micro-interacciones y transiciones animadas para usuarios con sensibilidad al movimiento."
+                                                   IsChecked="{Binding ReducedMotion, Mode=TwoWay}" />
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                </StackPanel>
+
+                <!-- Columna Derecha: Almacenamiento y Especificaciones Técnicas -->
+                <StackPanel Grid.Column="1" Spacing="20">
+
+                    <!-- 3. Procesamiento de Archivos y Destino -->
+                    <containers:ErpSectionCard Title="Directorio de Salida y Almacenamiento"
+                                               Subtitle="Controla dónde se guardan los archivos PDF generados."
+                                               IconKind="Folder">
+                        <StackPanel Spacing="18">
+                            <!-- Opción: Misma carpeta o Carpeta personalizada -->
+                            <forms:ErpToggleSwitch Label="Guardar en carpeta personalizada"
+                                                   Description="Si está desactivado, cada PDF se guardará en la misma carpeta donde reside su archivo XML original."
+                                                   IsChecked="{Binding IsCustomOutputDirectory, Mode=TwoWay}" />
+
+                            <!-- Selector de Carpeta Personalizada (Visible solo si está activo) -->
+                            <forms:ErpField Label="Carpeta de Destino para PDFs"
+                                            IsVisible="{Binding IsCustomOutputDirectory}">
+                                <forms:ErpPathPickerField SelectedPath="{Binding CustomOutputDirectory, Mode=TwoWay}"
+                                                          PlaceholderText="Seleccionar carpeta de destino..."
+                                                          BrowseCommand="{Binding PickFolderCommand}" />
+                            </forms:ErpField>
+
+                            <Separator Background="{DynamicResource LineSubtleBrush}" />
+
+                            <!-- Política de Sobreescritura -->
+                            <forms:ErpToggleSwitch Label="Sobreescribir PDFs existentes"
+                                                   Description="Reemplaza automáticamente el PDF si ya existe un archivo con el mismo nombre en la carpeta de salida."
+                                                   IsChecked="{Binding OverwriteExisting, Mode=TwoWay}" />
+
+                            <!-- Pre-escaneo fiscal -->
+                            <forms:ErpToggleSwitch Label="Pre-escanear metadatos fiscales"
+                                                   Description="Lee automáticamente el UUID, Emisor, Receptor y Total al agregar comprobantes para habilitar filtros y vista previa."
+                                                   IsChecked="{Binding PreScanMetadata, Mode=TwoWay}" />
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                    <!-- 4. Especificaciones Técnicas del Motor -->
+                    <containers:ErpSectionCard Title="Especificaciones del Motor de Impresión"
+                                               Subtitle="Detalles técnicos del núcleo de renderizado fiscal y cumplimiento normativo."
+                                               IconKind="Zap">
+                        <StackPanel Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                                <!-- Estándar Fiscal -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Estándar Fiscal:" Classes="text-caption ink-secondary font-bold" Margin="0,0,12,8" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="SAT CFDI 4.0 (Anexo 20 con Timbre Digital 1.1)" Classes="text-caption ink-strong" Margin="0,0,0,8" />
+
+                                <!-- Motor Gráfico -->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Motor de Renderizado:" Classes="text-caption ink-secondary font-bold" Margin="0,0,12,8" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="QuestPDF Vectorial Nativo de Alta Velocidad" Classes="text-caption ink-strong" Margin="0,0,0,8" />
+
+                                <!-- Plataforma -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Tecnología Core:" Classes="text-caption ink-secondary font-bold" Margin="0,0,12,8" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text=".NET 10 (C# 14) + Avalonia UI 12.1.4 Cross-Platform" Classes="text-caption ink-strong" Margin="0,0,0,8" />
+
+                                <!-- Complementos -->
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Complementos SAT:" Classes="text-caption ink-secondary font-bold" Margin="0,0,12,0" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Nómina 1.2, Pagos 2.0, Carta Porte 3.1, Vales, Comercio Ext., Imp. Locales, Leyendas" Classes="text-caption ink-strong" TextWrapping="Wrap" Margin="0,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+                    </containers:ErpSectionCard>
+
+                </StackPanel>
+
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -4,12 +4,70 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".gitmessage" />
+    <File Path="CHANGELOG.md" />
+    <File Path="CODE_OF_CONDUCT.md" />
+    <File Path="CONTRIBUTING.md" />
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Elementos de la solución/brand/">
+    <File Path="brand/build_brand.py" />
+    <File Path="brand/marca.html" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/app-icon/">
+    <File Path="brand/app-icon/app-icon-claro.svg" />
+    <File Path="brand/app-icon/app-icon-marca.svg" />
+    <File Path="brand/app-icon/app-icon-oscuro.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/favicon/">
+    <File Path="brand/favicon/favicon-32-claro.svg" />
+    <File Path="brand/favicon/favicon-32-marca.svg" />
+    <File Path="brand/favicon/favicon-32-oscuro.svg" />
+    <File Path="brand/favicon/favicon.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/imagotipo/">
+    <File Path="brand/imagotipo/imagotipo-horizontal-color.svg" />
+    <File Path="brand/imagotipo/imagotipo-horizontal-mono.svg" />
+    <File Path="brand/imagotipo/imagotipo-horizontal-negativo.svg" />
+    <File Path="brand/imagotipo/imagotipo-vertical-color.svg" />
+    <File Path="brand/imagotipo/imagotipo-vertical-mono.svg" />
+    <File Path="brand/imagotipo/imagotipo-vertical-negativo.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/isologo/">
+    <File Path="brand/isologo/isologo-horizontal-color.svg" />
+    <File Path="brand/isologo/isologo-horizontal-mono.svg" />
+    <File Path="brand/isologo/isologo-horizontal-negativo.svg" />
+    <File Path="brand/isologo/isologo-vertical-color.svg" />
+    <File Path="brand/isologo/isologo-vertical-mono.svg" />
+    <File Path="brand/isologo/isologo-vertical-negativo.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/isotipo/">
+    <File Path="brand/isotipo/isotipo-color.svg" />
+    <File Path="brand/isotipo/isotipo-mono.svg" />
+    <File Path="brand/isotipo/isotipo-negativo.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/logotipo/">
+    <File Path="brand/logotipo/logotipo-horizontal-color.svg" />
+    <File Path="brand/logotipo/logotipo-horizontal-mono.svg" />
+    <File Path="brand/logotipo/logotipo-horizontal-negativo.svg" />
+    <File Path="brand/logotipo/logotipo-vertical-color.svg" />
+    <File Path="brand/logotipo/logotipo-vertical-mono.svg" />
+    <File Path="brand/logotipo/logotipo-vertical-negativo.svg" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/brand/redes/">
+    <File Path="brand/redes/avatar-claro.svg" />
+    <File Path="brand/redes/avatar-marca.svg" />
+    <File Path="brand/redes/avatar-oscuro.svg" />
+  </Folder>
   <Folder Name="/Elementos de la solución/scripts/">
+    <File Path="scripts/build-release.ps1" />
+    <File Path="scripts/build-release.sh" />
     <File Path="scripts/setup-gitflow.ps1" />
     <File Path="scripts/setup-gitflow.sh" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/workflows/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/release.yml" />
   </Folder>
   <Project Path="AppUI/AppUI.csproj" Id="3560d171-8e89-4ceb-bba3-f3251ec56abd" />
   <Project Path="Core/Core.csproj" />

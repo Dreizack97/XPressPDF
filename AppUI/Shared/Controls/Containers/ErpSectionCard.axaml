@@ -1,0 +1,72 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:containers="using:AppUI.Shared.Controls.Containers"
+                    xmlns:display="using:AppUI.Shared.Controls.Display">
+
+    <ControlTheme x:Key="{x:Type containers:ErpSectionCard}" TargetType="containers:ErpSectionCard">
+        <Setter Property="Background" Value="{DynamicResource Surface1Brush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource LineDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Padding" Value="{StaticResource CardPadding}" />
+
+        <Setter Property="Template">
+            <ControlTemplate TargetType="containers:ErpSectionCard">
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        ClipToBounds="True">
+                    <DockPanel LastChildFill="True">
+                        <!-- Cabecera de la Tarjeta (Visible si hay Title) -->
+                        <Border DockPanel.Dock="Top"
+                                BorderBrush="{DynamicResource LineSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="{StaticResource CardHeaderPadding}"
+                                IsVisible="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <display:ErpIcon Kind="{TemplateBinding IconKind}"
+                                                         Size="18"
+                                                         Foreground="{DynamicResource InkPrimaryBrush}"
+                                                         IsVisible="{Binding IconKind, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                        <TextBlock Text="{TemplateBinding Title}"
+                                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                                   FontSize="{StaticResource FontSize400}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource InkStrongBrush}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{TemplateBinding Subtitle}"
+                                               FontFamily="{StaticResource FiraSansFontFamily}"
+                                               FontSize="{StaticResource FontSize200}"
+                                               Foreground="{DynamicResource InkSecondaryBrush}"
+                                               IsVisible="{Binding Subtitle, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                </StackPanel>
+
+                                <ContentPresenter Grid.Column="1"
+                                                  Content="{TemplateBinding HeaderActions}"
+                                                  VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Cuerpo de la Tarjeta -->
+                        <Border x:Name="PART_BodyBorder"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Border>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Modo IsFlush: elimina el padding para que listas/tablas lleguen de borde a borde -->
+        <Style Selector="^[IsFlush=True]">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

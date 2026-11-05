@@ -1,0 +1,73 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:display="using:AppUI.Shared.Controls.Display"
+             x:Class="AppUI.Shared.Controls.Forms.ErpFileUploadDropzone"
+             x:Name="Root">
+
+    <Border x:Name="PART_DropBorder"
+            Background="{DynamicResource SurfaceFieldBrush}"
+            BorderBrush="{DynamicResource LineStrongBrush}"
+            BorderThickness="2"
+            CornerRadius="{StaticResource CardRadius}"
+            Padding="32,24"
+            ClipToBounds="True">
+        <Border.Styles>
+            <!-- Borde estándar -->
+            <Style Selector="Border#PART_DropBorder">
+                <Setter Property="Transitions">
+                    <Transitions>
+                        <BrushTransition Property="Background" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+                        <BrushTransition Property="BorderBrush" Duration="{StaticResource DurationFast}" Easing="{StaticResource EaseOutQuart}" />
+                    </Transitions>
+                </Setter>
+            </Style>
+
+            <!-- Estado DragOver activo -->
+            <Style Selector="forms|ErpFileUploadDropzone[IsDragOver=True] /template/ Border#PART_DropBorder, forms|ErpFileUploadDropzone[IsDragOver=True] Border#PART_DropBorder">
+                <Setter Property="Background" Value="{DynamicResource ToneBlueSurfaceSoftBrush}" />
+                <Setter Property="BorderBrush" Value="#2563EB" />
+            </Style>
+        </Border.Styles>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+            <!-- Icono central en contenedor suave -->
+            <Border Width="52" Height="52"
+                    CornerRadius="{StaticResource RadiusFull}"
+                    Background="{DynamicResource Surface2Brush}"
+                    HorizontalAlignment="Center">
+                <display:ErpIcon Kind="{Binding IconKind, ElementName=Root}"
+                               Size="24"
+                               Foreground="{DynamicResource InkPrimaryBrush}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+            </Border>
+
+            <!-- Textos descriptivos -->
+            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding Title, ElementName=Root}"
+                           Classes="text-subheading ink-strong"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center" />
+                <TextBlock Text="{Binding Description, ElementName=Root}"
+                           Classes="text-caption ink-secondary"
+                           TextAlignment="Center" />
+            </StackPanel>
+
+            <!-- Botones de Acción -->
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Margin="0,6,0,0">
+                <actions:ErpButton Variant="Primary"
+                                   Size="Sm"
+                                   LeadingIcon="FilePlus"
+                                   Content="Seleccionar archivos XML"
+                                   Click="OnBrowseFilesClick" />
+                <actions:ErpButton Variant="Secondary"
+                                   Size="Sm"
+                                   LeadingIcon="FolderOpen"
+                                   Content="Seleccionar carpeta"
+                                   Click="OnBrowseFolderClick" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

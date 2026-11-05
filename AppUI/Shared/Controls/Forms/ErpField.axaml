@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:forms="using:AppUI.Shared.Controls.Forms">
+
+    <ControlTheme x:Key="{x:Type forms:ErpField}" TargetType="forms:ErpField">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="forms:ErpField">
+                <StackPanel Spacing="6">
+                    <!-- Etiqueta superior -->
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding Label, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{TemplateBinding Label}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize200}"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource InkBodyBrush}" />
+                        <TextBlock Text="*"
+                                   Foreground="{DynamicResource ToneRedInkBrush}"
+                                   FontWeight="Bold"
+                                   IsVisible="{TemplateBinding IsRequired}" />
+                    </StackPanel>
+
+                    <!-- Control de entrada anidado -->
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+
+                    <!-- Texto de ayuda (Hint) -->
+                    <TextBlock Text="{TemplateBinding HintText}"
+                               FontFamily="{StaticResource FiraSansFontFamily}"
+                               FontSize="{StaticResource FontSize200}"
+                               Foreground="{DynamicResource InkMutedBrush}"
+                               IsVisible="{Binding HintText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <!-- Mensaje de error de validación -->
+                    <TextBlock Text="{TemplateBinding ErrorText}"
+                               FontFamily="{StaticResource FiraSansFontFamily}"
+                               FontSize="{StaticResource FontSize200}"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource ToneRedInkBrush}"
+                               IsVisible="{Binding ErrorText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

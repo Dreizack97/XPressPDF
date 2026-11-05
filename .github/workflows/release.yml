@@ -1,0 +1,199 @@
+name: Publicar Release Oficial
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  empaquetar:
+    name: Empaquetar ${{ matrix.nombre }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            nombre: Windows (x64 / ARM64)
+            rids: "win-x64,win-arm64"
+            tipo: windows
+          - os: ubuntu-latest
+            nombre: Linux (x64 / ARM64)
+            rids: "linux-x64,linux-arm64"
+            tipo: unix
+          - os: macos-latest
+            nombre: macOS (Apple Silicon / Intel)
+            rids: "osx-arm64,osx-x64"
+            tipo: unix
+
+    steps:
+      - name: Descargar código fuente
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Extraer versión de la etiqueta
+        id: get_version
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Versión a compilar: $VERSION"
+
+      - name: Compilar y empaquetar distribuciones (Windows)
+        if: matrix.tipo == 'windows'
+        shell: pwsh
+        run: |
+          .\scripts\build-release.ps1 -Version "${{ steps.get_version.outputs.VERSION }}" -Runtime "${{ matrix.rids }}" -OutputDir "./dist" -Clean
+
+      - name: Compilar y empaquetar distribuciones (Unix / macOS)
+        if: matrix.tipo == 'unix'
+        shell: bash
+        run: |
+          chmod +x ./scripts/build-release.sh
+          ./scripts/build-release.sh --version "${{ steps.get_version.outputs.VERSION }}" --runtime "${{ matrix.rids }}" --output-dir "./dist" --clean
+
+      - name: Subir paquetes como artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: paquetes-${{ matrix.os }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+          retention-days: 1
+
+  publicar:
+    name: Consolidar y Publicar Release Oficial
+    needs: empaquetar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Descargar código fuente
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extraer versión de la etiqueta
+        id: get_version
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Descargar artefactos compilados
+        uses: actions/download-artifact@v4
+        with:
+          path: ./dist
+          merge-multiple: true
+
+      - name: Generar suma de comprobación SHA-256 consolidada
+        id: checksums
+        shell: bash
+        run: |
+          cd ./dist
+          rm -f SHA256SUMS.txt
+          sha256sum *.{zip,tar.gz} 2>/dev/null > SHA256SUMS.txt || true
+          cat SHA256SUMS.txt
+
+      - name: Construir notas de la versión (RELEASE_BODY.md)
+        shell: pwsh
+        run: |
+          $version = "${{ steps.get_version.outputs.VERSION }}"
+          $changelogPath = "CHANGELOG.md"
+          $extractedNotes = ""
+
+          if (Test-Path $changelogPath) {
+              $changelogLines = Get-Content $changelogPath
+              $inTarget = $false
+              $extracted = [System.Collections.Generic.List[string]]::new()
+
+              foreach ($line in $changelogLines) {
+                  if ($line -match "^##\s+\[$([regex]::Escape($version))\]") {
+                      $inTarget = $true
+                      continue
+                  }
+                  if ($inTarget) {
+                      if ($line -match "^##\s+\[" -or $line -match "^---\s*$") {
+                          break
+                      }
+                      $extracted.Add($line)
+                  }
+              }
+              $extractedNotes = ($extracted -join "`n").Trim()
+          }
+
+          if ([string]::IsNullOrWhiteSpace($extractedNotes)) {
+              $extractedNotes = "* Consulte el [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) para conocer las novedades detalladas."
+          }
+
+          $hashes = Get-Content "./dist/SHA256SUMS.txt" -Raw
+
+          $body = @"
+          # XPress PDF v$version 🚀
+
+          Lanzamiento oficial de **XPress PDF**, la solución integral multiplataforma para la conversión masiva de comprobantes fiscales digitales por internet (**CFDI 4.0**) a documentos PDF de alta precisión estética y técnica, desarrollada sobre **.NET 10**, **QuestPDF** y **Avalonia UI 12**.
+
+          ---
+
+          ## 🌟 Novedades y Capacidades en esta Versión
+
+          $extractedNotes
+
+          ---
+
+          ## 📦 Guía de Descargas Multiplataforma
+
+          Seleccione el paquete correspondiente a su sistema operativo y arquitectura de procesador:
+
+          | Sistema Operativo | Arquitectura | Modalidad Standalone (Recomendada) | Modalidad Portable |
+          |---|---|---|---|
+          | **Windows** | x64 (Intel / AMD 64-bit) | ``XPressPDF-v$version-win-x64-standalone.zip`` | ``XPressPDF-v$version-win-x64-portable.zip`` |
+          | **Windows** | ARM64 (Snapdragon / Copilot+) | ``XPressPDF-v$version-win-arm64-standalone.zip`` | ``XPressPDF-v$version-win-arm64-portable.zip`` |
+          | **Linux** | x64 (Ubuntu, Debian, Fedora, Arch) | ``XPressPDF-v$version-linux-x64-standalone.tar.gz`` | ``XPressPDF-v$version-linux-x64-portable.tar.gz`` |
+          | **Linux** | ARM64 (Raspberry Pi 4/5, Servidores ARM) | ``XPressPDF-v$version-linux-arm64-standalone.tar.gz`` | ``XPressPDF-v$version-linux-arm64-portable.tar.gz`` |
+          | **macOS** | Apple Silicon (M1 / M2 / M3 / M4) | ``XPressPDF-v$version-osx-arm64-standalone.tar.gz`` | ``XPressPDF-v$version-osx-arm64-portable.tar.gz`` |
+          | **macOS** | Intel x64 | ``XPressPDF-v$version-osx-x64-standalone.tar.gz`` | ``XPressPDF-v$version-osx-x64-portable.tar.gz`` |
+
+          > [!TIP]
+          > **¿Standalone o Portable?**
+          > - **Standalone (Recomendada)**: Viene completamente autocontenida con el motor .NET 10 integrado. No requiere instalar ningún componente adicional. Solo descomprima y ejecute.
+          > - **Portable**: Paquete ultraligero que aprovecha el runtime compartido de [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) instalado en su equipo.
+
+          > [!NOTE]
+          > **Requisitos adicionales de entorno:**
+          > - **Linux**: QuestPDF y SkiaSharp requieren la biblioteca tipográfica del sistema. Instálela con: `sudo apt install libfontconfig1` (Ubuntu/Debian) o `sudo dnf install fontconfig` (Fedora).
+          > - **macOS**: En macOS, la primera ejecución de un binario no firmado por Apple puede requerir permitirlo en *Ajustes del Sistema > Privacidad y Seguridad* o ejecutar `xattr -d com.apple.quarantine XPressPDF`.
+
+          ---
+
+          ## 🔒 Verificación de Integridad Criptográfica (SHA-256)
+
+          ```text
+          $hashes
+          ```
+
+          ---
+          Historial completo de versiones disponible en el [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md).
+          "@
+
+          Set-Content -Path "./dist/RELEASE_BODY.md" -Value $body -Encoding utf8
+
+      - name: Publicar Release Oficial en GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "XPress PDF v${{ steps.get_version.outputs.VERSION }}"
+          body_path: "./dist/RELEASE_BODY.md"
+          files: |
+            dist/*.zip
+            dist/*.tar.gz
+            dist/SHA256SUMS.txt
+          draft: false
+          prerelease: false
+          generate_release_notes: false
