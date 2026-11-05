@@ -1,0 +1,17 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AppUI.Shared.Controls.Display.ErpIcon"
+             x:Name="Root">
+    <Viewbox Width="{Binding Size, ElementName=Root}"
+             Height="{Binding Size, ElementName=Root}"
+             Stretch="Uniform">
+        <Path Width="24"
+              Height="24"
+              Data="{Binding Geometry, ElementName=Root}"
+              Stroke="{Binding Foreground, ElementName=Root}"
+              StrokeThickness="{Binding StrokeThickness, ElementName=Root}"
+              StrokeLineCap="Round"
+              StrokeJoin="Round"
+              Fill="Transparent" />
+    </Viewbox>
+</UserControl>

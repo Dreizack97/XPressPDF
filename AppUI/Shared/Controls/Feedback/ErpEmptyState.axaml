@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+                    xmlns:display="using:AppUI.Shared.Controls.Display">
+
+    <ControlTheme x:Key="{x:Type feedback:ErpEmptyState}" TargetType="feedback:ErpEmptyState">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="feedback:ErpEmptyState">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="16"
+                            Margin="32">
+                    <!-- Contenedor circular del icono -->
+                    <Border Width="56" Height="56"
+                            CornerRadius="{StaticResource RadiusFull}"
+                            Background="{DynamicResource Surface2Brush}"
+                            BorderBrush="{DynamicResource LineDefaultBrush}"
+                            BorderThickness="1"
+                            HorizontalAlignment="Center">
+                        <display:ErpIcon Kind="{TemplateBinding IconKind}"
+                                         Size="24"
+                                         Foreground="{DynamicResource InkSecondaryBrush}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Textos descriptivos -->
+                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                        <TextBlock Text="{TemplateBinding Title}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize400}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource InkStrongBrush}"
+                                   TextAlignment="Center" />
+                        <TextBlock Text="{TemplateBinding Description}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize300}"
+                                   Foreground="{DynamicResource InkSecondaryBrush}"
+                                   TextAlignment="Center"
+                                   MaxWidth="440"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!-- Ranura de Acciones -->
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="Center" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

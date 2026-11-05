@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AppUI.Features.Diagnostics.ViewModels"
+             xmlns:actions="using:AppUI.Shared.Controls.Actions"
+             xmlns:containers="using:AppUI.Shared.Controls.Containers"
+             xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+             xmlns:forms="using:AppUI.Shared.Controls.Forms"
+             xmlns:pageHeader="using:AppUI.Layout.PageHeader"
+             x:Class="AppUI.Features.Diagnostics.Views.DiagnosticsView"
+             x:DataType="vm:DiagnosticsViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="24" RowSpacing="16">
+
+        <!-- Encabezado de Página -->
+        <pageHeader:ErpPageHeader Grid.Row="0"
+                                  Category="SISTEMA"
+                                  Title="Bitácora de Diagnóstico"
+                                  Subtitle="Registros detallados de lectura de esquemas, parsing de XML y generación de PDF.">
+            <pageHeader:ErpPageHeader.PrimaryActions>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <actions:ErpButton Variant="Secondary"
+                                       Size="Md"
+                                       LeadingIcon="RefreshCw"
+                                       Content="Actualizar"
+                                       Command="{Binding LoadLogsCommand}" />
+                    <actions:ErpButton Variant="Secondary"
+                                       Size="Md"
+                                       LeadingIcon="Folder"
+                                       Content="Abrir Carpeta de Logs"
+                                       Command="{Binding OpenLogsFolderCommand}" />
+                </StackPanel>
+            </pageHeader:ErpPageHeader.PrimaryActions>
+        </pageHeader:ErpPageHeader>
+
+        <!-- Tarjeta de Logs a Pantalla Completa con Virtualización -->
+        <containers:ErpSectionCard Grid.Row="1"
+                                   Title="Eventos de la Sesión"
+                                   Subtitle="Filtrado en tiempo real con resaltado semántico de severidad."
+                                   IconKind="FileText"
+                                   IsFlush="True">
+            <DockPanel LastChildFill="True">
+                <!-- Filtros Superiores -->
+                <Border DockPanel.Dock="Top"
+                        BorderBrush="{DynamicResource LineSubtleBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="20,14"
+                        Background="{DynamicResource Surface2Brush}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+                        <forms:ErpSearchInput Grid.Column="0"
+                                              Text="{Binding SearchQuery, Mode=TwoWay}"
+                                              PlaceholderText="Filtrar mensajes de log..." />
+
+                        <ComboBox Grid.Column="1"
+                                  Height="{StaticResource ControlHeightMd}"
+                                  CornerRadius="{StaticResource FieldRadius}"
+                                  ItemsSource="{Binding LevelFilterOptions}"
+                                  SelectedItem="{Binding SelectedLevelFilter, Mode=TwoWay}"
+                                  MinWidth="140" />
+                    </Grid>
+                </Border>
+
+                <!-- Estado Vacío o Lista Virtualizada -->
+                <Grid>
+                    <!-- Estado Vacío -->
+                    <feedback:ErpEmptyState IsVisible="{Binding HasNoLogs}"
+                                            IconKind="FileText"
+                                            Title="No hay registros en la bitácora"
+                                            Description="Los eventos generados durante la lectura de XML y conversión a PDF aparecerán aquí."
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center" />
+
+                    <!-- Lista Virtualizada de Logs -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  IsVisible="{Binding HasFilteredLogs}">
+                        <ItemsControl ItemsSource="{Binding FilteredLogs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:LogEntry">
+                                    <Border BorderBrush="{DynamicResource LineSubtleBrush}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="20,10">
+                                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="12" VerticalAlignment="Center">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{Binding Timestamp}"
+                                                       Classes="font-mono text-caption ink-muted"
+                                                       VerticalAlignment="Center" />
+
+                                            <feedback:ErpStatusBadge Grid.Column="1"
+                                                                     Status="{Binding StatusTone}"
+                                                                     Text="{Binding Level}"
+                                                                     Size="Sm"
+                                                                     VerticalAlignment="Center" />
+
+                                            <SelectableTextBlock Grid.Column="2"
+                                                                 Text="{Binding Message}"
+                                                                 FontFamily="{StaticResource FiraCodeFontFamily}"
+                                                                 FontSize="{StaticResource FontSize200}"
+                                                                 Foreground="{DynamicResource InkPrimaryBrush}"
+                                                                 TextWrapping="Wrap"
+                                                                 VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </DockPanel>
+        </containers:ErpSectionCard>
+    </Grid>
+</UserControl>

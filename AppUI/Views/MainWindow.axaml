@@ -1,22 +1,103 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:AppUI.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:layout="using:AppUI.Layout"
+        xmlns:navbar="using:AppUI.Layout.Navbar"
+        xmlns:sidebar="using:AppUI.Layout.Sidebar"
+        xmlns:feedback="using:AppUI.Shared.Controls.Feedback"
+        xmlns:conversionVm="using:AppUI.Features.Conversion.ViewModels"
+        xmlns:conversionViews="using:AppUI.Features.Conversion.Views"
+        xmlns:settingsVm="using:AppUI.Features.Settings.ViewModels"
+        xmlns:settingsViews="using:AppUI.Features.Settings.Views"
+        xmlns:diagVm="using:AppUI.Features.Diagnostics.ViewModels"
+        xmlns:diagViews="using:AppUI.Features.Diagnostics.Views"
         x:Class="AppUI.Views.MainWindow"
-        x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="AppUI">
+        x:DataType="layout:MainWindowViewModel"
+        Title="XPressPDF - Conversor Masivo de CFDI 4.0 a PDF"
+        Width="1280" Height="820"
+        MinWidth="960" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        CanResize="True">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+    <Window.DataTemplates>
+        <DataTemplate DataType="conversionVm:ConversionWorkspaceViewModel">
+            <conversionViews:ConversionWorkspaceView />
+        </DataTemplate>
+        <DataTemplate DataType="settingsVm:SettingsViewModel">
+            <settingsViews:SettingsView />
+        </DataTemplate>
+        <DataTemplate DataType="diagVm:DiagnosticsViewModel">
+            <diagViews:DiagnosticsView />
+        </DataTemplate>
+    </Window.DataTemplates>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <Grid>
+        <!-- 1. Marco Principal de la Aplicación: Bordes Redondeados (RadiusXl) y Sombra Elevada -->
+        <Border x:Name="WindowFrameBorder"
+                Margin="8"
+                Background="{DynamicResource SurfaceCanvasBrush}"
+                BorderBrush="{DynamicResource LineDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource RadiusXl}"
+                BoxShadow="{StaticResource ElevationShadowLg}"
+                ClipToBounds="True">
+            <DockPanel LastChildFill="True">
+                <!-- Barra de Navegación Superior -->
+                <navbar:ErpNavbar x:Name="NavbarControl" DockPanel.Dock="Top" />
 
+                <!-- Barra Lateral Izquierda (Sidebar) -->
+                <sidebar:ErpSidebar x:Name="SidebarControl" DockPanel.Dock="Left" />
+
+                <!-- Contenedor de la Vista Activa + Host de Notificaciones Flotantes -->
+                <Grid>
+                    <!-- Vista Activa con transición suave -->
+                    <TransitioningContentControl Content="{Binding CurrentView}">
+                        <TransitioningContentControl.PageTransition>
+                            <CrossFade Duration="{StaticResource DurationInstant}" />
+                        </TransitioningContentControl.PageTransition>
+                    </TransitioningContentControl>
+
+                    <!-- Notificaciones Flotantes (Toast Host) -->
+                    <feedback:ErpToastHost x:Name="ToastHostControl"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom" />
+                </Grid>
+            </DockPanel>
+        </Border>
+
+        <!-- 2. Grips Perimetrales de Redimensionamiento (8 Direcciones) -->
+        <Grid x:Name="ResizeGripsHost" IsHitTestVisible="True">
+            <!-- 4 Bordes Laterales -->
+            <Border Height="8" VerticalAlignment="Top" Margin="16,0,16,0"
+                    Cursor="TopSide" Background="Transparent"
+                    Tag="North" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Height="8" VerticalAlignment="Bottom" Margin="16,0,16,0"
+                    Cursor="BottomSide" Background="Transparent"
+                    Tag="South" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Width="8" HorizontalAlignment="Left" Margin="0,16,0,16"
+                    Cursor="LeftSide" Background="Transparent"
+                    Tag="West" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Width="8" HorizontalAlignment="Right" Margin="0,16,0,16"
+                    Cursor="RightSide" Background="Transparent"
+                    Tag="East" PointerPressed="OnResizeGripPointerPressed" />
+
+            <!-- 4 Esquinas -->
+            <Border Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Cursor="TopLeftCorner" Background="Transparent"
+                    Tag="NorthWest" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Width="16" Height="16" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Cursor="TopRightCorner" Background="Transparent"
+                    Tag="NorthEast" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    Cursor="BottomLeftCorner" Background="Transparent"
+                    Tag="SouthWest" PointerPressed="OnResizeGripPointerPressed" />
+            <Border Width="16" Height="16" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Cursor="BottomRightCorner" Background="Transparent"
+                    Tag="SouthEast" PointerPressed="OnResizeGripPointerPressed" />
+        </Grid>
+    </Grid>
 </Window>

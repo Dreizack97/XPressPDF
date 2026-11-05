@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:containers="using:AppUI.Shared.Controls.Containers"
+                    xmlns:display="using:AppUI.Shared.Controls.Display"
+                    xmlns:converters="using:AppUI.Shared.Converters">
+
+    <converters:ToneToBrushConverter x:Key="ToneSoftBrushConverter" Variant="SurfaceSoft" />
+    <converters:ToneToBrushConverter x:Key="ToneInkBrushConverter" Variant="Ink" />
+
+    <ControlTheme x:Key="{x:Type containers:ErpStatCard}" TargetType="containers:ErpStatCard">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="containers:ErpStatCard">
+                <Border Background="{DynamicResource Surface1Brush}"
+                        BorderBrush="{DynamicResource LineDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource CardRadius}"
+                        Padding="16,12"
+                        BoxShadow="{StaticResource ElevationShadowSm}">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                        <!-- 1. Etiqueta superior (Overline tracking amplio) -->
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="{TemplateBinding Label}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize100}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource InkMutedBrush}"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+
+                        <!-- Icono en contenedor circular con tono semántico -->
+                        <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                                Width="38" Height="38"
+                                CornerRadius="{StaticResource RadiusLg}"
+                                Background="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneSoftBrushConverter}}"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right">
+                            <display:ErpIcon Kind="{TemplateBinding IconKind}"
+                                           Size="20"
+                                           Foreground="{Binding Tone, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ToneInkBrushConverter}}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- 2. Cifra KPI en Fira Code -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="{TemplateBinding Value}"
+                                   FontFamily="{StaticResource FiraCodeFontFamily}"
+                                   FontSize="{StaticResource FontSize600}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource InkStrongBrush}"
+                                   Margin="0,4,0,2"
+                                   VerticalAlignment="Center" />
+
+                        <!-- 3. Descripción secundaria opcional -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                   Text="{TemplateBinding Description}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize200}"
+                                   Foreground="{DynamicResource InkSecondaryBrush}"
+                                   IsVisible="{Binding Description, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

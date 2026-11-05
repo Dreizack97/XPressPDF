@@ -1,0 +1,76 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sidebar="using:AppUI.Layout.Sidebar"
+                    xmlns:display="using:AppUI.Shared.Controls.Display">
+
+    <ControlTheme x:Key="{x:Type sidebar:ErpSidebarNavItem}" TargetType="sidebar:ErpSidebarNavItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Height" Value="42" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+
+        <Setter Property="Template">
+            <ControlTemplate TargetType="sidebar:ErpSidebarNavItem">
+                <Border x:Name="PART_RootBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="0"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                        <!-- Icono -->
+                        <display:ErpIcon x:Name="PART_Icon"
+                                       Grid.Column="0"
+                                       Kind="{TemplateBinding IconKind}"
+                                       Size="20"
+                                       Foreground="{DynamicResource InkSecondaryBrush}"
+                                       VerticalAlignment="Center" />
+
+                        <!-- Título (Oculto cuando está colapsado) -->
+                        <TextBlock x:Name="PART_Title"
+                                   Grid.Column="1"
+                                   Text="{TemplateBinding Title}"
+                                   FontFamily="{StaticResource FiraSansFontFamily}"
+                                   FontSize="{StaticResource FontSize300}"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource InkBodyBrush}"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding !IsCollapsed, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                        <!-- Badge contador opcional -->
+                        <Border x:Name="PART_Badge"
+                                Grid.Column="2"
+                                CornerRadius="{StaticResource RadiusFull}"
+                                Background="{DynamicResource Surface2Brush}"
+                                Padding="8,2"
+                                IsVisible="{Binding BadgeText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <TextBlock Text="{TemplateBinding BadgeText}"
+                                       Classes="font-mono text-overline ink-primary"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Hover -->
+        <Style Selector="^:pointerover /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource Surface2Brush}" />
+        </Style>
+
+        <!-- Selected (Píldora activa con acento azul) -->
+        <Style Selector="^[IsSelected=True] /template/ Border#PART_RootBorder">
+            <Setter Property="Background" Value="{DynamicResource ToneBlueSurfaceSoftBrush}" />
+        </Style>
+        <Style Selector="^[IsSelected=True] /template/ display|ErpIcon#PART_Icon">
+            <Setter Property="Foreground" Value="#2563EB" />
+        </Style>
+        <Style Selector="^[IsSelected=True] /template/ TextBlock#PART_Title">
+            <Setter Property="Foreground" Value="{DynamicResource ToneBlueInkStrongBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>
