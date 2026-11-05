@@ -30,18 +30,18 @@ public class RelatedCfdiComponent : IComponent
 
             foreach (ComprobanteCfdiRelacionados group in _relatedList)
             {
-                column.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(4).PaddingVertical(1.5F).Row(row =>
+                column.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(6).PaddingVertical(2).Text(t =>
                 {
-                    row.AutoItem().Text("Tipo de Relación: ").Style(CfdiPdfTheme.LabelStyle);
-                    row.RelativeItem().Text(SatCatalogProvider.GetTipoRelacion(group.TipoRelacion)).Style(CfdiPdfTheme.ValueStyle);
+                    t.Span("Tipo de Relación: ").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span(SatCatalogProvider.GetTipoRelacion(group.TipoRelacion)).Style(CfdiPdfTheme.ValueStyle);
                 });
 
                 foreach (ComprobanteCfdiRelacionadosCfdiRelacionado rel in group.CfdiRelacionado)
                 {
-                    column.Item().PaddingHorizontal(6).PaddingVertical(1).Row(row =>
+                    column.Item().PaddingHorizontal(8).PaddingVertical(1.5F).Text(t =>
                     {
-                        row.AutoItem().Text("• UUID Relacionado: ").Style(CfdiPdfTheme.LabelStyle);
-                        row.RelativeItem().Text(rel.UUID).Style(CfdiPdfTheme.ValueStyle);
+                        t.Span("• UUID Relacionado: ").Style(CfdiPdfTheme.LabelStyle);
+                        t.Span(rel.UUID).Style(CfdiPdfTheme.ValueStyle);
                     });
                 }
             }

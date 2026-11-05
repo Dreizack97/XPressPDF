@@ -6,12 +6,15 @@ using Core.Models.Complements.ImpuestosLocales10;
 using Core.Pdf.Styling;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 
 /// <summary>
 /// Renderizador modular para la sección del complemento de Impuestos Locales 1.0.
 /// </summary>
 public class ImpuestosLocalesSectionRenderer : ICfdiComplementSectionRenderer
 {
+    private static readonly CultureInfo Culture = CultureInfo.GetCultureInfo("es-MX");
+
     public int Order => 30;
 
     public bool CanRender(Comprobante comprobante) => comprobante.ImpuestosLocales is not null;
@@ -49,7 +52,7 @@ public class ImpuestosLocalesSectionRenderer : ICfdiComplementSectionRenderer
                     {
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(traslado.ImpLocTrasladado).Style(CfdiPdfTheme.ValueStyle);
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text($"{traslado.TasadeTraslado:N2}%").Style(CfdiPdfTheme.ValueStyle).AlignRight();
-                        table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(traslado.Importe.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                        table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(traslado.Importe.ToString("C", Culture)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
                     }
                 });
             }
@@ -76,16 +79,16 @@ public class ImpuestosLocalesSectionRenderer : ICfdiComplementSectionRenderer
                     {
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(retencion.ImpLocRetenido).Style(CfdiPdfTheme.ValueStyle);
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text($"{retencion.TasadeRetencion:N2}%").Style(CfdiPdfTheme.ValueStyle).AlignRight();
-                        table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(retencion.Importe.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                        table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(retencion.Importe.ToString("C", Culture)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
                     }
                 });
             }
 
             // Resumen de totales locales
-            col.Item().Padding(2.5F).Row(row =>
+            col.Item().Padding(4).Row(row =>
             {
-                row.RelativeItem().Text($"Total de Traslados Locales: {local.TotaldeTraslados:C}").Style(CfdiPdfTheme.LabelStyle);
-                row.RelativeItem().Text($"Total de Retenciones Locales: {local.TotaldeRetenciones:C}").Style(CfdiPdfTheme.LabelStyle).AlignRight();
+                row.RelativeItem().Text($"Total de Traslados Locales: {local.TotaldeTraslados.ToString("C", Culture)}").Style(CfdiPdfTheme.LabelStyle);
+                row.RelativeItem().Text($"Total de Retenciones Locales: {local.TotaldeRetenciones.ToString("C", Culture)}").Style(CfdiPdfTheme.LabelStyle).AlignRight();
             });
         });
     }

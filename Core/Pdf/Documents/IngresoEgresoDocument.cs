@@ -9,6 +9,8 @@ using Core.Pdf.Components;
 using Core.Pdf.Styling;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Representación impresa de CFDI de Ingreso (I) y Egreso / Nota de Crédito (E) conforme al Anexo 20 y RMF 2.7.1.7.
@@ -35,7 +37,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
         {
             column.Spacing(6);
 
-            // 1. Datos de Emisor y Receptor
+            // 1. Datos de Emisor y Receptor (Tarjetas simétricas con ExtendVertical)
             column.Item().Component(new IssuerRecipientComponent(Comprobante));
 
             // 2. Información Global (si aplica)
@@ -83,19 +85,17 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                 // Si hay condiciones de pago o tipo de cambio, mostrarlos en una fila secundaria
                 if (!string.IsNullOrWhiteSpace(Comprobante.CondicionesDePago) || (Comprobante.TipoCambioSpecified && Comprobante.TipoCambio > 0))
                 {
-                    col.Item().PaddingHorizontal(5).PaddingVertical(2).Row(r =>
+                    col.Item().PaddingHorizontal(6).PaddingVertical(3).Row(r =>
                     {
-                        r.Spacing(10);
+                        r.Spacing(15);
                         if (!string.IsNullOrWhiteSpace(Comprobante.CondicionesDePago))
                         {
-                            r.AutoItem().Text("Condiciones de Pago: ").Style(CfdiPdfTheme.LabelStyle);
-                            r.RelativeItem().Text(Comprobante.CondicionesDePago).Style(CfdiPdfTheme.ValueStyle);
+                            r.AutoItem().Text(t => CfdiPdfTheme.KeyValue(t, "Condiciones de Pago:", Comprobante.CondicionesDePago));
                         }
 
                         if (Comprobante.TipoCambioSpecified && Comprobante.TipoCambio > 0)
                         {
-                            r.AutoItem().Text("Tipo de Cambio: ").Style(CfdiPdfTheme.LabelStyle);
-                            r.RelativeItem().Text(Comprobante.TipoCambio.ToString("N4")).Style(CfdiPdfTheme.ValueStyle);
+                            r.AutoItem().Text(t => CfdiPdfTheme.KeyValue(t, "Tipo de Cambio:", Comprobante.TipoCambio.ToString("N4")));
                         }
                     });
                 }
@@ -121,7 +121,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                         columns.RelativeColumn(1.0F);// Valor Unitario
                         if (hasDiscount)
                             columns.RelativeColumn(0.9F); // Descuento
-                        columns.ConstantColumn(35);  // Objeto Imp
+                        columns.ConstantColumn(44);  // Objeto Imp (44pt para evitar salto de línea en Obj.Imp)
                         columns.RelativeColumn(1.0F);// Importe
                     });
 
@@ -146,7 +146,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.ClaveUnidad).Style(CfdiPdfTheme.ValueStyle);
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.Unidad).Style(CfdiPdfTheme.ValueStyle);
 
-                        // Descripción con soporte para número de identificación, pedimento o cuenta predial
+                        // Descripción con soporte para número de identificación, pedimento, cuenta predial, terceros e IEDU
                         table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Column(descCol =>
                         {
                             descCol.Item().Text(concepto.Descripcion).Style(CfdiPdfTheme.ValueStyle);
@@ -172,6 +172,11 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                                 }
                             }
 
+                            if (concepto.ACuentaTerceros != null)
+                            {
+                                descCol.Item().Text($"A Cuenta de Terceros: {concepto.ACuentaTerceros.RfcACuentaTerceros} ({concepto.ACuentaTerceros.NombreACuentaTerceros})").Style(CfdiPdfTheme.SmallValueStyle);
+                            }
+
                             if (concepto.InstitucionesEducativas is not null)
                             {
                                 var iedu = concepto.InstitucionesEducativas;
@@ -194,7 +199,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                 });
             });
 
-            // 6. Totales e Importe con Letra
+            // 6. Totales e Importe con Letra (Simetría de altura mediante ExtendVertical)
             column.Item().Row(row =>
             {
                 row.Spacing(10);
@@ -205,7 +210,7 @@ public class IngresoEgresoDocument : CfdiDocumentBase
                     col.Item().Background(CfdiPdfTheme.HeaderBackground).Padding(2.5F)
                         .Text("Importe con Letra").Style(CfdiPdfTheme.SectionTitleStyle).AlignCenter();
 
-                    col.Item().Padding(5).Text(CurrencyToWordsConverter.ToText(Comprobante.Total, Comprobante.Moneda))
+                    col.Item().Padding(6).Text(CurrencyToWordsConverter.ToText(Comprobante.Total, Comprobante.Moneda))
                         .Style(CfdiPdfTheme.ValueStyle);
                 });
 

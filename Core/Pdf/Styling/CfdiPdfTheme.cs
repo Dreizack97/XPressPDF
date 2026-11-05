@@ -31,4 +31,35 @@ public static class CfdiPdfTheme
 
     public static IContainer CellBodyStyle(IContainer container) =>
         container.BorderBottom(0.5F).BorderColor(BorderColor).PaddingVertical(1.5F).PaddingHorizontal(4);
+
+    public static IContainer CardStyle(IContainer container) =>
+        container.Border(0.75F, BorderColor).CornerRadius(3);
+
+    public static IContainer CardHeaderStyle(IContainer container) =>
+        container.Background(HeaderBackground).PaddingVertical(2.5F).PaddingHorizontal(4);
+
+    public static void KeyValue(TextDescriptor text, string label, string? value)
+    {
+        text.Span(label).Style(LabelStyle);
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            text.Span(" ");
+            text.Span(value).Style(ValueStyle);
+        }
+    }
+
+    public static void KeyValueRow(ColumnDescriptor col, string label, string? value)
+    {
+        col.Item().Text(t => KeyValue(t, label, value));
+    }
+
+    public static void KeyValueTwoColumns(ColumnDescriptor col, string label1, string? value1, string label2, string? value2)
+    {
+        col.Item().Row(row =>
+        {
+            row.Spacing(6);
+            row.RelativeItem().Text(t => KeyValue(t, label1, value1));
+            row.RelativeItem().Text(t => KeyValue(t, label2, value2));
+        });
+    }
 }

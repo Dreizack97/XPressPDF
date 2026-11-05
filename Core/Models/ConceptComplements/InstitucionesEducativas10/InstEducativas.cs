@@ -6,7 +6,7 @@ using Core.Abstractions;
 
 [Serializable]
 [XmlType(AnonymousType = true, Namespace = "http://www.sat.gob.mx/iedu")]
-[XmlRoot(Namespace = "http://www.sat.gob.mx/iedu", IsNullable = false)]
+[XmlRoot("instEducativas", Namespace = "http://www.sat.gob.mx/iedu", IsNullable = false)]
 public sealed class InstEducativas : ICfdiConceptComplement
 {
     [XmlIgnore]

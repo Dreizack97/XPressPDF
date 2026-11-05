@@ -10,6 +10,8 @@ using Core.Pdf.Components;
 using Core.Pdf.Styling;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Representación impresa de CFDI de Recepción de Pagos 2.0 (Tipo P).
@@ -35,7 +37,7 @@ public class RecepcionPagosDocument : CfdiDocumentBase
         {
             column.Spacing(6);
 
-            // 1. Emisor y Receptor
+            // 1. Emisor y Receptor (Tarjetas simétricas)
             column.Item().Component(new IssuerRecipientComponent(Comprobante));
 
             // 2. CFDI Relacionados (si existen)
@@ -56,25 +58,29 @@ public class RecepcionPagosDocument : CfdiDocumentBase
                         col.Item().Background(CfdiPdfTheme.HeaderBackground).Padding(2.5F)
                             .Text("Resumen de Totales del Complemento de Pagos").Style(CfdiPdfTheme.SectionTitleStyle).AlignCenter();
 
-                        col.Item().Padding(4).Row(row =>
+                        col.Item().Padding(5).Row(row =>
                         {
+                            row.Spacing(12);
+
                             row.RelativeItem().Column(c =>
                             {
-                                c.Item().Text(t => { t.Span("Monto Total de Pagos: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.MontoTotalPagos.ToString("C")).Style(CfdiPdfTheme.ValueBoldStyle); });
+                                c.Spacing(2);
+                                c.Item().Text(t => { t.Span("Monto Total de Pagos: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.MontoTotalPagos)).Style(CfdiPdfTheme.ValueBoldStyle); });
                                 if (totales.TotalTrasladosBaseIVA16Specified)
-                                    c.Item().Text(t => { t.Span("Base IVA 16%: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.TotalTrasladosBaseIVA16.ToString("C")).Style(CfdiPdfTheme.ValueStyle); });
+                                    c.Item().Text(t => { t.Span("Base IVA 16%: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.TotalTrasladosBaseIVA16)).Style(CfdiPdfTheme.ValueStyle); });
                                 if (totales.TotalTrasladosImpuestoIVA16Specified)
-                                    c.Item().Text(t => { t.Span("Impuesto IVA 16%: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.TotalTrasladosImpuestoIVA16.ToString("C")).Style(CfdiPdfTheme.ValueStyle); });
+                                    c.Item().Text(t => { t.Span("Impuesto IVA 16%: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.TotalTrasladosImpuestoIVA16)).Style(CfdiPdfTheme.ValueStyle); });
                             });
 
                             row.RelativeItem().Column(c =>
                             {
+                                c.Spacing(2);
                                 if (totales.TotalRetencionesIVASpecified)
-                                    c.Item().Text(t => { t.Span("Retención IVA: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.TotalRetencionesIVA.ToString("C")).Style(CfdiPdfTheme.ValueStyle); });
+                                    c.Item().Text(t => { t.Span("Retención IVA: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.TotalRetencionesIVA)).Style(CfdiPdfTheme.ValueStyle); });
                                 if (totales.TotalRetencionesISRSpecified)
-                                    c.Item().Text(t => { t.Span("Retención ISR: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.TotalRetencionesISR.ToString("C")).Style(CfdiPdfTheme.ValueStyle); });
+                                    c.Item().Text(t => { t.Span("Retención ISR: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.TotalRetencionesISR)).Style(CfdiPdfTheme.ValueStyle); });
                                 if (totales.TotalRetencionesIEPSSpecified)
-                                    c.Item().Text(t => { t.Span("Retención IEPS: ").Style(CfdiPdfTheme.LabelStyle); t.Span(totales.TotalRetencionesIEPS.ToString("C")).Style(CfdiPdfTheme.ValueStyle); });
+                                    c.Item().Text(t => { t.Span("Retención IEPS: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(totales.TotalRetencionesIEPS)).Style(CfdiPdfTheme.ValueStyle); });
                             });
                         });
                     });
@@ -90,10 +96,13 @@ public class RecepcionPagosDocument : CfdiDocumentBase
                             .Text($"Información del Pago #{indexPago}").Style(CfdiPdfTheme.SectionTitleStyle).AlignCenter();
 
                         // Encabezado del pago
-                        col.Item().Padding(3).Row(pagoRow =>
+                        col.Item().Padding(5).Row(pagoRow =>
                         {
+                            pagoRow.Spacing(12);
+
                             pagoRow.RelativeItem().Column(c =>
                             {
+                                c.Spacing(2);
                                 c.Item().Text(t => { t.Span("Fecha de Pago: ").Style(CfdiPdfTheme.LabelStyle); t.Span(pago.FechaPago.ToString("yyyy-MM-dd HH:mm:ss")).Style(CfdiPdfTheme.ValueStyle); });
                                 c.Item().Text(t => { t.Span("Forma de Pago: ").Style(CfdiPdfTheme.LabelStyle); t.Span(SatCatalogProvider.GetFormaPago(pago.FormaDePagoP)).Style(CfdiPdfTheme.ValueStyle); });
                                 if (!string.IsNullOrWhiteSpace(pago.NumOperacion))
@@ -102,22 +111,24 @@ public class RecepcionPagosDocument : CfdiDocumentBase
 
                             pagoRow.RelativeItem().Column(c =>
                             {
+                                c.Spacing(2);
                                 c.Item().Text(t => { t.Span("Moneda de Pago: ").Style(CfdiPdfTheme.LabelStyle); t.Span(pago.MonedaP).Style(CfdiPdfTheme.ValueStyle); });
                                 if (pago.TipoCambioPSpecified && pago.TipoCambioP > 0)
                                     c.Item().Text(t => { t.Span("Tipo de Cambio: ").Style(CfdiPdfTheme.LabelStyle); t.Span(pago.TipoCambioP.ToString("N4")).Style(CfdiPdfTheme.ValueStyle); });
-                                c.Item().Text(t => { t.Span("Monto Pagado: ").Style(CfdiPdfTheme.LabelStyle); t.Span(pago.Monto.ToString("C")).Style(CfdiPdfTheme.ValueBoldStyle); });
+                                c.Item().Text(t => { t.Span("Monto Pagado: ").Style(CfdiPdfTheme.LabelStyle); t.Span(FormatMoney(pago.Monto)).Style(CfdiPdfTheme.ValueBoldStyle); });
                             });
                         });
 
                         // Cuentas bancarias si existen
                         if (!string.IsNullOrWhiteSpace(pago.CtaOrdenante) || !string.IsNullOrWhiteSpace(pago.CtaBeneficiario))
                         {
-                            col.Item().PaddingHorizontal(3).PaddingBottom(2).Row(ctaRow =>
+                            col.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(5).PaddingVertical(2).Row(ctaRow =>
                             {
+                                ctaRow.Spacing(12);
                                 if (!string.IsNullOrWhiteSpace(pago.CtaOrdenante))
-                                    ctaRow.RelativeItem().Text($"Cta. Ordenante: {pago.CtaOrdenante} ({pago.RfcEmisorCtaOrd ?? "N/A"})").Style(CfdiPdfTheme.SmallValueStyle);
+                                    ctaRow.RelativeItem().Text(t => CfdiPdfTheme.KeyValue(t, "Cta. Ordenante:", $"{pago.CtaOrdenante} ({pago.RfcEmisorCtaOrd ?? "N/A"})"));
                                 if (!string.IsNullOrWhiteSpace(pago.CtaBeneficiario))
-                                    ctaRow.RelativeItem().Text($"Cta. Beneficiario: {pago.CtaBeneficiario} ({pago.RfcEmisorCtaBen ?? "N/A"})").Style(CfdiPdfTheme.SmallValueStyle);
+                                    ctaRow.RelativeItem().Text(t => CfdiPdfTheme.KeyValue(t, "Cta. Beneficiario:", $"{pago.CtaBeneficiario} ({pago.RfcEmisorCtaBen ?? "N/A"})"));
                             });
                         }
 
@@ -155,9 +166,9 @@ public class RecepcionPagosDocument : CfdiDocumentBase
                                     drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(string.IsNullOrWhiteSpace(serieFolio) ? "-" : serieFolio).Style(CfdiPdfTheme.ValueStyle);
                                     drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(dr.MonedaDR).Style(CfdiPdfTheme.ValueStyle);
                                     drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(dr.NumParcialidad).Style(CfdiPdfTheme.ValueStyle).AlignCenter();
-                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(dr.ImpSaldoAnt.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
-                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(dr.ImpPagado.ToString("C")).Style(CfdiPdfTheme.ValueBoldStyle).AlignRight();
-                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(dr.ImpSaldoInsoluto.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(FormatMoney(dr.ImpSaldoAnt)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(FormatMoney(dr.ImpPagado)).Style(CfdiPdfTheme.ValueBoldStyle).AlignRight();
+                                    drTable.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(FormatMoney(dr.ImpSaldoInsoluto)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
                                 }
                             });
                         }

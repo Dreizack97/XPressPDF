@@ -6,12 +6,16 @@ using Core.Models.Complements.ValesDeDespensa10;
 using Core.Pdf.Styling;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Globalization;
+using System.Linq;
 
 /// <summary>
 /// Renderizador modular para la sección del complemento de Vales de Despensa 1.0.
 /// </summary>
 public class ValesDespensaSectionRenderer : ICfdiComplementSectionRenderer
 {
+    private static readonly CultureInfo Culture = CultureInfo.GetCultureInfo("es-MX");
+
     public int Order => 20;
 
     public bool CanRender(Comprobante comprobante) => comprobante.ValesDespensa is not null;
@@ -49,7 +53,7 @@ public class ValesDespensaSectionRenderer : ICfdiComplementSectionRenderer
                 table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(vales.TipoOperacion).Style(CfdiPdfTheme.ValueStyle);
                 table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(vales.RegistroPatronal ?? "N/A").Style(CfdiPdfTheme.ValueStyle);
                 table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(vales.NumeroDeCuenta).Style(CfdiPdfTheme.ValueStyle);
-                table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(vales.Total.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(vales.Total.ToString("C", Culture)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
             });
         });
 
@@ -94,13 +98,13 @@ public class ValesDespensaSectionRenderer : ICfdiComplementSectionRenderer
                     table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.rfc).Style(CfdiPdfTheme.ValueStyle);
                     table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.curp).Style(CfdiPdfTheme.ValueStyle);
                     table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.nombre?.Trim()).Style(CfdiPdfTheme.ValueStyle);
-                    table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.importe.ToString("C")).Style(CfdiPdfTheme.ValueStyle).AlignRight();
+                    table.Cell().Element(CfdiPdfTheme.CellBodyStyle).Text(concepto.importe.ToString("C", Culture)).Style(CfdiPdfTheme.ValueStyle).AlignRight();
                 }
 
                 table.Footer(footer =>
                 {
                     footer.Cell().ColumnSpan(5).Element(CfdiPdfTheme.CellHeaderStyle).Text("Total Dispersión").Style(CfdiPdfTheme.LabelStyle).AlignRight();
-                    footer.Cell().Element(CfdiPdfTheme.CellHeaderStyle).Text(vales.Total.ToString("C")).Style(CfdiPdfTheme.LabelStyle).AlignRight();
+                    footer.Cell().Element(CfdiPdfTheme.CellHeaderStyle).Text(vales.Total.ToString("C", Culture)).Style(CfdiPdfTheme.LabelStyle).AlignRight();
                 });
             });
         });

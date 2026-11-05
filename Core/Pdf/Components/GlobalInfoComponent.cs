@@ -25,25 +25,26 @@ public class GlobalInfoComponent : IComponent
             column.Item().Background(CfdiPdfTheme.HeaderBackground).Padding(2.5F)
                 .Text("Información Global (Ventas al Público en General)").Style(CfdiPdfTheme.SectionTitleStyle).AlignCenter();
 
-            column.Item().PaddingHorizontal(5).PaddingVertical(2.5F).Row(row =>
+            column.Item().PaddingHorizontal(6).PaddingVertical(3.5F).Row(row =>
             {
-                row.Spacing(10);
-                row.RelativeItem().Row(r =>
+                row.Spacing(12);
+
+                row.RelativeItem().Text(t =>
                 {
-                    r.AutoItem().Text("Periodicidad: ").Style(CfdiPdfTheme.LabelStyle);
-                    r.RelativeItem().Text(SatCatalogProvider.GetPeriodicidad(_info.Periodicidad)).Style(CfdiPdfTheme.ValueStyle);
+                    t.Span("Periodicidad: ").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span(SatCatalogProvider.GetPeriodicidad(_info.Periodicidad)).Style(CfdiPdfTheme.ValueStyle);
                 });
 
-                row.RelativeItem().Row(r =>
+                row.RelativeItem().Text(t =>
                 {
-                    r.AutoItem().Text("Meses: ").Style(CfdiPdfTheme.LabelStyle);
-                    r.RelativeItem().Text(SatCatalogProvider.GetMeses(_info.Meses)).Style(CfdiPdfTheme.ValueStyle);
+                    t.Span("Meses: ").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span(SatCatalogProvider.GetMeses(_info.Meses)).Style(CfdiPdfTheme.ValueStyle);
                 });
 
-                row.RelativeItem().Row(r =>
+                row.RelativeItem().Text(t =>
                 {
-                    r.AutoItem().Text("Año: ").Style(CfdiPdfTheme.LabelStyle);
-                    r.RelativeItem().Text(_info.Año.ToString()).Style(CfdiPdfTheme.ValueStyle);
+                    t.Span("Año: ").Style(CfdiPdfTheme.LabelStyle);
+                    t.Span(_info.Año.ToString()).Style(CfdiPdfTheme.ValueStyle);
                 });
             });
         });
