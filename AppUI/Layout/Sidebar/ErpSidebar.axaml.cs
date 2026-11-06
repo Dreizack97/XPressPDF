@@ -20,6 +20,7 @@ public partial class ErpSidebar : UserControl
         AvaloniaProperty.Register<ErpSidebar, NavigationTarget>(nameof(CurrentTarget), NavigationTarget.Conversion);
 
     private INavigationService? _navigationService;
+    private IPreferencesService? _preferencesService;
 
     static ErpSidebar()
     {
@@ -58,10 +59,19 @@ public partial class ErpSidebar : UserControl
     private void OnIsCollapsedChanged()
     {
         CurrentWidth = IsCollapsed ? CollapsedWidth : ExpandedWidth;
+        if (_preferencesService != null && _preferencesService.Current.IsSidebarCollapsed != IsCollapsed)
+        {
+            _preferencesService.Current.IsSidebarCollapsed = IsCollapsed;
+            _preferencesService.Save(_preferencesService.Current);
+        }
     }
 
-    public void AttachNavigationService(INavigationService navigationService)
+    public void AttachServices(INavigationService navigationService, IPreferencesService preferencesService)
     {
+        _preferencesService = preferencesService;
+        IsCollapsed = preferencesService.Current.IsSidebarCollapsed;
+        CurrentWidth = IsCollapsed ? CollapsedWidth : ExpandedWidth;
+
         _navigationService = navigationService;
         _navigationService.Navigated += target => CurrentTarget = target;
         CurrentTarget = _navigationService.CurrentTarget;

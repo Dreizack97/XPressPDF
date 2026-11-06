@@ -38,8 +38,9 @@ public partial class App : Application
             var themeService = Services.GetRequiredService<IThemeService>();
             var navService = Services.GetRequiredService<INavigationService>();
             var toastService = Services.GetRequiredService<IToastService>();
+            var preferencesService = Services.GetRequiredService<IPreferencesService>();
 
-            mainWindow.AttachServices(storageService, themeService, navService, toastService);
+            mainWindow.AttachServices(storageService, themeService, navService, toastService, preferencesService);
 
             desktop.MainWindow = mainWindow;
 
