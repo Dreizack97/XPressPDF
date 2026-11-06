@@ -7,11 +7,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AppUI.Layout;
 
+using global::Core.Abstractions;
+
 public partial class MainWindowViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
     private readonly IPreferencesService _preferencesService;
     private readonly IThemeService _themeService;
+    private readonly ILogService _logService;
 
     public ConversionWorkspaceViewModel ConversionVm { get; }
     public SettingsViewModel SettingsVm { get; }
@@ -27,6 +30,7 @@ public partial class MainWindowViewModel : ObservableObject
         INavigationService navigationService,
         IPreferencesService preferencesService,
         IThemeService themeService,
+        ILogService logService,
         ConversionWorkspaceViewModel conversionVm,
         SettingsViewModel settingsVm,
         DiagnosticsViewModel diagnosticsVm)
@@ -34,6 +38,7 @@ public partial class MainWindowViewModel : ObservableObject
         _navigationService = navigationService;
         _preferencesService = preferencesService;
         _themeService = themeService;
+        _logService = logService;
 
         ConversionVm = conversionVm;
         SettingsVm = settingsVm;
@@ -48,6 +53,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         var prefs = await _preferencesService.LoadAsync();
         _themeService.SetTheme(prefs.SelectedTheme);
+        await _logService.LogAsync("Sesión de usuario iniciada en interfaz gráfica.", "INFO").ConfigureAwait(false);
     }
 
     private void OnNavigated(NavigationTarget target)
@@ -59,5 +65,14 @@ public partial class MainWindowViewModel : ObservableObject
             NavigationTarget.Diagnostics => DiagnosticsVm,
             _ => ConversionVm
         };
+
+        if (target == NavigationTarget.Diagnostics)
+        {
+            DiagnosticsVm.LoadLogs();
+        }
+        else if (target == NavigationTarget.Settings)
+        {
+            SettingsVm.ReloadFromPreferences();
+        }
     }
 }
