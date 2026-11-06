@@ -12,8 +12,12 @@ public static class UiServiceCollectionExtensions
 {
     public static IServiceCollection AddAppUiServices(this IServiceCollection services)
     {
-        // 1. Registrar motor Core de CFDI e IoC
-        services.AddXPressPdfCore();
+        // 1. Registrar motor Core de CFDI e IoC con ruta unificada de logs en AppData
+        var logDir = System.IO.Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData),
+            "XPressPDF",
+            "logs");
+        services.AddXPressPdfCore(logDirectory: logDir);
 
         // 2. Registrar servicios de infraestructura de UI (Singletons)
         services.AddSingleton<IThemeService, ThemeService>();

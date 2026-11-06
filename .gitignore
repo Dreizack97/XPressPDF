@@ -366,3 +366,7 @@ FodyWeavers.xsd
 
 # Fotografías y logotipos subidos en desarrollo (Media:RootPath): datos personales.
 **/media/
+
+# Directorios de distribución y empaquetado
+dist/
+test-*/

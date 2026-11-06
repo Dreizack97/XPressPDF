@@ -15,7 +15,10 @@ public sealed class PreferencesService : IPreferencesService
     };
 
     private readonly string _filePath;
+    private readonly object _lock = new();
     private AppPreferences _current = new();
+
+    public event Action<AppPreferences>? PreferencesChanged;
 
     public PreferencesService()
     {
@@ -23,32 +26,61 @@ public sealed class PreferencesService : IPreferencesService
         var dir = Path.Combine(appData, "XPressPDF");
         Directory.CreateDirectory(dir);
         _filePath = Path.Combine(dir, "preferences.json");
+        LoadInternal();
     }
 
     public AppPreferences Current => _current;
 
-    public async Task<AppPreferences> LoadAsync()
+    private void LoadInternal()
     {
-        try
+        lock (_lock)
         {
-            if (File.Exists(_filePath))
+            try
             {
-                var json = await File.ReadAllTextAsync(_filePath).ConfigureAwait(false);
-                var loaded = JsonSerializer.Deserialize<AppPreferences>(json, JsonOptions);
-                if (loaded != null)
+                if (File.Exists(_filePath))
                 {
-                    _current = loaded;
-                    return _current;
+                    var json = File.ReadAllText(_filePath);
+                    var loaded = JsonSerializer.Deserialize<AppPreferences>(json, JsonOptions);
+                    if (loaded != null)
+                    {
+                        _current = loaded;
+                        return;
+                    }
                 }
             }
+            catch
+            {
+                // Fallback a preferencias predeterminadas en caso de error
+            }
+
+            _current = new AppPreferences();
         }
-        catch
+    }
+
+    public Task<AppPreferences> LoadAsync()
+    {
+        LoadInternal();
+        return Task.FromResult(_current);
+    }
+
+    public void Save(AppPreferences preferences)
+    {
+        ArgumentNullException.ThrowIfNull(preferences);
+        lock (_lock)
         {
-            // Fallback a preferencias predeterminadas en caso de archivo corrupto o inaccesible
+            _current = preferences;
+            try
+            {
+                var json = JsonSerializer.Serialize(preferences, JsonOptions);
+                File.WriteAllText(_filePath, json);
+            }
+            catch
+            {
+                // Evitar fallas si el archivo está temporalmente bloqueado
+            }
         }
 
-        _current = new AppPreferences();
-        return _current;
+        PreferencesChanged?.Invoke(_current);
     }
 
     public async Task SaveAsync(AppPreferences preferences)
@@ -63,7 +95,9 @@ public sealed class PreferencesService : IPreferencesService
         }
         catch
         {
-            // No interrumpir la aplicación si el disco está temporalmente bloqueado
+            // Evitar interrupción si el disco está temporalmente bloqueado
         }
+
+        PreferencesChanged?.Invoke(_current);
     }
 }

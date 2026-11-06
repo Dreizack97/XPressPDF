@@ -52,6 +52,22 @@ public class CfdiConversionService
                 return new CfdiConversionResult(xmlFilePath, null, null, false, error, stopwatch.Elapsed);
             }
 
+            // Precarga segura de logotipo corporativo si no fue precargado en bytes
+            if (options.LogoImageBytes is null &&
+                !string.IsNullOrWhiteSpace(options.LogoImagePath) &&
+                File.Exists(options.LogoImagePath))
+            {
+                try
+                {
+                    byte[] logoBytes = await File.ReadAllBytesAsync(options.LogoImagePath, cancellationToken).ConfigureAwait(false);
+                    options = options with { LogoImageBytes = logoBytes };
+                }
+                catch
+                {
+                    // Continúa con la conversión si el logotipo no puede leerse
+                }
+            }
+
             // Deserialización asíncrona segura
             Comprobante comprobante = await _xmlParser.ParseFileAsync(xmlFilePath, cancellationToken).ConfigureAwait(false);
             string? uuid = comprobante.TimbreFiscalDigital?.UUID;

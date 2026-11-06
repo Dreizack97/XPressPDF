@@ -52,11 +52,11 @@
                                                          Foreground="{DynamicResource InkMutedBrush}"
                                                          HorizontalAlignment="Center"
                                                          VerticalAlignment="Center"
-                                                         IsVisible="{Binding LogoPath, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
-                                        <Image Source="{Binding LogoPath}"
+                                                         IsVisible="{Binding !HasLogoPreview}" />
+                                        <Image Source="{Binding LogoPreview}"
                                                Stretch="Uniform"
                                                Margin="8"
-                                               IsVisible="{Binding LogoPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                               IsVisible="{Binding HasLogoPreview}" />
                                     </Grid>
                                 </Border>
 

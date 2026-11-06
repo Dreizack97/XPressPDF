@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using AppUI.Core.Models;
 using AppUI.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -66,7 +67,20 @@ public partial class DiagnosticsViewModel : ObservableObject
 
                 if (files.Count > 0)
                 {
-                    var lines = File.ReadAllLines(files[0]);
+                    var lines = new List<string>();
+                    using (var fs = new FileStream(files[0], FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var reader = new StreamReader(fs, Encoding.UTF8))
+                    {
+                        string? line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(line))
+                                lines.Add(line);
+                        }
+                    }
+
+                    // Eventos más recientes arriba
+                    lines.Reverse();
                     foreach (var line in lines)
                     {
                         var entry = ParseLine(line);
@@ -85,27 +99,46 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     private static LogEntry ParseLine(string line)
     {
-        // Formato: [2026-11-04 12:30:00] [INFO] Mensaje
+        // Formato esperado: [2026-11-06 12:30:00.123] [INFO] Mensaje
         var status = StatusTone.Neutral;
         var level = "INFO";
         var timestamp = DateTime.Now.ToString("HH:mm:ss");
         var message = line;
 
-        if (line.Contains("[ERROR]", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            level = "ERROR";
-            status = StatusTone.Danger;
+            if (line.StartsWith('[') && line.IndexOf(']') is int firstClose && firstClose > 1)
+            {
+                var rawTs = line[1..firstClose];
+                if (DateTime.TryParse(rawTs, out var dt))
+                {
+                    timestamp = dt.ToString("HH:mm:ss");
+                }
+                else
+                {
+                    timestamp = rawTs;
+                }
+
+                var rest = line[(firstClose + 1)..].TrimStart();
+                if (rest.StartsWith('[') && rest.IndexOf(']') is int secondClose && secondClose > 1)
+                {
+                    level = rest[1..secondClose].ToUpperInvariant();
+                    message = rest[(secondClose + 1)..].TrimStart();
+                }
+            }
         }
-        else if (line.Contains("[WARN]", StringComparison.OrdinalIgnoreCase))
+        catch
         {
-            level = "WARN";
-            status = StatusTone.Warning;
+            // Conserva mensaje original como fallback
         }
-        else if (line.Contains("[INFO]", StringComparison.OrdinalIgnoreCase))
+
+        status = level switch
         {
-            level = "INFO";
-            status = StatusTone.Info;
-        }
+            "ERROR" => StatusTone.Danger,
+            "WARN" or "WARNING" => StatusTone.Warning,
+            "INFO" => StatusTone.Info,
+            _ => StatusTone.Neutral
+        };
 
         return new LogEntry(timestamp, level, message, status);
     }

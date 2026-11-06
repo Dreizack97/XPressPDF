@@ -17,12 +17,28 @@ public partial class MainWindow : Window
         Loaded += (_, _) => ApplyWindowState(WindowState);
     }
 
-    public void AttachServices(IStorageService storageService, IThemeService themeService, INavigationService navigationService, IToastService toastService)
+    public void AttachServices(
+        IStorageService storageService,
+        IThemeService themeService,
+        INavigationService navigationService,
+        IToastService toastService,
+        IPreferencesService preferencesService)
     {
         storageService.RegisterTopLevel(this);
         NavbarControl.AttachServices(themeService);
-        SidebarControl.AttachNavigationService(navigationService);
+        SidebarControl.AttachServices(navigationService, preferencesService);
         ToastHostControl.AttachToastService(toastService);
+
+        themeService.ThemeChanged += variant =>
+        {
+            var themeName = variant == Avalonia.Styling.ThemeVariant.Light ? "Light"
+                          : variant == Avalonia.Styling.ThemeVariant.Dark ? "Dark" : "System";
+            if (preferencesService.Current.SelectedTheme != themeName)
+            {
+                preferencesService.Current.SelectedTheme = themeName;
+                preferencesService.Save(preferencesService.Current);
+            }
+        };
     }
 
     public void ToggleSidebar() => SidebarControl.ToggleCollapse();

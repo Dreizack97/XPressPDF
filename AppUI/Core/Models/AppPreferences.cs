@@ -34,4 +34,9 @@ public sealed class AppPreferences
     /// Si es true, desactiva animaciones y transiciones visuales (accesibilidad).
     /// </summary>
     public bool ReducedMotion { get; set; } = false;
+
+    /// <summary>
+    /// Si es true, mantiene la barra lateral (Sidebar) en modo contraído al iniciar.
+    /// </summary>
+    public bool IsSidebarCollapsed { get; set; } = false;
 }

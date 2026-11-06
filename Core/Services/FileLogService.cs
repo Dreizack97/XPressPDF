@@ -17,7 +17,9 @@ public class FileLogService : ILogService
 
     public FileLogService(string? logDirectory = null)
     {
-        _logDirectory = logDirectory ?? Path.Combine(AppContext.BaseDirectory, "logs");
+        _logDirectory = !string.IsNullOrWhiteSpace(logDirectory)
+            ? logDirectory
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XPressPDF", "logs");
     }
 
     public void Log(string message, string level = "INFO")

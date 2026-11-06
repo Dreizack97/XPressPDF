@@ -15,7 +15,7 @@
         Title="XPress PDF - Conversor Masivo de CFDI 4.0 a PDF"
         Icon="/Assets/app-icon.ico"
         Width="1280" Height="820"
-        MinWidth="960" MinHeight="640"
+        MinWidth="1280" MinHeight="820"
         WindowStartupLocation="CenterScreen"
         WindowDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
