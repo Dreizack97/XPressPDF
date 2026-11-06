@@ -17,6 +17,7 @@ public class CfdiPdfGenerator : ICfdiPdfGenerator
     static CfdiPdfGenerator()
     {
         QuestPDF.Settings.License = LicenseType.Community;
+
     }
 
     private readonly ICfdiPdfDocumentFactory _documentFactory;

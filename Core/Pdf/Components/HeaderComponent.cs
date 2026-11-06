@@ -32,11 +32,19 @@ public class HeaderComponent : IComponent
             // Columna de Logotipo
             if (_options.LogoImageBytes is { Length: > 0 } bytes)
             {
-                row.RelativeItem().AlignLeft().AlignMiddle().MaxHeight(50).Image(bytes).FitArea();
+                row.RelativeItem().Height(50).AlignLeft().AlignMiddle().Image(bytes).FitArea();
             }
             else if (!string.IsNullOrWhiteSpace(_options.LogoImagePath) && File.Exists(_options.LogoImagePath))
             {
-                row.RelativeItem().AlignLeft().AlignMiddle().MaxHeight(50).Image(_options.LogoImagePath).FitArea();
+                try
+                {
+                    byte[] fileBytes = File.ReadAllBytes(_options.LogoImagePath);
+                    row.RelativeItem().Height(50).AlignLeft().AlignMiddle().Image(fileBytes).FitArea();
+                }
+                catch
+                {
+                    row.RelativeItem();
+                }
             }
             else
             {

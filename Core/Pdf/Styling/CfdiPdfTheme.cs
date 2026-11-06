@@ -9,7 +9,7 @@ using QuestPDF.Infrastructure;
 /// </summary>
 public static class CfdiPdfTheme
 {
-    public static readonly string PrimaryFont = Fonts.Arial;
+    public static readonly string PrimaryFont = "Lato";
 
     public static readonly string PrimaryColor = Colors.Grey.Darken3;
     public static readonly string SecondaryColor = Colors.Grey.Darken2;
