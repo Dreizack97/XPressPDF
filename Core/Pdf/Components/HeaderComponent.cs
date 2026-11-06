@@ -60,19 +60,19 @@ public class HeaderComponent : IComponent
                 column.Item().Background(CfdiPdfTheme.LightBackground).PaddingHorizontal(5).PaddingVertical(2).Row(r =>
                 {
                     r.Spacing(5);
-                    r.RelativeItem(20).Text("Serie").Style(CfdiPdfTheme.HeaderLabelStyle);
-                    r.RelativeItem(25).Text("Folio").Style(CfdiPdfTheme.HeaderLabelStyle);
-                    r.RelativeItem(25).Text("Lugar").Style(CfdiPdfTheme.HeaderLabelStyle);
-                    r.RelativeItem(30).Text("Fecha").Style(CfdiPdfTheme.HeaderLabelStyle).AlignEnd();
+                    r.RelativeItem(14).Text("Serie").Style(CfdiPdfTheme.HeaderLabelStyle);
+                    r.RelativeItem(20).Text("Folio").Style(CfdiPdfTheme.HeaderLabelStyle);
+                    r.RelativeItem(20).Text("Lugar").Style(CfdiPdfTheme.HeaderLabelStyle);
+                    r.RelativeItem(46).Text("Fecha").Style(CfdiPdfTheme.HeaderLabelStyle).AlignEnd();
                 });
 
                 column.Item().PaddingHorizontal(5).PaddingVertical(2).Row(r =>
                 {
                     r.Spacing(5);
-                    r.RelativeItem(20).Text(_comprobante.Serie).Style(CfdiPdfTheme.ValueStyle);
-                    r.RelativeItem(25).Text(_comprobante.Folio).Style(CfdiPdfTheme.ValueStyle);
-                    r.RelativeItem(25).Text(_comprobante.LugarExpedicion).Style(CfdiPdfTheme.ValueStyle);
-                    r.RelativeItem(30).Text(_comprobante.Fecha.ToString("yyyy-MM-ddTHH:mm:ss")).Style(CfdiPdfTheme.ValueStyle).AlignEnd();
+                    r.RelativeItem(14).Text(_comprobante.Serie).Style(CfdiPdfTheme.ValueStyle);
+                    r.RelativeItem(20).Text(_comprobante.Folio).Style(CfdiPdfTheme.ValueStyle);
+                    r.RelativeItem(20).Text(_comprobante.LugarExpedicion).Style(CfdiPdfTheme.ValueStyle);
+                    r.RelativeItem(46).Text(_comprobante.Fecha.ToString("yyyy-MM-ddTHH:mm:ss")).Style(CfdiPdfTheme.ValueStyle).AlignEnd();
                 });
             });
         });
